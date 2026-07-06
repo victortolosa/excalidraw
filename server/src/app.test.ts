@@ -195,6 +195,56 @@ test("folders: create makes a real dir, delete only when empty", async () => {
   assert.equal(dotDir.status, 400);
 });
 
+test("search matches filename and text-element content", async () => {
+  const withText = JSON.stringify({
+    type: "excalidraw",
+    version: 2,
+    elements: [{ type: "text", text: "Quarterly Roadmap 2026" }],
+    appState: {},
+    files: {},
+  });
+  await app.request("/api/files/notes.excalidraw", {
+    method: "PUT",
+    body: withText,
+  });
+  await app.request("/api/files/unrelated.excalidraw", {
+    method: "PUT",
+    body: SCENE,
+  });
+
+  // filename match
+  const byName = await (await app.request("/api/files?q=notes")).json();
+  assert.deepEqual(
+    byName.map((f: any) => f.path),
+    ["notes.excalidraw"],
+  );
+
+  // content match, case-insensitive
+  const byText = await (await app.request("/api/files?q=roadmap")).json();
+  assert.deepEqual(
+    byText.map((f: any) => f.path),
+    ["notes.excalidraw"],
+  );
+
+  const none = await (await app.request("/api/files?q=zzznope")).json();
+  assert.deepEqual(none, []);
+
+  await app.request("/api/files/notes.excalidraw", { method: "DELETE" });
+  await app.request("/api/files/unrelated.excalidraw", { method: "DELETE" });
+});
+
+test("GET /api/folders lists real dirs, including empty ones", async () => {
+  await app.request("/api/folders/archive/2025", { method: "POST" });
+  const folders = await (await app.request("/api/folders")).json();
+  const paths = folders.map((f: any) => f.path);
+  assert.ok(paths.includes("archive"));
+  assert.ok(paths.includes("archive/2025"));
+  // dot-dirs (.thumbnails) never appear
+  assert.ok(paths.every((p: string) => !p.startsWith(".")));
+  await app.request("/api/folders/archive/2025", { method: "DELETE" });
+  await app.request("/api/folders/archive", { method: "DELETE" });
+});
+
 test("meta round-trips through .dashboard.json", async () => {
   const blob = { favorites: ["dropped.excalidraw"], order: "mtime" };
   const put = await app.request("/api/meta", {

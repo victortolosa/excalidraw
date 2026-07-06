@@ -72,6 +72,49 @@ async function listDrawings(dataDir: string): Promise<FileEntry[]> {
   return entries;
 }
 
+async function listFolders(dataDir: string): Promise<
+  { path: string; name: string }[]
+> {
+  const folders: { path: string; name: string }[] = [];
+
+  const walk = async (dir: string, rel: string) => {
+    let dirents;
+    try {
+      dirents = await fs.readdir(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const dirent of dirents) {
+      if (!dirent.isDirectory() || dirent.name.startsWith(".")) {
+        continue;
+      }
+      const childRel = rel ? `${rel}/${dirent.name}` : dirent.name;
+      folders.push({ path: childRel, name: dirent.name });
+      await walk(path.join(dir, dirent.name), childRel);
+    }
+  };
+
+  await walk(dataDir, "");
+  return folders;
+}
+
+/** does any text element in the drawing contain `query` (lowercased)? */
+async function drawingTextMatches(abs: string, query: string) {
+  try {
+    const data = JSON.parse(await fs.readFile(abs, "utf8"));
+    return (
+      Array.isArray(data.elements) &&
+      data.elements.some(
+        (element: unknown) =>
+          typeof (element as { text?: unknown })?.text === "string" &&
+          (element as { text: string }).text.toLowerCase().includes(query),
+      )
+    );
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Split the wildcard tail of `/api/files/*` into the drawing path and an
  * optional action suffix. Unambiguous because drawing paths must end in
@@ -123,7 +166,26 @@ export function createApp(options: { dataDir: string; staticDir: string }) {
 
   api.get("/health", (c) => c.json({ ok: true }));
 
-  api.get("/files", async (c) => c.json(await listDrawings(dataDir)));
+  api.get("/files", async (c) => {
+    const files = await listDrawings(dataDir);
+    const query = c.req.query("q")?.trim().toLowerCase();
+    if (!query) {
+      return c.json(files);
+    }
+    // search: filename match, else text-element content match
+    const matches = [];
+    for (const file of files) {
+      if (
+        file.name.toLowerCase().includes(query) ||
+        (await drawingTextMatches(path.join(dataDir, file.path), query))
+      ) {
+        matches.push(file);
+      }
+    }
+    return c.json(matches);
+  });
+
+  api.get("/folders", async (c) => c.json(await listFolders(dataDir)));
 
   api.get("/files/:path{.+}", async (c) => {
     const { rel, action } = parseFileRoute(c.req.param("path"));
