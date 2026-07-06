@@ -7,11 +7,13 @@
  * localStorage restore-on-load and tabSync are bypassed, and this module
  * owns its own debounced save + lifecycle flushes.
  */
+import { isTestEnv } from "@excalidraw/common";
 import { serializeAsJSON } from "@excalidraw/excalidraw/data/json";
 import {
   restoreAppState,
   restoreElements,
 } from "@excalidraw/excalidraw/data/restore";
+import { exportToSvg } from "@excalidraw/excalidraw/scene/export";
 
 import type { OrderedExcalidrawElement } from "@excalidraw/element/types";
 import type {
@@ -147,6 +149,38 @@ export const loadServerScene = async (
   }
 };
 
+/**
+ * Regenerate the dashboard thumbnail after a successful save. Fire and
+ * forget — a missing thumbnail only degrades the dashboard grid.
+ */
+const putThumbnail = async (job: PendingSave) => {
+  if (isTestEnv()) {
+    return;
+  }
+  try {
+    const elements = job.elements.filter((element) => !element.isDeleted);
+    if (!elements.length) {
+      return;
+    }
+    const svg = await exportToSvg(
+      elements,
+      {
+        exportBackground: true,
+        viewBackgroundColor: job.appState.viewBackgroundColor ?? "#ffffff",
+        exportPadding: 16,
+      },
+      job.files,
+    );
+    await fetch(`${fileUrl(job.path)}/thumbnail`, {
+      method: "PUT",
+      headers: { "Content-Type": "image/svg+xml" },
+      body: svg.outerHTML,
+    });
+  } catch (error) {
+    console.warn(`thumbnail generation failed for "${job.path}"`, error);
+  }
+};
+
 const performSave = async () => {
   if (!pending || saveInFlight) {
     return;
@@ -186,6 +220,7 @@ const performSave = async () => {
     }
     lastSavedScene = serialized;
     setStatus(pending ? "dirty" : "saved");
+    putThumbnail(job);
   } catch (error) {
     console.error(`failed to save server file "${job.path}"`, error);
     // retain the payload — the next change or flush retries
