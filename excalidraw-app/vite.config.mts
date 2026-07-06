@@ -17,6 +17,11 @@ export default defineConfig(({ mode }) => {
       port: Number(envVars.VITE_APP_PORT || 3000),
       // open the browser
       open: true,
+      // self-hosted dashboard: forward API calls to the local file server
+      // (run `node server/src/index.ts` alongside `yarn start`)
+      proxy: {
+        "/api": envVars.VITE_APP_SERVER_PROXY || "http://localhost:3011",
+      },
     },
     // We need to specify the envDir since now there are no
     //more located in parallel with the vite.config.ts file but in parent dir
