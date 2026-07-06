@@ -24,7 +24,7 @@ architecture decisions; this file is the *do*, broken into one-sitting units.
   distinct from the existing dev `docker-compose.yml`): `image:
   ghcr.io/victortolosa/excalidraw:latest`, volume `./data:/data`, ports `8085:80`.
   *Done when:* file exists, **no `build:` key**.
-- [ ] **0.3 Push, confirm green.** `git push origin custom`, watch the `build-and-push`
+- [x] **0.3 Push, confirm green.** `git push origin custom`, watch the `build-and-push`
   action.
   *Done when:* GHCR shows a fresh `:latest` + `:<sha>`.
 
@@ -37,35 +37,35 @@ architecture decisions; this file is the *do*, broken into one-sitting units.
 Build `server/` as a standalone Node/Hono app first — `curl` it without touching
 Excalidraw at all.
 
-- [ ] **1.1 Scaffold.** `server/` with Hono: serve `excalidraw-app/build` statically +
+- [x] **1.1 Scaffold.** `server/` with Hono: serve `excalidraw-app/build` statically +
   `GET /api/health`. Data dir from `DATA_DIR` env (default `./data`).
   *Done when:* `node server` → `curl localhost:PORT/api/health` returns ok.
-- [ ] **1.2 Path sanitizer + its tests (do this first — it's the security boundary).**
+- [x] **1.2 Path sanitizer + its tests (do this first — it's the security boundary).**
   A `safePath(input)` util: reject `..`, absolute paths, and non-`.excalidraw`
   extensions; resolve strictly under `DATA_DIR`. Unit-test the traversal cases.
   *Done when:* tests prove `../../etc/passwd` and `foo.txt` are rejected, and
   `sub/a.excalidraw` is allowed.
-- [ ] **1.3 List.** `GET /api/files` → `[{path, name, mtime, size, folder}]`.
+- [x] **1.3 List.** `GET /api/files` → `[{path, name, mtime, size, folder}]`.
   *Done when:* dropping a `.excalidraw` into `./data` shows up in the response.
-- [ ] **1.4 Read/write/delete one file.** `GET/PUT/DELETE /api/files/*` (wildcard route
+- [x] **1.4 Read/write/delete one file.** `GET/PUT/DELETE /api/files/*` (wildcard route
   so nested folders work), all through `safePath`. **PUT returns the new `mtime`** in the
   body (needed for the Phase 5 conflict guard).
   *Done when:* `curl PUT` creates the file on disk; GET reads it back; DELETE removes it.
-- [ ] **1.5 Rename/move + folders.** `POST /api/files/*/rename`,
+- [x] **1.5 Rename/move + folders.** `POST /api/files/*/rename`,
   `POST/DELETE /api/folders/*`.
   *Done when:* rename moves the file on disk; creating a folder makes a real dir.
-- [ ] **1.6 Metadata.** `GET/PUT /api/meta` backed by `.dashboard.json` in the data dir.
+- [x] **1.6 Metadata.** `GET/PUT /api/meta` backed by `.dashboard.json` in the data dir.
   *Done when:* PUT then GET round-trips a favorites/order blob.
-- [ ] **1.7 Thumbnail endpoints.** `PUT/GET /api/files/*/thumbnail` → stored under
+- [x] **1.7 Thumbnail endpoints.** `PUT/GET /api/files/*/thumbnail` → stored under
   `.thumbnails/` keyed by path + mtime.
   *Done when:* PUT an SVG, GET it back.
-- [ ] **1.8 `Cache-Control: no-store` on all `/api`.** One middleware line.
+- [x] **1.8 `Cache-Control: no-store` on all `/api`.** One middleware line.
   *Done when:* `curl -I` an API response shows the header.
-- [ ] **1.9 Vite dev proxy.** In `excalidraw-app/vite.config.mts`: `/api` →
+- [x] **1.9 Vite dev proxy.** In `excalidraw-app/vite.config.mts`: `/api` →
   `http://localhost:PORT`. Keep it tiny; add to the fork-surface manifest.
   *Done when:* `yarn start` + `node server` → a browser fetch to `/api/health` works
   through Vite.
-- [ ] **1.10 Dockerfile runtime stage.** Replace the nginx final stage with
+- [x] **1.10 Dockerfile runtime stage.** Replace the nginx final stage with
   `node:24-alpine` running `server/`. Leave the build stage untouched.
   *Done when:* `docker build` + run with `-v ./data:/data` → app loads **and**
   `curl /api/files` works in the container.

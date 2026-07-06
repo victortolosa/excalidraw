@@ -182,7 +182,9 @@ table is what tells you the intent to re-apply. Additive files/dirs don't belong
 | `Dockerfile` | Runtime stage: Node server instead of nginx | Runtime stage only |
 | `excalidraw-app/App.tsx` | `#/d/<path>` routing + server-save branch inside the existing `onChange` (~line 689); does **not** touch `LocalData.ts` | <30 lines |
 | `excalidraw-app/index.tsx` | Mount dashboard route | <10 lines |
-| `excalidraw-app/vite.config.mts` | Dev proxy `/api` → local server | <10 lines |
+| `excalidraw-app/vite.config.mts` | Dev proxy `/api` → local server (port 3011) | <10 lines |
+| `.dockerignore` | Allowlist entry for `server/` | 1 line |
+| `.gitignore` | Unignore `server/package-lock.json` | 2 lines |
 
 (Update as phases land. If this table grows past ~5 rows, patches are getting too
 invasive — refactor toward additive files.)
@@ -265,19 +267,19 @@ Work these in order. Each phase is a reasonable unit for one AI session.
 
 - [x] `git fetch upstream && git merge upstream/master` into `custom`; resolve conflicts; verify `yarn test:typecheck` passes
 - [x] Add `docker-compose.ghcr.yml` at repo root: image `ghcr.io/victortolosa/excalidraw:latest`, volume `./data:/data`, ports `8085:80` (named `.ghcr.yml` since upstream's dev `docker-compose.yml` already exists; modeled on NoteDiscovery's)
-- [ ] Commit and push; confirm GHCR build still green
+- [x] Commit and push; confirm GHCR build still green (run 28820944147, 2026-07-06)
 
 **Verify:** fresh upstream merged, compose file exists, CI green.
 
 ### Phase 1 — Backend file API + Docker
 
-- [ ] Scaffold `server/` (Node + Hono): static serving of `excalidraw-app/build` + the API table above
-- [ ] Implement file listing/read/write/delete/rename with path sanitization
-- [ ] Implement `GET/PUT /api/meta` backed by `.dashboard.json` in the data dir
-- [ ] Thumbnail endpoint: `PUT/GET /api/files/:path/thumbnail` storing to `.thumbnails/` (see pre-flight #5)
-- [ ] Vite dev proxy: `/api` → local server port in `vite.config.mts` (see pre-flight #2)
-- [ ] Rewrite Dockerfile final stage: `node:24-alpine` running `server/`, replacing nginx; keep the build stage as-is
-- [ ] Local test: `docker build` + run with a mounted dir; curl the API; confirm files appear on disk
+- [x] Scaffold `server/` (Node + Hono): static serving of `excalidraw-app/build` + the API table above (standalone npm package, TS run natively on Node 24+; tests via `node --test`)
+- [x] Implement file listing/read/write/delete/rename with path sanitization
+- [x] Implement `GET/PUT /api/meta` backed by `.dashboard.json` in the data dir
+- [x] Thumbnail endpoint: `PUT/GET /api/files/:path/thumbnail` storing to `.thumbnails/` (see pre-flight #5)
+- [x] Vite dev proxy: `/api` → `localhost:3011` in `vite.config.mts` (see pre-flight #2)
+- [x] Rewrite Dockerfile final stage: `node:24-alpine` running `server/`, replacing nginx; keep the build stage as-is
+- [x] Local test: `docker build` + run with a mounted dir; curl the API; confirm files appear on disk (verified 2026-07-06: health, static app, PUT→disk, listing)
 
 **Verify:** `curl PUT` creates a `.excalidraw` file in the mounted directory; app still loads in browser.
 
