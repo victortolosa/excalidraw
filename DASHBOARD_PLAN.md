@@ -263,8 +263,8 @@ Work these in order. Each phase is a reasonable unit for one AI session.
 
 ### Phase 0 — Repo prep
 
-- [ ] `git fetch upstream && git merge upstream/master` into `custom`; resolve conflicts; verify `yarn test:typecheck` passes
-- [ ] Add `docker-compose.yml` at repo root: image `ghcr.io/victortolosa/excalidraw:latest`, volume `./data:/data`, port mapping (model it on NoteDiscovery's `docker-compose.ghcr.yml`)
+- [x] `git fetch upstream && git merge upstream/master` into `custom`; resolve conflicts; verify `yarn test:typecheck` passes
+- [x] Add `docker-compose.ghcr.yml` at repo root: image `ghcr.io/victortolosa/excalidraw:latest`, volume `./data:/data`, ports `8085:80` (named `.ghcr.yml` since upstream's dev `docker-compose.yml` already exists; modeled on NoteDiscovery's)
 - [ ] Commit and push; confirm GHCR build still green
 
 **Verify:** fresh upstream merged, compose file exists, CI green.

@@ -17,10 +17,10 @@ architecture decisions; this file is the *do*, broken into one-sitting units.
 
 ## Phase 0 — Repo prep
 
-- [ ] **0.1 Sync upstream (optional).** `git fetch upstream && git merge upstream/master`
+- [x] **0.1 Sync upstream (optional).** `git fetch upstream && git merge upstream/master`
   into `custom`, resolve conflicts, run `yarn test:typecheck`.
   *Done when:* typecheck passes, tree clean.
-- [ ] **0.2 Add the GHCR compose file.** New root file `docker-compose.ghcr.yml` (kept
+- [x] **0.2 Add the GHCR compose file.** New root file `docker-compose.ghcr.yml` (kept
   distinct from the existing dev `docker-compose.yml`): `image:
   ghcr.io/victortolosa/excalidraw:latest`, volume `./data:/data`, ports `8085:80`.
   *Done when:* file exists, **no `build:` key**.
