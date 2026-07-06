@@ -19,6 +19,8 @@ logs
 node_modules
 npm-debug.log*
 package-lock.json
+# the standalone server/ package uses npm — its lockfile is committed
+!server/package-lock.json
 yarn-debug.log*
 yarn-error.log*
 packages/excalidraw/types
