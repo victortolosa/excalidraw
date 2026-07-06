@@ -115,18 +115,18 @@ updates; reload restores; plain `#/`-less usage still works as stock.
 
 ## Phase 3 — Dashboard MVP
 
-- [ ] **3.1 Route shell.** `excalidraw-app/dashboard/` at `#/`, empty shell.
+- [x] **3.1 Route shell.** `excalidraw-app/dashboard/` at `#/`, empty shell.
   *Done when:* `#/` shows the dashboard, `#/d/x` still shows the editor.
-- [ ] **3.2 Card grid.** List from `GET /api/files`.
+- [x] **3.2 Card grid.** List from `GET /api/files`.
   *Done when:* files render as cards.
-- [ ] **3.3 Thumbnails.** Generate SVG client-side after save → PUT; grid loads from the
+- [x] **3.3 Thumbnails.** Generate SVG client-side after save → PUT; grid loads from the
   thumbnail endpoint, **not** full files.
   *Done when:* grid shows thumbnails without downloading every full drawing.
-- [ ] **3.4 Create new.** Name prompt → PUT empty scene → open editor.
+- [x] **3.4 Create new.** Name prompt → PUT empty scene → open editor.
   *Done when:* new file appears on disk and opens.
-- [ ] **3.5 Open / rename / delete-with-confirm.**
+- [x] **3.5 Open / rename / delete-with-confirm.**
   *Done when:* all three work from the grid.
-- [ ] **3.6 Sort by name / modified.**
+- [x] **3.6 Sort by name / modified.**
   *Done when:* toggle reorders.
 
 **Phase verify:** full loop — create, draw, return to dashboard, see thumbnail, rename,

@@ -182,7 +182,7 @@ table is what tells you the intent to re-apply. Additive files/dirs don't belong
 | `Dockerfile` | Runtime stage: Node server instead of nginx | Runtime stage only |
 | `excalidraw-app/App.tsx` | `#/d/<path>` routing + server-save branch inside the existing `onChange`; does **not** touch `LocalData.ts` | 29 lines (landed) |
 | `vitest.config.mts` | Exclude `server/**` (has its own node:test suite) | 2 lines |
-| `excalidraw-app/index.tsx` | Mount dashboard route | <10 lines |
+| `excalidraw-app/index.tsx` | Mount `DashboardRoot` instead of `ExcalidrawApp` | 3 lines (landed) |
 | `excalidraw-app/vite.config.mts` | Dev proxy `/api` → local server (port 3011) | <10 lines |
 | `.dockerignore` | Allowlist entry for `server/` | 1 line |
 | `.gitignore` | Unignore `server/package-lock.json` | 2 lines |
@@ -297,11 +297,11 @@ Work these in order. Each phase is a reasonable unit for one AI session.
 
 ### Phase 3 — Dashboard MVP
 
-- [ ] `excalidraw-app/dashboard/` route at `#/`: card grid listing files from the API
-- [ ] Thumbnails: client generates SVG after save → PUT to thumbnail endpoint; dashboard grid loads thumbnails from server, not full files (see pre-flight #5)
-- [ ] Create new drawing (name prompt → PUT empty scene → open editor)
-- [ ] Rename, delete (with confirm), open
-- [ ] Sort by name / modified date
+- [x] `excalidraw-app/dashboard/` route at `#/`: card grid listing files from the API
+- [x] Thumbnails: client generates SVG after save → PUT to thumbnail endpoint; dashboard grid loads thumbnails from server, not full files (see pre-flight #5)
+- [x] Create new drawing (name prompt → PUT empty scene → open editor)
+- [x] Rename, delete (with confirm), open
+- [x] Sort by name / modified date
 
 **Verify:** full loop — create, draw, return to dashboard, see thumbnail, rename, reopen, delete.
 
