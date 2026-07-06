@@ -37,8 +37,36 @@ const expectOk = async (response: Response) => {
   return response;
 };
 
-export const listFiles = async (): Promise<ServerFileEntry[]> =>
-  (await expectOk(await fetch("/api/files"))).json();
+export interface ServerFolderEntry {
+  path: string;
+  name: string;
+}
+
+export const listFiles = async (query?: string): Promise<ServerFileEntry[]> =>
+  (
+    await expectOk(
+      await fetch(
+        query?.trim()
+          ? `/api/files?q=${encodeURIComponent(query.trim())}`
+          : "/api/files",
+      ),
+    )
+  ).json();
+
+export const listFolders = async (): Promise<ServerFolderEntry[]> =>
+  (await expectOk(await fetch("/api/folders"))).json();
+
+export const createFolder = async (path: string) => {
+  await expectOk(
+    await fetch(`/api/folders/${encodePath(path)}`, { method: "POST" }),
+  );
+};
+
+export const deleteFolder = async (path: string) => {
+  await expectOk(
+    await fetch(`/api/folders/${encodePath(path)}`, { method: "DELETE" }),
+  );
+};
 
 export const createFile = async (path: string) => {
   await expectOk(

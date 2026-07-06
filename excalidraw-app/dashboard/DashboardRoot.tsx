@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import ExcalidrawApp from "../App";
 
 import { Dashboard } from "./Dashboard";
+import { QuickSwitcher } from "./QuickSwitcher";
 
 /**
  * Hash router for the self-hosted dashboard fork:
@@ -25,5 +26,10 @@ export const DashboardRoot = () => {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  return route === "dashboard" ? <Dashboard /> : <ExcalidrawApp />;
+  return (
+    <>
+      {route === "dashboard" ? <Dashboard /> : <ExcalidrawApp />}
+      <QuickSwitcher />
+    </>
+  );
 };
