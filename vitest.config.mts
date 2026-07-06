@@ -82,6 +82,8 @@ export default defineConfig({
     setupFiles: ["./setupTests.ts"],
     globals: true,
     environment: "jsdom",
+    // fork: server/ tests run on node:test (`cd server && npm test`), not vitest
+    exclude: ["**/node_modules/**", "**/dist/**", "server/**"],
     // don't list skipped tests in the failure tree — keeps output readable
     hideSkippedTests: true,
     coverage: {
