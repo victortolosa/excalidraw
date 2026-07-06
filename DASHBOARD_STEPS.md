@@ -1,0 +1,174 @@
+# Excalidraw Dashboard — Step-by-step checklist
+
+Commit-sized steps for building the self-hosted drawing dashboard yourself.
+Companion to [DASHBOARD_PLAN.md](DASHBOARD_PLAN.md) — the plan has the *why* and the
+architecture decisions; this file is the *do*, broken into one-sitting units.
+
+## How to use this file
+
+- **One step = one small commit on `custom`.** Don't push until the step's *Done when*
+  passes — pushing triggers the GHCR image build.
+- **Only sync upstream at phase boundaries**, never mid-phase (see the upstream sync
+  runbook in DASHBOARD_PLAN.md).
+- Check the box when a step's *Done when* is green. Record any decision changes back in
+  DASHBOARD_PLAN.md's Decisions section with a date.
+
+---
+
+## Phase 0 — Repo prep
+
+- [ ] **0.1 Sync upstream (optional).** `git fetch upstream && git merge upstream/master`
+  into `custom`, resolve conflicts, run `yarn test:typecheck`.
+  *Done when:* typecheck passes, tree clean.
+- [ ] **0.2 Add the GHCR compose file.** New root file `docker-compose.ghcr.yml` (kept
+  distinct from the existing dev `docker-compose.yml`): `image:
+  ghcr.io/victortolosa/excalidraw:latest`, volume `./data:/data`, ports `8085:80`.
+  *Done when:* file exists, **no `build:` key**.
+- [ ] **0.3 Push, confirm green.** `git push origin custom`, watch the `build-and-push`
+  action.
+  *Done when:* GHCR shows a fresh `:latest` + `:<sha>`.
+
+**Phase verify:** fresh upstream merged, compose file exists, CI green.
+
+---
+
+## Phase 1 — Backend file API + Docker
+
+Build `server/` as a standalone Node/Hono app first — `curl` it without touching
+Excalidraw at all.
+
+- [ ] **1.1 Scaffold.** `server/` with Hono: serve `excalidraw-app/build` statically +
+  `GET /api/health`. Data dir from `DATA_DIR` env (default `./data`).
+  *Done when:* `node server` → `curl localhost:PORT/api/health` returns ok.
+- [ ] **1.2 Path sanitizer + its tests (do this first — it's the security boundary).**
+  A `safePath(input)` util: reject `..`, absolute paths, and non-`.excalidraw`
+  extensions; resolve strictly under `DATA_DIR`. Unit-test the traversal cases.
+  *Done when:* tests prove `../../etc/passwd` and `foo.txt` are rejected, and
+  `sub/a.excalidraw` is allowed.
+- [ ] **1.3 List.** `GET /api/files` → `[{path, name, mtime, size, folder}]`.
+  *Done when:* dropping a `.excalidraw` into `./data` shows up in the response.
+- [ ] **1.4 Read/write/delete one file.** `GET/PUT/DELETE /api/files/*` (wildcard route
+  so nested folders work), all through `safePath`. **PUT returns the new `mtime`** in the
+  body (needed for the Phase 5 conflict guard).
+  *Done when:* `curl PUT` creates the file on disk; GET reads it back; DELETE removes it.
+- [ ] **1.5 Rename/move + folders.** `POST /api/files/*/rename`,
+  `POST/DELETE /api/folders/*`.
+  *Done when:* rename moves the file on disk; creating a folder makes a real dir.
+- [ ] **1.6 Metadata.** `GET/PUT /api/meta` backed by `.dashboard.json` in the data dir.
+  *Done when:* PUT then GET round-trips a favorites/order blob.
+- [ ] **1.7 Thumbnail endpoints.** `PUT/GET /api/files/*/thumbnail` → stored under
+  `.thumbnails/` keyed by path + mtime.
+  *Done when:* PUT an SVG, GET it back.
+- [ ] **1.8 `Cache-Control: no-store` on all `/api`.** One middleware line.
+  *Done when:* `curl -I` an API response shows the header.
+- [ ] **1.9 Vite dev proxy.** In `excalidraw-app/vite.config.mts`: `/api` →
+  `http://localhost:PORT`. Keep it tiny; add to the fork-surface manifest.
+  *Done when:* `yarn start` + `node server` → a browser fetch to `/api/health` works
+  through Vite.
+- [ ] **1.10 Dockerfile runtime stage.** Replace the nginx final stage with
+  `node:24-alpine` running `server/`. Leave the build stage untouched.
+  *Done when:* `docker build` + run with `-v ./data:/data` → app loads **and**
+  `curl /api/files` works in the container.
+
+**Phase verify:** `curl PUT` creates a `.excalidraw` file in the mounted dir; app still
+loads in the browser.
+
+---
+
+## Phase 2 — Editor open/save wiring ⚠️ riskiest (touches upstream)
+
+Keep every upstream diff minimal. The only upstream file that gains logic here is
+`App.tsx`; everything else is the additive `serverStorage.ts`.
+
+- [ ] **2.1 Parse `#/d/<path>`.** Follow the existing `#json=` pattern in `App.tsx`
+  (~line 226). Just detect the mode and extract the path for now.
+  *Done when:* loading `#/d/test.excalidraw` logs the parsed path.
+- [ ] **2.2 `serverStorage.ts` load (additive file).** `loadFromServer(path)` → GET the
+  file, return `{elements, appState, files}`, and **remember the returned `mtime`** as
+  the conflict baseline.
+  *Done when:* opening a server URL renders the on-disk drawing.
+- [ ] **2.3 `serverStorage.ts` save (additive file).** Own debounce (~3–5s), and **skip
+  the PUT if the serialized scene is unchanged** since last save. On a successful PUT,
+  refresh the stored `mtime` baseline from the response.
+  *Done when:* repeated no-op changes send zero PUTs; a real edit sends exactly one.
+- [ ] **2.4 Branch inside `onChange`.** At `App.tsx` ~line 689: if a server file is open,
+  call `serverStorage` save; else keep stock `LocalData.save`. This is the whole upstream
+  save hook — keep it a few lines. **Do not edit `LocalData._save`.**
+  *Done when:* editing a `#/d/` file writes to disk after the debounce; plain `#/` usage
+  is byte-for-byte stock.
+- [ ] **2.5 Flush on lifecycle.** Reuse the existing `flushSave` spots (`App.tsx` ~line
+  619) to also flush the server save on visibilitychange / tab close / route back to the
+  dashboard.
+  *Done when:* closing the tab mid-edit still persists the last change.
+- [ ] **2.6 Bypass localStorage restore + tabSync when a server file is open**
+  (pre-flight #3 trap). Guard restore-on-load and `tabSync` so scratch content can't
+  bleed into a server file.
+  *Done when:* draw on `#/`, then open `#/d/a.excalidraw` → the server file is **not**
+  polluted with scratch content; two tabs on two different files don't fight.
+- [ ] **2.7 Save-status indicator.** saved / saving / error in the UI.
+  *Done when:* the indicator reflects a real PUT and an error (kill the server to test).
+
+**Phase verify:** open `#/d/test.excalidraw`, draw, wait for debounce → file on disk
+updates; reload restores; plain `#/`-less usage still works as stock.
+
+---
+
+## Phase 3 — Dashboard MVP
+
+- [ ] **3.1 Route shell.** `excalidraw-app/dashboard/` at `#/`, empty shell.
+  *Done when:* `#/` shows the dashboard, `#/d/x` still shows the editor.
+- [ ] **3.2 Card grid.** List from `GET /api/files`.
+  *Done when:* files render as cards.
+- [ ] **3.3 Thumbnails.** Generate SVG client-side after save → PUT; grid loads from the
+  thumbnail endpoint, **not** full files.
+  *Done when:* grid shows thumbnails without downloading every full drawing.
+- [ ] **3.4 Create new.** Name prompt → PUT empty scene → open editor.
+  *Done when:* new file appears on disk and opens.
+- [ ] **3.5 Open / rename / delete-with-confirm.**
+  *Done when:* all three work from the grid.
+- [ ] **3.6 Sort by name / modified.**
+  *Done when:* toggle reorders.
+
+**Phase verify:** full loop — create, draw, return to dashboard, see thumbnail, rename,
+reopen, delete.
+
+---
+
+## Phase 4 — Organization
+
+- [ ] **4.1 Favorites.** Star toggle → persisted in `.dashboard.json`; favorites section.
+  *Done when:* favorite/unfavorite survives a server restart.
+- [ ] **4.2 Folders.** Create / browse / move files (real directories in the data dir).
+  *Done when:* moving a file relocates it on disk.
+- [ ] **4.3 Search.** Filename match + text-element content match.
+  *Done when:* search finds a drawing by text inside it.
+- [ ] **4.4 Recents.** Last-opened, from metadata.
+  *Done when:* recently opened files surface first.
+- [ ] **4.5 Cmd+K quick switcher.**
+  *Done when:* Cmd+K opens files by name.
+
+**Phase verify:** favorites persist across restart; search finds by inner text; Cmd+K
+opens files.
+
+---
+
+## Phase 5 — Polish & hardening
+
+- [ ] **5.1 Conflict guard.** Client sends its baseline mtime; server 409s if disk mtime
+  is newer; UI offers reload-or-overwrite. (Step 2.3 keeps the baseline fresh so you
+  don't conflict with your own writes.)
+  *Done when:* a two-tab edit triggers the conflict UI.
+- [ ] **5.2 Dark mode parity** for the dashboard.
+- [ ] **5.3 Backup script** for the data dir (cron rsync or model on the NoteDiscovery
+  backup script).
+- [ ] **5.4 Offline fallback.** Server unreachable → editor falls back to localStorage
+  with a banner.
+  *Done when:* killing the server mid-edit doesn't lose work.
+- [ ] **5.5 Auth-expiry handling.** Non-JSON API response (Cloudflare Access login page)
+  → detect it, show a "session expired" banner, keep unsaved work in localStorage until
+  re-auth.
+- [ ] **5.6 Deploy + remote checklist.** Deploy to homelab and walk the "Remote access
+  verification checklist" in DASHBOARD_PLAN.md.
+
+**Phase verify:** two-tab edit triggers the conflict UI; killing the server mid-edit
+doesn't lose work; remote checklist passes.

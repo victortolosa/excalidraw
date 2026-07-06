@@ -60,10 +60,14 @@ Small Node service (Hono recommended; Express fine) that serves the built fronte
 
 - **Hash routing** in `excalidraw-app`: `#/` → dashboard, `#/d/<path>` → editor with that
   file. `App.tsx` already dispatches on `#json=` and `#url=` hashes — follow that pattern.
-- New `excalidraw-app/data/serverStorage.ts`: fetch file on open; hook the existing
-  debounced save path (`LocalData._save`, see `excalidraw-app/data/LocalData.ts` ~line 118)
-  to also PUT to the API when a server file is open. localStorage remains the
-  offline/scratch fallback for drawings not yet saved to the server.
+- New `excalidraw-app/data/serverStorage.ts`: fetch file on open; own debounced save
+  that PUTs to the API when a server file is open. Wire it in by **branching inside the
+  app-level `onChange` handler in `App.tsx`** (~line 689, where `LocalData.save` is
+  already called) — **NOT** by editing `LocalData._save` in `LocalData.ts`. `onChange`
+  already receives `(elements, appState, files)` and `App.tsx` is an already-tracked
+  upstream file, so this keeps the patch additive and off `LocalData.ts` (which is not in
+  the fork-surface manifest). localStorage remains the offline/scratch fallback for
+  drawings not yet saved to the server.
 - Save the **full scene including embedded images** (`.excalidraw` format supports inline
   `files` as data URLs) so every file on disk is self-contained.
 
@@ -87,7 +91,8 @@ Small Node service (Hono recommended; Express fine) that serves the built fronte
 
 1. **New files over edits.** `server/`, `excalidraw-app/dashboard/`, `serverStorage.ts`
    are all additive. Upstream files touched should be limited to: `App.tsx` (routing +
-   save hook, target <30 lines of diff), `index.tsx`, `Dockerfile`.
+   the server-save branch inside the existing `onChange`, target <30 lines of diff — do
+   **not** edit `LocalData.ts`), `index.tsx`, `vite.config.mts`, `Dockerfile`.
 2. **Small, single-purpose commits on `custom`** — same style as the NoteDiscovery fork.
 3. **Upstream sync:** `git fetch upstream && git merge upstream/master` into `custom`
    (merge, NOT rebase — `custom` is pushed and deployed). Sync **before** starting a new
@@ -131,7 +136,7 @@ you don't understand just to get the merge through.
 | File / area | Expected? | Strategy |
 |---|---|---|
 | `server/`, `excalidraw-app/dashboard/`, `serverStorage.ts` | Never (ours only) | No action |
-| `excalidraw-app/App.tsx` | Occasionally | Re-apply the *intent* of our patch (routing + save hook) onto upstream's new code — don't blindly keep "ours". Our diff is deliberately <30 lines to make this easy |
+| `excalidraw-app/App.tsx` | Occasionally | Re-apply the *intent* of our patch (routing + the server-save branch inside `onChange`) onto upstream's new code — don't blindly keep "ours". Our diff is deliberately <30 lines to make this easy |
 | `Dockerfile` | Rare (~2×/year upstream) | Take upstream's **build stage** changes (node version bumps etc.), keep our **runtime stage** (Node server instead of nginx) |
 | `package.json` / `yarn.lock` (root) | If we added workspace deps | Take upstream's version, re-add our deps, re-run `yarn` to regenerate the lockfile |
 | `.github/workflows/` | Rare | Upstream workflows: take theirs. `build-custom.yml` is ours only |
@@ -144,7 +149,7 @@ hook points semantically. Check in this order (cheap → expensive):
 
 - [ ] `yarn test:typecheck` — catches renamed/removed APIs we depend on
 - [ ] Grep that our integration points still exist and look the same:
-  - `LocalData._save` / the debounced save path in `excalidraw-app/data/LocalData.ts`
+  - the app-level `onChange` save hook (the `LocalData.save` call, ~line 689) in `excalidraw-app/App.tsx` — our server-save branch sits here
   - hash-route dispatch (`#json=`, `#url=`, our `#/d/`) in `excalidraw-app/App.tsx`
   - `exportToSvg` signature in `@excalidraw/utils` (thumbnails)
   - `.excalidraw` format `version` field — if bumped, test loading an old file
@@ -175,7 +180,7 @@ table is what tells you the intent to re-apply. Additive files/dirs don't belong
 | Upstream file | Why we touch it | Patch size target |
 |---|---|---|
 | `Dockerfile` | Runtime stage: Node server instead of nginx | Runtime stage only |
-| `excalidraw-app/App.tsx` | `#/d/<path>` routing + server-save hook | <30 lines |
+| `excalidraw-app/App.tsx` | `#/d/<path>` routing + server-save branch inside the existing `onChange` (~line 689); does **not** touch `LocalData.ts` | <30 lines |
 | `excalidraw-app/index.tsx` | Mount dashboard route | <10 lines |
 | `excalidraw-app/vite.config.mts` | Dev proxy `/api` → local server | <10 lines |
 
@@ -279,8 +284,8 @@ Work these in order. Each phase is a reasonable unit for one AI session.
 ### Phase 2 — Editor open/save wiring ⚠️ riskiest phase (touches upstream code)
 
 - [ ] Add hash-route handling for `#/d/<path>` in `App.tsx` (follow the existing `#json=` pattern)
-- [ ] Create `excalidraw-app/data/serverStorage.ts`: load scene from API on open
-- [ ] Hook autosave to PUT full scene (elements + appState subset + files) when a server file is open — own debounce ~3–5s + flush on visibilitychange/route change, skip if unchanged (see pre-flight #4)
+- [ ] Create `excalidraw-app/data/serverStorage.ts`: load scene from API on open; remember the `mtime` the server returns as the conflict baseline
+- [ ] Branch inside the app-level `onChange` in `App.tsx` (~line 689): when a server file is open, call `serverStorage` save instead of stock `LocalData.save` — own debounce ~3–5s, flush on visibilitychange/route change, PUT the full scene (elements + appState subset + files), and **skip the PUT if the serialized scene is unchanged** (required, not optional — `onChange` fires on selection/viewport changes too; see pre-flight #4). Do **not** edit `LocalData._save`. On a successful PUT, refresh the stored `mtime` baseline from the response
 - [ ] Bypass localStorage restore-on-load and tabSync when a server file is open (see pre-flight #3)
 - [ ] Save-status indicator (saved / saving / error) in the UI
 - [ ] Keep localStorage behavior intact when no server file is open
@@ -309,7 +314,7 @@ Work these in order. Each phase is a reasonable unit for one AI session.
 
 ### Phase 5 — Polish & hardening
 
-- [ ] Conflict guard: client sends the mtime it loaded; server rejects PUT if disk mtime is newer (covers two tabs / multi-device); UI offers reload-or-overwrite
+- [ ] Conflict guard: client sends its baseline mtime; server rejects PUT (409) if disk mtime is newer (covers two tabs / multi-device); UI offers reload-or-overwrite. The PUT response must return the new mtime so the client refreshes its baseline — otherwise the client false-conflicts against its *own* next save (the server bumps mtime on every write; see Phase 2 `serverStorage`)
 - [ ] Dark mode parity for dashboard
 - [ ] Backup script for the data dir (model on `~/Repos/jot/notediscovery-backup.ps1` or a simple cron rsync)
 - [ ] Error states: server unreachable → editor falls back to localStorage with a banner
