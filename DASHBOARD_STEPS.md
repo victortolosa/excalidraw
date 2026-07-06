@@ -80,32 +80,32 @@ loads in the browser.
 Keep every upstream diff minimal. The only upstream file that gains logic here is
 `App.tsx`; everything else is the additive `serverStorage.ts`.
 
-- [ ] **2.1 Parse `#/d/<path>`.** Follow the existing `#json=` pattern in `App.tsx`
+- [x] **2.1 Parse `#/d/<path>`.** Follow the existing `#json=` pattern in `App.tsx`
   (~line 226). Just detect the mode and extract the path for now.
   *Done when:* loading `#/d/test.excalidraw` logs the parsed path.
-- [ ] **2.2 `serverStorage.ts` load (additive file).** `loadFromServer(path)` → GET the
+- [x] **2.2 `serverStorage.ts` load (additive file).** `loadFromServer(path)` → GET the
   file, return `{elements, appState, files}`, and **remember the returned `mtime`** as
   the conflict baseline.
   *Done when:* opening a server URL renders the on-disk drawing.
-- [ ] **2.3 `serverStorage.ts` save (additive file).** Own debounce (~3–5s), and **skip
+- [x] **2.3 `serverStorage.ts` save (additive file).** Own debounce (~3–5s), and **skip
   the PUT if the serialized scene is unchanged** since last save. On a successful PUT,
   refresh the stored `mtime` baseline from the response.
   *Done when:* repeated no-op changes send zero PUTs; a real edit sends exactly one.
-- [ ] **2.4 Branch inside `onChange`.** At `App.tsx` ~line 689: if a server file is open,
+- [x] **2.4 Branch inside `onChange`.** At `App.tsx` ~line 689: if a server file is open,
   call `serverStorage` save; else keep stock `LocalData.save`. This is the whole upstream
   save hook — keep it a few lines. **Do not edit `LocalData._save`.**
   *Done when:* editing a `#/d/` file writes to disk after the debounce; plain `#/` usage
   is byte-for-byte stock.
-- [ ] **2.5 Flush on lifecycle.** Reuse the existing `flushSave` spots (`App.tsx` ~line
+- [x] **2.5 Flush on lifecycle.** Reuse the existing `flushSave` spots (`App.tsx` ~line
   619) to also flush the server save on visibilitychange / tab close / route back to the
   dashboard.
   *Done when:* closing the tab mid-edit still persists the last change.
-- [ ] **2.6 Bypass localStorage restore + tabSync when a server file is open**
+- [x] **2.6 Bypass localStorage restore + tabSync when a server file is open**
   (pre-flight #3 trap). Guard restore-on-load and `tabSync` so scratch content can't
   bleed into a server file.
   *Done when:* draw on `#/`, then open `#/d/a.excalidraw` → the server file is **not**
   polluted with scratch content; two tabs on two different files don't fight.
-- [ ] **2.7 Save-status indicator.** saved / saving / error in the UI.
+- [x] **2.7 Save-status indicator.** saved / saving / error in the UI.
   *Done when:* the indicator reflects a real PUT and an error (kill the server to test).
 
 **Phase verify:** open `#/d/test.excalidraw`, draw, wait for debounce → file on disk

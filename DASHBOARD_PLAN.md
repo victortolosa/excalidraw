@@ -180,7 +180,8 @@ table is what tells you the intent to re-apply. Additive files/dirs don't belong
 | Upstream file | Why we touch it | Patch size target |
 |---|---|---|
 | `Dockerfile` | Runtime stage: Node server instead of nginx | Runtime stage only |
-| `excalidraw-app/App.tsx` | `#/d/<path>` routing + server-save branch inside the existing `onChange` (~line 689); does **not** touch `LocalData.ts` | <30 lines |
+| `excalidraw-app/App.tsx` | `#/d/<path>` routing + server-save branch inside the existing `onChange`; does **not** touch `LocalData.ts` | 29 lines (landed) |
+| `vitest.config.mts` | Exclude `server/**` (has its own node:test suite) | 2 lines |
 | `excalidraw-app/index.tsx` | Mount dashboard route | <10 lines |
 | `excalidraw-app/vite.config.mts` | Dev proxy `/api` → local server (port 3011) | <10 lines |
 | `.dockerignore` | Allowlist entry for `server/` | 1 line |
@@ -285,12 +286,12 @@ Work these in order. Each phase is a reasonable unit for one AI session.
 
 ### Phase 2 — Editor open/save wiring ⚠️ riskiest phase (touches upstream code)
 
-- [ ] Add hash-route handling for `#/d/<path>` in `App.tsx` (follow the existing `#json=` pattern)
-- [ ] Create `excalidraw-app/data/serverStorage.ts`: load scene from API on open; remember the `mtime` the server returns as the conflict baseline
-- [ ] Branch inside the app-level `onChange` in `App.tsx` (~line 689): when a server file is open, call `serverStorage` save instead of stock `LocalData.save` — own debounce ~3–5s, flush on visibilitychange/route change, PUT the full scene (elements + appState subset + files), and **skip the PUT if the serialized scene is unchanged** (required, not optional — `onChange` fires on selection/viewport changes too; see pre-flight #4). Do **not** edit `LocalData._save`. On a successful PUT, refresh the stored `mtime` baseline from the response
-- [ ] Bypass localStorage restore-on-load and tabSync when a server file is open (see pre-flight #3)
-- [ ] Save-status indicator (saved / saving / error) in the UI
-- [ ] Keep localStorage behavior intact when no server file is open
+- [x] Add hash-route handling for `#/d/<path>` in `App.tsx` (follow the existing `#json=` pattern)
+- [x] Create `excalidraw-app/data/serverStorage.ts`: load scene from API on open; remember the `mtime` the server returns as the conflict baseline
+- [x] Branch inside the app-level `onChange` in `App.tsx` (~line 689): when a server file is open, call `serverStorage` save instead of stock `LocalData.save` — own debounce ~3–5s, flush on visibilitychange/route change, PUT the full scene (elements + appState subset + files), and **skip the PUT if the serialized scene is unchanged** (required, not optional — `onChange` fires on selection/viewport changes too; see pre-flight #4). Do **not** edit `LocalData._save`. On a successful PUT, refresh the stored `mtime` baseline from the response
+- [x] Bypass localStorage restore-on-load and tabSync when a server file is open (see pre-flight #3)
+- [x] Save-status indicator (saved / saving / error) in the UI
+- [x] Keep localStorage behavior intact when no server file is open
 
 **Verify:** open `#/d/test.excalidraw`, draw, wait for debounce → file on disk updates; reload restores the drawing; plain `#/`-less usage still works as stock.
 
