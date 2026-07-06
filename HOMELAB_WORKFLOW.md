@@ -6,6 +6,10 @@ This fork is the patched source for the self-hosted Excalidraw instance running 
 
 The server does not build Excalidraw. The server only pulls and runs a Docker image built by GitHub Actions.
 
+> **This is a personal fork — never open a PR against `excalidraw/excalidraw` and never
+> push to `upstream`.** See [FORK_POLICY.md](FORK_POLICY.md) for the full policy and how
+> to enforce it locally.
+
 ## System map
 
 ```text

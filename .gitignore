@@ -27,3 +27,18 @@ dev-dist
 html
 meta*.json
 .claude
+
+# --- Personal fork: private data & secrets (never commit — see FORK_POLICY.md) ---
+# Mounted drawings/metadata/thumbnails data dir (see DASHBOARD_PLAN.md)
+/data/
+.dashboard.json
+.thumbnails/
+# Local compose overrides & server-only config
+docker-compose.override.yml
+compose.override.yml
+*.local.yml
+*.local.yaml
+# Secrets / tokens (Cloudflare tunnel token, GHCR PAT, Access service tokens, etc.)
+*.token
+.secrets
+secrets/
