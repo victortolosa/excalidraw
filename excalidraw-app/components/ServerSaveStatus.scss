@@ -1,0 +1,25 @@
+.excalidraw-app {
+  .ServerSaveStatus {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    pointer-events: none;
+    background-color: var(--island-bg-color);
+    color: var(--text-primary-color);
+    box-shadow: var(--shadow-island);
+
+    &--dirty {
+      opacity: 0.7;
+    }
+
+    &--error {
+      background-color: var(--color-danger);
+      color: #fff;
+    }
+  }
+}
