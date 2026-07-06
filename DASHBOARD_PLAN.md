@@ -307,11 +307,11 @@ Work these in order. Each phase is a reasonable unit for one AI session.
 
 ### Phase 4 — Organization features
 
-- [ ] Favorites: star toggle, persisted in `.dashboard.json`, favorites section on dashboard
-- [ ] Folders: create/browse/move files (real directories in the data dir)
-- [ ] Search: filename match + text-element content match (extract text from `.excalidraw` JSON server-side in the list endpoint, or client-side)
-- [ ] Recents (last-opened, from metadata)
-- [ ] Cmd+K quick switcher (port the NoteDiscovery idea)
+- [x] Favorites: star toggle, persisted in `.dashboard.json`, favorites section on dashboard
+- [x] Folders: create/browse/move files (real directories in the data dir)
+- [x] Search: filename match + text-element content match (extract text from `.excalidraw` JSON server-side in the list endpoint, or client-side)
+- [x] Recents (last-opened, from metadata)
+- [x] Cmd+K quick switcher (port the NoteDiscovery idea)
 
 **Verify:** favorite/unfavorite persists across restart; search finds a drawing by text inside it; Cmd+K opens files.
 

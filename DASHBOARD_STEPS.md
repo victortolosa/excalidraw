@@ -136,15 +136,15 @@ reopen, delete.
 
 ## Phase 4 — Organization
 
-- [ ] **4.1 Favorites.** Star toggle → persisted in `.dashboard.json`; favorites section.
+- [x] **4.1 Favorites.** Star toggle → persisted in `.dashboard.json`; favorites section.
   *Done when:* favorite/unfavorite survives a server restart.
-- [ ] **4.2 Folders.** Create / browse / move files (real directories in the data dir).
+- [x] **4.2 Folders.** Create / browse / move files (real directories in the data dir).
   *Done when:* moving a file relocates it on disk.
-- [ ] **4.3 Search.** Filename match + text-element content match.
+- [x] **4.3 Search.** Filename match + text-element content match.
   *Done when:* search finds a drawing by text inside it.
-- [ ] **4.4 Recents.** Last-opened, from metadata.
+- [x] **4.4 Recents.** Last-opened, from metadata.
   *Done when:* recently opened files surface first.
-- [ ] **4.5 Cmd+K quick switcher.**
+- [x] **4.5 Cmd+K quick switcher.**
   *Done when:* Cmd+K opens files by name.
 
 **Phase verify:** favorites persist across restart; search finds by inner text; Cmd+K
