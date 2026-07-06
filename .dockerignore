@@ -9,6 +9,7 @@
 !public/
 !packages/
 !scripts/
+!server/
 !tsconfig.json
 !yarn.lock
 

@@ -13,8 +13,26 @@ ARG NODE_ENV=production
 
 RUN npm_config_target_arch=${TARGETARCH} yarn build:app:docker
 
-FROM nginx:stable-alpine-slim@sha256:2c605dbeab79a6b2a63340474fe58119d0ef95bdc4b1f41df0aa689659b3d13b
+# runtime: Node server (server/) serving the static build + the /api file API
+# (fork change — upstream uses nginx here; see DASHBOARD_PLAN.md)
+FROM node:24-alpine
 
-COPY --from=build /opt/node_app/excalidraw-app/build /usr/share/nginx/html
+WORKDIR /app
 
-HEALTHCHECK CMD wget -q -O /dev/null http://localhost || exit 1
+COPY server/package.json server/package-lock.json ./server/
+RUN cd server && npm ci --omit=dev
+
+COPY server/src ./server/src
+COPY --from=build /opt/node_app/excalidraw-app/build ./excalidraw-app/build
+
+ENV NODE_ENV=production \
+    PORT=80 \
+    DATA_DIR=/data \
+    STATIC_DIR=/app/excalidraw-app/build
+
+EXPOSE 80
+VOLUME /data
+
+HEALTHCHECK CMD wget -q -O /dev/null http://localhost/api/health || exit 1
+
+CMD ["node", "server/src/index.ts"]
