@@ -105,6 +105,7 @@ import {
   ExportToExcalidrawPlus,
   exportToExcalidrawPlus,
 } from "./components/ExportToExcalidrawPlus";
+import { ServerSaveStatus } from "./components/ServerSaveStatus";
 import { TopErrorBoundary } from "./components/TopErrorBoundary";
 
 import {
@@ -128,6 +129,12 @@ import {
   LocalData,
   localStorageQuotaExceededAtom,
 } from "./data/LocalData";
+import {
+  isServerFileOpen,
+  loadServerScene,
+  parseServerHash,
+  saveToServer,
+} from "./data/serverStorage";
 import { isBrowserStorageStateNewer } from "./data/tabSync";
 import { ShareDialog, shareDialogStateAtom } from "./share/ShareDialog";
 import CollabError, { collabErrorIndicatorAtom } from "./collab/CollabError";
@@ -227,6 +234,16 @@ const initializeScene = async (opts: {
     /^#json=([a-zA-Z0-9_-]+),([a-zA-Z0-9_-]+)$/,
   );
   const externalUrlMatch = window.location.hash.match(/^#url=(.*)$/);
+
+  // self-hosted dashboard fork: `#/d/<path>` opens a drawing from the file
+  // server — return early so localStorage scratch content can't bleed in
+  const serverFilePath = parseServerHash(window.location.hash);
+  if (serverFilePath) {
+    return {
+      scene: await loadServerScene(serverFilePath),
+      isExternalScene: false,
+    };
+  }
 
   const localDataState = importFromLocalStorage();
 
@@ -551,13 +568,18 @@ const ExcalidrawWrapper = () => {
               appState: restoreAppState(data.scene.appState, null),
               captureUpdate: CaptureUpdateAction.IMMEDIATELY,
             });
+            if (data.scene.files) {
+              excalidrawAPI.addFiles(Object.values(data.scene.files));
+            }
           }
         });
       }
     };
 
     const syncData = debounce(() => {
-      if (isTestEnv()) {
+      // tabSync must not run for server files (fork): two tabs on two
+      // different files would fight through the single localStorage scene
+      if (isTestEnv() || isServerFileOpen()) {
         return;
       }
       if (
@@ -685,7 +707,11 @@ const ExcalidrawWrapper = () => {
 
     // this check is redundant, but since this is a hot path, it's best
     // not to evaludate the nested expression every time
-    if (!LocalData.isSavePaused()) {
+    if (isServerFileOpen()) {
+      // fork: server file open — full scene goes to the file API with its
+      // own debounce; localStorage stays untouched
+      saveToServer(elements, appState, files);
+    } else if (!LocalData.isSavePaused()) {
       LocalData.save(elements, appState, files, () => {
         if (excalidrawAPI) {
           let didChange = false;
@@ -1257,6 +1283,7 @@ const ExcalidrawWrapper = () => {
           />
         )}
       </Excalidraw>
+      <ServerSaveStatus />
     </div>
   );
 };
