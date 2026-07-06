@@ -24,6 +24,8 @@ import type {
 
 import { atom, appJotaiStore } from "../app-jotai";
 
+import { recordRecent } from "./serverMeta";
+
 const FILE_EXTENSION = ".excalidraw";
 
 const SAVE_DEBOUNCE_MS = 3000;
@@ -130,6 +132,9 @@ export const loadServerScene = async (
     saveEnabled = true;
     lastSavedScene = serializeAsJSON(elements, appState, files, "local");
     setStatus("saved");
+    if (!isTestEnv()) {
+      recordRecent(path).catch(() => {});
+    }
 
     return { elements, appState, files, scrollToContent: true };
   } catch (error) {
