@@ -1,3 +1,6 @@
+# Example GHCR compose file. The deployed stack is Git-managed in the
+# homelab repo: ~/Repos/homelab/docker-services/excalidraw/compose.yml
+# (sha-pinned image, host data path per homelab conventions).
 services:
   excalidraw:
     image: ghcr.io/victortolosa/excalidraw:latest

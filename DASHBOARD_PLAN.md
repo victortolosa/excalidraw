@@ -358,9 +358,7 @@ for reads *and writes* to the data dir. Tasks:
       auth-expiry task, but a sane session length is the first line of defense
 - [ ] Server sets `Cache-Control: no-store` on all `/api` responses (one middleware
       line) so Cloudflare/browsers never cache file contents or listings
-- [ ] Server-side compose (`/opt/stacks/<excalidraw stack>`): add the data-dir volume;
-      keep the LAN port binding as-is (`10.0.0.71:8085` stays reachable — trusted-LAN
-      model, and Homepage links to it)
+- [x] Server-side compose: Git-managed template `~/Repos/homelab/docker-services/excalidraw/compose.yml` — data volume `/opt/homelab/docker/excalidraw/data:/data`, LAN port `8085:80` unchanged (deploy: `./deploy/docker-stacks/deploy.sh excalidraw`)
 - [ ] Note the payload ceiling: Cloudflare proxies cap request bodies (~100MB on free
       plan). Fine for drawings; if a scene with embedded images ever hits it, the fix
       is trimming images, not raising the limit
@@ -389,12 +387,12 @@ Browser SSO blocks scripts, CLI, and MCP servers (an `excalidraw-mcp` in the spi
 
 ### Homelab-repo housekeeping (in `~/Repos/homelab`, not this repo)
 
-- [ ] Update `docs/operations/remote-access.md` Excalidraw section: auth model becomes
+- [x] Update `docs/operations/remote-access.md` Excalidraw section: auth model becomes
       "Cloudflare Access Google SSO → Excalidraw file API (no app auth; Access is the
-      sole remote barrier)" and note where the data dir lives
-- [ ] Update `docs/source-of-truth.md` / `docs/service-inventory.md`: data path, backup
-      coverage
-- [ ] Backups: put the data dir under the existing Restic coverage; optionally add a
+      sole remote barrier)" and note where the data dir lives (done 2026-07-06)
+- [x] Update `docs/source-of-truth.md` / `docs/service-inventory.md`: data path, backup
+      coverage (done 2026-07-06)
+- [x] Backups: data dir lives at `/opt/homelab/docker/excalidraw/data`, inside existing Restic coverage; rsync script at `docker-services/excalidraw/backup-data.sh` (cron it on the server); optionally add a
       Syncthing share to the NAS like NoteDiscovery's
       (`/opt/homelab/docker/notediscovery/data` ↔ NAS docs share) — plain files make
       this symmetric

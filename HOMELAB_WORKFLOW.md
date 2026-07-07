@@ -78,7 +78,7 @@ docs/operations/git-deploy.md
 docs/source-of-truth.md
 ```
 
-Do not add a `docker-services/excalidraw` template just because this repo exists. Excalidraw has a separate source repo and a CI-built image, so the live stack can stay server-owned under `/opt/stacks/excalidraw` until there is a stronger reason to promote it into the homelab repo.
+The live stack IS Git-managed (since 2026-07-06): the compose template lives in the homelab repo at `docker-services/excalidraw/compose.yml` (sha-pinned image, data volume) and deploys with `./deploy/docker-stacks/deploy.sh excalidraw`. The earlier "stay server-owned" decision was superseded when the dashboard/file API gave the compose file real config to version.
 
 ## Build workflow
 
@@ -166,15 +166,16 @@ After push, confirm the `build-and-push` workflow succeeded in GitHub Actions.
 
 ## Server deploy workflow
 
-After GitHub Actions publishes the image, update the server:
+After GitHub Actions publishes the image, bump the sha in
+`~/Repos/homelab/docker-services/excalidraw/compose.yml`, commit, push, then:
 
 ```bash
 ssh victor@10.0.0.71
-cd /opt/stacks/excalidraw
-docker compose pull excalidraw
-docker compose up -d --force-recreate excalidraw
+cd ~/homelab
+git pull
+./deploy/docker-stacks/deploy.sh excalidraw
 docker logs excalidraw --tail=50
-curl -I http://127.0.0.1:8085
+curl -s http://127.0.0.1:8085/api/health
 ```
 
 Open:
@@ -215,30 +216,19 @@ image: ghcr.io/victortolosa/excalidraw:latest
 
 ## Updating from upstream
 
-Use this when pulling in upstream Excalidraw changes:
+Use the upstream sync runbook in [DASHBOARD_PLAN.md](DASHBOARD_PLAN.md):
+**merge, never rebase** — `custom` is pushed and deployed, so history must
+not be rewritten. Sync at phase boundaries only.
 
 ```bash
 cd /Users/victortolosa/Repos/excalidraw
-git fetch upstream --tags
+git fetch upstream
 git checkout custom
-git rebase upstream/master
+git merge upstream/master
 ```
 
-Resolve conflicts, run checks, then push:
-
-```bash
-yarn test --watch=false
-yarn build:app:docker
-git push --force-with-lease origin custom
-```
-
-For a release-based update, rebase onto a tag instead:
-
-```bash
-git rebase v0.X.0
-```
-
-Use `--force-with-lease`, not plain `--force`.
+Resolve conflicts per the plan's conflict playbook, run its post-merge
+verification checklist, then `git push origin custom`.
 
 ## Boundaries
 
