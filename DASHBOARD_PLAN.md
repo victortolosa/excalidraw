@@ -58,8 +58,8 @@ Small Node service (Hono recommended; Express fine) that serves the built fronte
 
 ### Editor integration — the ONLY upstream files touched
 
-- **Hash routing** in `excalidraw-app`: `#/` → dashboard, `#/d/<path>` → editor with that
-  file. `App.tsx` already dispatches on `#json=` and `#url=` hashes — follow that pattern.
+- **Hash routing** in `excalidraw-app`: bare URL or `#/` → dashboard (the homepage),
+  `#/d/<path>` → editor with that file, `#scratch` → stock browser-local editor. `App.tsx` already dispatches on `#json=` and `#url=` hashes — follow that pattern.
 - New `excalidraw-app/data/serverStorage.ts`: fetch file on open; own debounced save
   that PUTs to the API when a server file is open. Wire it in by **branching inside the
   app-level `onChange` handler in `App.tsx`** (~line 689, where `LocalData.save` is
@@ -86,6 +86,11 @@ Small Node service (Hono recommended; Express fine) that serves the built fronte
 - **JSON metadata file**, not SQLite — favorites/groups are tiny; keep it human-readable.
 - **Leave collab/Firebase code untouched** — stripping it adds merge surface for no gain;
   it just sits unused.
+- **(2026-07-06) Dashboard is the homepage.** Originally the bare URL kept the stock
+  scratch editor and the dashboard lived only at `#/`. After deploying, landing on a
+  scratch canvas felt wrong for a drawing manager — bare URL now routes to the
+  dashboard; the scratch editor stays reachable via the header link / `#scratch`.
+  Stock hashes (`#json=`, `#url=`, `#room=`) still open the editor directly.
 
 ## Patch-hygiene rules (the fork workflow)
 
