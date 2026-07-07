@@ -241,6 +241,24 @@ export function createApp(options: { dataDir: string; staticDir: string }) {
     } catch {
       return c.json({ error: "body must be valid JSON" }, 400);
     }
+
+    // conflict guard: reject when the disk copy is newer than the client's
+    // baseline (two tabs / two devices). No header = unconditional write.
+    const baseline = Number(c.req.header("X-Base-Mtime"));
+    if (baseline > 0) {
+      try {
+        const diskMtime = Math.round((await fs.stat(abs)).mtimeMs);
+        if (diskMtime > baseline) {
+          return c.json(
+            { error: "file changed on disk since it was loaded", mtime: diskMtime },
+            409,
+          );
+        }
+      } catch {
+        // file doesn't exist yet — nothing to conflict with
+      }
+    }
+
     await atomicWrite(abs, body);
     const stat = await fs.stat(abs);
     return c.json({ mtime: Math.round(stat.mtimeMs), size: stat.size });

@@ -245,6 +245,55 @@ test("GET /api/folders lists real dirs, including empty ones", async () => {
   await app.request("/api/folders/archive", { method: "DELETE" });
 });
 
+test("conflict guard: 409 when disk is newer than the client baseline", async () => {
+  const put1 = await app.request("/api/files/conflict.excalidraw", {
+    method: "PUT",
+    body: SCENE,
+  });
+  const { mtime: baseline } = await put1.json();
+
+  // another writer bumps the disk mtime past the baseline
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  await app.request("/api/files/conflict.excalidraw", {
+    method: "PUT",
+    body: SCENE.replace("[]", "[ ]"),
+  });
+
+  const stale = await app.request("/api/files/conflict.excalidraw", {
+    method: "PUT",
+    body: SCENE,
+    headers: { "X-Base-Mtime": String(baseline) },
+  });
+  assert.equal(stale.status, 409);
+  const conflictBody = await stale.json();
+  assert.equal(typeof conflictBody.mtime, "number");
+  assert.ok(conflictBody.mtime > baseline);
+
+  // a current baseline writes fine and returns the fresh mtime
+  const ok = await app.request("/api/files/conflict.excalidraw", {
+    method: "PUT",
+    body: SCENE,
+    headers: { "X-Base-Mtime": String(conflictBody.mtime) },
+  });
+  assert.equal(ok.status, 200);
+
+  // no header = unconditional overwrite (and new files never conflict)
+  const force = await app.request("/api/files/conflict.excalidraw", {
+    method: "PUT",
+    body: SCENE,
+  });
+  assert.equal(force.status, 200);
+  const fresh = await app.request("/api/files/brand-new.excalidraw", {
+    method: "PUT",
+    body: SCENE,
+    headers: { "X-Base-Mtime": "12345" },
+  });
+  assert.equal(fresh.status, 200);
+
+  await app.request("/api/files/conflict.excalidraw", { method: "DELETE" });
+  await app.request("/api/files/brand-new.excalidraw", { method: "DELETE" });
+});
+
 test("meta round-trips through .dashboard.json", async () => {
   const blob = { favorites: ["dropped.excalidraw"], order: "mtime" };
   const put = await app.request("/api/meta", {
