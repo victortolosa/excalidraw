@@ -160,7 +160,9 @@ opens files.
   *Done when:* a two-tab edit triggers the conflict UI.
 - [x] **5.2 Dark mode parity** for the dashboard.
 - [x] **5.3 Backup script** for the data dir (cron rsync or model on the NoteDiscovery
-  backup script).
+  backup script). *Installed on docker-i5 2026-07-06: script at
+  `/opt/homelab/docker/excalidraw/backup-data.sh`, daily cron 03:30 →
+  `/opt/backups/excalidraw` (dir owned by victor); test run verified.*
 - [x] **5.4 Offline fallback.** Server unreachable → editor falls back to localStorage
   with a banner.
   *Done when:* killing the server mid-edit doesn't lose work.
@@ -169,6 +171,11 @@ opens files.
   re-auth.
 - [ ] **5.6 Deploy + remote checklist.** Deploy to homelab and walk the "Remote access
   verification checklist" in DASHBOARD_PLAN.md.
+  *Progress 2026-07-06: stack promoted to Git-managed template
+  (`homelab:docker-services/excalidraw/`, deploy via `deploy.sh excalidraw`);
+  backup script + cron installed and verified on the server. Remaining:
+  run `deploy.sh excalidraw`, Cloudflare Access settings (empty path filter,
+  exact emails, ~1-week session), and the remote verification checklist.*
 
 **Phase verify:** two-tab edit triggers the conflict UI; killing the server mid-edit
 doesn't lose work; remote checklist passes.
