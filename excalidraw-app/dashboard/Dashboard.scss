@@ -87,6 +87,18 @@
     cursor: text !important;
   }
 
+  &__scratch-link {
+    font-size: 0.85rem;
+    color: var(--dash-fg-muted);
+    text-decoration: none;
+    padding: 0.4rem 0.4rem;
+
+    &:hover {
+      color: var(--dash-accent);
+      text-decoration: underline;
+    }
+  }
+
   &__section-title {
     font-size: 0.9rem;
     text-transform: uppercase;

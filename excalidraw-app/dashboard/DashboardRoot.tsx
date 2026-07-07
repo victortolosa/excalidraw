@@ -7,12 +7,14 @@ import { QuickSwitcher } from "./QuickSwitcher";
 
 /**
  * Hash router for the self-hosted dashboard fork:
+ * - no hash / `#/…` → dashboard (the homepage)
  * - `#/d/<path>` → editor with a server file (handled inside ExcalidrawApp)
- * - `#/…` (anything else under `#/`) → dashboard
- * - no hash / stock hashes (`#json=`, `#room=`, …) → stock editor
+ * - `#scratch` and stock hashes (`#json=`, `#room=`, …) → stock editor
  */
 const isDashboardHash = (hash: string) =>
-  hash.startsWith("#/") && !hash.startsWith("#/d/");
+  hash === "" ||
+  hash === "#" ||
+  (hash.startsWith("#/") && !hash.startsWith("#/d/"));
 
 const getRoute = () =>
   isDashboardHash(window.location.hash) ? "dashboard" : "editor";

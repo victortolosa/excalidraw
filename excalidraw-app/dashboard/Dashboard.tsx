@@ -394,6 +394,13 @@ export const Dashboard = () => {
           <button className="Dashboard__primary" onClick={onCreate}>
             + New drawing
           </button>
+          <a
+            className="Dashboard__scratch-link"
+            href="#scratch"
+            title="Open the stock scratch editor (browser-local, not saved to the server)"
+          >
+            Scratchpad
+          </a>
         </div>
       </header>
 
