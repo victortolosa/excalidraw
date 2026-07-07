@@ -7,7 +7,8 @@ const LABELS = {
   dirty: "Unsaved changes",
   saving: "Saving…",
   saved: "Saved",
-  error: "Save failed — will retry",
+  error: "Save failed — will retry (kept locally)",
+  "session-expired": "Session expired — click to sign in again",
 } as const;
 
 /**
@@ -21,10 +22,15 @@ export const ServerSaveStatus = () => {
     return null;
   }
 
+  const isClickable = status === "session-expired";
+
   return (
     <div
-      className={`ServerSaveStatus ServerSaveStatus--${status}`}
+      className={`ServerSaveStatus ServerSaveStatus--${status} ${
+        isClickable ? "ServerSaveStatus--clickable" : ""
+      }`}
       title={getOpenServerFile() ?? undefined}
+      onClick={isClickable ? () => window.location.reload() : undefined}
     >
       {LABELS[status]}
     </div>

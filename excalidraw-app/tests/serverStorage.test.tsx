@@ -234,6 +234,118 @@ describe("serverStorage", () => {
     });
   });
 
+  describe("conflict guard + recovery + session expiry (Phase 5)", () => {
+    const RECOVERY_KEY = "excalidraw-server-recovery:a.excalidraw";
+
+    const openFile = async (storage: any) => {
+      fetchMock.mockResolvedValueOnce(
+        jsonResponse(SCENE_ON_SERVER, { headers: { "X-Mtime": "100" } }),
+      );
+      await storage.loadServerScene("a.excalidraw");
+      fetchMock.mockClear();
+    };
+
+    const changedElements = () =>
+      asOrdered([
+        ...SCENE_ON_SERVER.elements,
+        API.createElement({ type: "ellipse", id: "el-2" }),
+      ]);
+
+    afterEach(() => {
+      localStorage.clear();
+    });
+
+    it("sends the mtime baseline with every guarded PUT", async () => {
+      const storage = await importServerStorage();
+      await openFile(storage);
+
+      fetchMock.mockResolvedValueOnce(jsonResponse({ mtime: 200 }));
+      storage.saveToServer(changedElements(), makeAppState(), {});
+      await storage.flushServerSave();
+
+      expect(fetchMock.mock.calls[0][1].headers["X-Base-Mtime"]).toBe("100");
+    });
+
+    it("overwrites without the baseline after a confirmed 409", async () => {
+      const storage = await importServerStorage();
+      await openFile(storage);
+
+      vi.stubGlobal("confirm", vi.fn().mockReturnValue(true));
+      fetchMock
+        .mockResolvedValueOnce(
+          jsonResponse({ error: "conflict", mtime: 999 }, { status: 409 }),
+        )
+        .mockResolvedValueOnce(jsonResponse({ mtime: 1000 }));
+
+      storage.saveToServer(changedElements(), makeAppState(), {});
+      await storage.flushServerSave();
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      // retry must be unconditional (no baseline header)
+      expect(
+        fetchMock.mock.calls[1][1].headers["X-Base-Mtime"],
+      ).toBeUndefined();
+    });
+
+    it("keeps a localStorage recovery copy when a save fails", async () => {
+      const storage = await importServerStorage();
+      await openFile(storage);
+
+      fetchMock.mockRejectedValueOnce(new Error("server down"));
+      storage.saveToServer(changedElements(), makeAppState(), {});
+      await storage.flushServerSave();
+
+      const recovered = localStorage.getItem(RECOVERY_KEY);
+      expect(recovered).toBeTruthy();
+      expect(JSON.parse(recovered!).elements.map((el: any) => el.id)).toContain(
+        "el-2",
+      );
+
+      // successful retry clears the recovery copy
+      fetchMock.mockResolvedValueOnce(jsonResponse({ mtime: 300 }));
+      await storage.flushServerSave();
+      expect(localStorage.getItem(RECOVERY_KEY)).toBe(null);
+    });
+
+    it("offers to restore a recovery copy on the next load", async () => {
+      const storage = await importServerStorage();
+
+      const recoveryScene = {
+        ...SCENE_ON_SERVER,
+        elements: [
+          ...SCENE_ON_SERVER.elements,
+          API.createElement({ type: "diamond", id: "recovered-el" }),
+        ],
+      };
+      localStorage.setItem(RECOVERY_KEY, JSON.stringify(recoveryScene));
+
+      vi.stubGlobal("confirm", vi.fn().mockReturnValue(true));
+      fetchMock.mockResolvedValueOnce(
+        jsonResponse(SCENE_ON_SERVER, { headers: { "X-Mtime": "100" } }),
+      );
+
+      const scene = await storage.loadServerScene("a.excalidraw");
+      expect(scene.elements?.map((el: any) => el.id)).toContain("recovered-el");
+    });
+
+    it("flags an auth wall (HTML response) as session-expired, keeps work", async () => {
+      const storage = await importServerStorage();
+      await openFile(storage);
+
+      fetchMock.mockResolvedValueOnce(
+        new Response("<html>Cloudflare Access login</html>", {
+          status: 200,
+          headers: { "Content-Type": "text/html; charset=utf-8" },
+        }),
+      );
+
+      storage.saveToServer(changedElements(), makeAppState(), {});
+      await storage.flushServerSave();
+
+      expect(localStorage.getItem(RECOVERY_KEY)).toBeTruthy();
+    });
+  });
+
   describe("leaving server mode", () => {
     it("closes the server file when the hash no longer points at one", async () => {
       const storage = await importServerStorage();

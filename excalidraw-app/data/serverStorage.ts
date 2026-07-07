@@ -33,7 +33,13 @@ const SAVE_MAX_WAIT_MS = 15000;
 // fetch keepalive payload budget (spec caps in-flight keepalive at 64KiB)
 const KEEPALIVE_MAX_BYTES = 60_000;
 
-export type ServerSaveStatus = "dirty" | "saving" | "saved" | "error" | null;
+export type ServerSaveStatus =
+  | "dirty"
+  | "saving"
+  | "saved"
+  | "error"
+  | "session-expired"
+  | null;
 
 export const serverSaveStatusAtom = atom<ServerSaveStatus>(null);
 
@@ -53,7 +59,45 @@ interface PendingSave {
   elements: readonly OrderedExcalidrawElement[];
   appState: AppState;
   files: BinaryFiles;
+  /** server mtime this tab last saw — the conflict-guard baseline */
+  baseline: number;
 }
+
+// ---------------------------------------------------------------------------
+// crash/offline recovery: failed saves are kept in localStorage until a PUT
+// for that path succeeds, so closing the tab while the server is down (or a
+// Cloudflare Access session expired) doesn't lose work
+// ---------------------------------------------------------------------------
+
+const RECOVERY_PREFIX = "excalidraw-server-recovery:";
+
+const writeRecovery = (path: string, serialized: string) => {
+  try {
+    localStorage.setItem(RECOVERY_PREFIX + path, serialized);
+  } catch {
+    // quota exceeded — nothing we can do
+  }
+};
+
+const readRecovery = (path: string) => {
+  try {
+    return localStorage.getItem(RECOVERY_PREFIX + path);
+  } catch {
+    return null;
+  }
+};
+
+const clearRecovery = (path: string) => {
+  try {
+    localStorage.removeItem(RECOVERY_PREFIX + path);
+  } catch {
+    // ignore
+  }
+};
+
+/** a Cloudflare Access login page instead of JSON = expired session */
+const looksLikeAuthWall = (response: Response) =>
+  (response.headers.get("Content-Type") ?? "").includes("text/html");
 
 let pending: PendingSave | null = null;
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -91,6 +135,44 @@ const closeServerFile = () => {
 };
 
 /**
+ * If a recovery copy exists for `path` and the user wants it, return the
+ * restored scene (and queue a save of it); otherwise clean up and return
+ * null so the server copy is used.
+ */
+const restoreFromRecovery = (path: string, serverSerialized: string | null) => {
+  const recovered = readRecovery(path);
+  if (!recovered || recovered === serverSerialized) {
+    clearRecovery(path);
+    return null;
+  }
+  if (
+    !window.confirm(
+      `Found unsaved local changes for "${path}" from a previous session.\n\n` +
+        `OK — restore them (they'll be saved to the server).\n` +
+        `Cancel — discard them and use the server version.`,
+    )
+  ) {
+    clearRecovery(path);
+    return null;
+  }
+  try {
+    const data = JSON.parse(recovered);
+    const elements = restoreElements(data.elements, null, {
+      repairBindings: true,
+      deleteInvisibleElements: true,
+    });
+    // RestoredAppState is a serializable subset of AppState — the save
+    // path only ever serializes it, so the wider type is safe here
+    const appState = restoreAppState(data.appState, null) as AppState;
+    const files: BinaryFiles = data.files ?? {};
+    return { elements, appState, files };
+  } catch {
+    clearRecovery(path);
+    return null;
+  }
+};
+
+/**
  * Load a drawing from the server. Called from App's initializeScene when
  * the hash is `#/d/<path>` — the returned scene replaces any localStorage
  * restore (scratch content must never bleed into a server file).
@@ -110,7 +192,15 @@ export const loadServerScene = async (
       saveEnabled = true;
       lastSavedScene = null;
       setStatus("saved");
+      const recovered = restoreFromRecovery(path, null);
+      if (recovered) {
+        saveToServer(recovered.elements, recovered.appState, recovered.files);
+        return { ...recovered, scrollToContent: true };
+      }
       return { elements: [], files: {} };
+    }
+    if (looksLikeAuthWall(response)) {
+      throw new Error("session expired (auth wall instead of JSON)");
     }
     if (!response.ok) {
       throw new Error(`load failed: HTTP ${response.status}`);
@@ -136,19 +226,28 @@ export const loadServerScene = async (
       recordRecent(path).catch(() => {});
     }
 
+    const recovered = restoreFromRecovery(path, lastSavedScene);
+    if (recovered) {
+      saveToServer(recovered.elements, recovered.appState, recovered.files);
+      return { ...recovered, scrollToContent: true };
+    }
+
     return { elements, appState, files, scrollToContent: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error(`failed to load server file "${path}"`, error);
     // keep the file "open" so we don't fall back to scratch behavior, but
     // block saves — an empty editor must not overwrite the file on disk
     currentFile = { path, mtime: 0 };
     saveEnabled = false;
     lastSavedScene = null;
-    setStatus("error");
+    const sessionExpired = String(error?.message).includes("session expired");
+    setStatus(sessionExpired ? "session-expired" : "error");
     return {
       elements: [],
       appState: {
-        errorMessage: `Could not load "${path}" from the server.`,
+        errorMessage: sessionExpired
+          ? "Your session expired — reload the page to sign in again."
+          : `Could not load "${path}" from the server.`,
       },
     };
   }
@@ -210,11 +309,40 @@ const performSave = async () => {
   saveInFlight = true;
   setStatus("saving");
   try {
-    const response = await fetch(fileUrl(job.path), {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: serialized,
-    });
+    const putScene = (baseline: number) =>
+      fetch(fileUrl(job.path), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          // baseline 0 = new file or deliberate overwrite — no guard
+          ...(baseline > 0 ? { "X-Base-Mtime": String(baseline) } : {}),
+        },
+        body: serialized,
+      });
+
+    let response = await putScene(job.baseline);
+
+    if (response.status === 409) {
+      const overwrite = window.confirm(
+        `"${job.path}" changed on the server (another tab or device?).\n\n` +
+          `OK — overwrite it with this tab's version.\n` +
+          `Cancel — reload to get the server version (this tab's latest ` +
+          `changes are kept locally as a backup).`,
+      );
+      if (!overwrite) {
+        writeRecovery(job.path, serialized);
+        window.location.reload();
+        return;
+      }
+      response = await putScene(0);
+    }
+
+    if (looksLikeAuthWall(response)) {
+      writeRecovery(job.path, serialized);
+      pending = pending ?? job;
+      setStatus("session-expired");
+      return;
+    }
     if (!response.ok) {
       throw new Error(`save failed: HTTP ${response.status}`);
     }
@@ -224,11 +352,14 @@ const performSave = async () => {
       currentFile.mtime = body.mtime;
     }
     lastSavedScene = serialized;
+    clearRecovery(job.path);
     setStatus(pending ? "dirty" : "saved");
     putThumbnail(job);
   } catch (error) {
     console.error(`failed to save server file "${job.path}"`, error);
-    // retain the payload — the next change or flush retries
+    // retain the payload — the next change or flush retries, and the
+    // localStorage copy survives a tab close
+    writeRecovery(job.path, serialized);
     pending = pending ?? job;
     setStatus("error");
   } finally {
@@ -268,7 +399,13 @@ export const saveToServer = (
   if (!currentFile || !saveEnabled) {
     return;
   }
-  pending = { path: currentFile.path, elements, appState, files };
+  pending = {
+    path: currentFile.path,
+    elements,
+    appState,
+    files,
+    baseline: currentFile.mtime,
+  };
   setStatus("dirty");
   scheduleSave();
 };

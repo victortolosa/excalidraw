@@ -17,9 +17,15 @@
       opacity: 0.7;
     }
 
-    &--error {
+    &--error,
+    &--session-expired {
       background-color: var(--color-danger);
       color: #fff;
+    }
+
+    &--clickable {
+      pointer-events: all;
+      cursor: pointer;
     }
   }
 }
