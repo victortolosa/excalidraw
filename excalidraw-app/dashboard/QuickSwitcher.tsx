@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { editorHash, listFiles } from "./api";
+import { themeClass } from "./theme";
 
 import "./QuickSwitcher.scss";
 
@@ -76,7 +77,7 @@ export const QuickSwitcher = () => {
   };
 
   return (
-    <div className="QuickSwitcher" onClick={() => setOpen(false)}>
+    <div className={themeClass("QuickSwitcher")} onClick={() => setOpen(false)}>
       <div
         className="QuickSwitcher__panel"
         onClick={(event) => event.stopPropagation()}

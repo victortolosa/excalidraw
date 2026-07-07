@@ -5,7 +5,7 @@
   --qs-border: #e4e4ec;
   --qs-accent: #6965db;
 
-  @media (prefers-color-scheme: dark) {
+  &.theme--dark {
     --qs-bg: #1e1e24;
     --qs-fg: #e3e3e8;
     --qs-fg-muted: #9a9aa5;

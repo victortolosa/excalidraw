@@ -7,7 +7,8 @@
   --dash-accent: #6965db;
   --dash-danger: #db6965;
 
-  @media (prefers-color-scheme: dark) {
+  // follows the editor's theme setting (see theme.ts), not the OS directly
+  &.theme--dark {
     --dash-bg: #121212;
     --dash-fg: #e3e3e8;
     --dash-fg-muted: #9a9aa5;

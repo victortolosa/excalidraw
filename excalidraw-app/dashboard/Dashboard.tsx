@@ -14,6 +14,8 @@ import {
   thumbnailUrl,
 } from "./api";
 
+import { themeClass } from "./theme";
+
 import "./Dashboard.scss";
 
 import type { DashboardMeta } from "../data/serverMeta";
@@ -369,7 +371,7 @@ export const Dashboard = () => {
   );
 
   return (
-    <div className="Dashboard">
+    <div className={themeClass("Dashboard")}>
       <header className="Dashboard__header">
         <h1>Drawings</h1>
         <div className="Dashboard__controls">
