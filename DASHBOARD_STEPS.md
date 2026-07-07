@@ -173,9 +173,11 @@ opens files.
   verification checklist" in DASHBOARD_PLAN.md.
   *Progress 2026-07-06: stack promoted to Git-managed template
   (`homelab:docker-services/excalidraw/`, deploy via `deploy.sh excalidraw`);
-  backup script + cron installed and verified on the server. Remaining:
-  run `deploy.sh excalidraw`, Cloudflare Access settings (empty path filter,
-  exact emails, ~1-week session), and the remote verification checklist.*
+  backup script + cron installed and verified; **deployed — dashboard
+  confirmed working at `https://draw.makeshit.app/#/`** (browsers cache the
+  old shell via the PWA service worker; hard refresh after deploys).
+  Remaining: Cloudflare Access settings review (empty path filter, exact
+  emails, ~1-week session) and the remote verification checklist.*
 
 **Phase verify:** two-tab edit triggers the conflict UI; killing the server mid-edit
 doesn't lose work; remote checklist passes.
