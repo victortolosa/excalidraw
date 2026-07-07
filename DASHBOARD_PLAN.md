@@ -77,6 +77,11 @@ Small Node service (Hono recommended; Express fine) that serves the built fronte
   file mtime).
 - Favorites (star), groups as **real folders** in the data dir (portable, not virtual),
   search (filename + text-element contents), recents, Cmd+K quick switcher.
+- 2026-07-06 polish pass: the dashboard uses a compact workspace layout with a tabbed
+  Quick access section (Favorites or Recent, not both at once), card action menus,
+  drag/drop moves into folder tiles and breadcrumb targets, and route-scoped page
+  scrolling. Keep future dashboard polish inside `excalidraw-app/dashboard/` when
+  possible.
 
 ### Decisions made (revisit only if they stop fitting)
 

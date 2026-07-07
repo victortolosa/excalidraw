@@ -169,7 +169,13 @@ opens files.
 - [x] **5.5 Auth-expiry handling.** Non-JSON API response (Cloudflare Access login page)
   → detect it, show a "session expired" banner, keep unsaved work in localStorage until
   re-auth.
-- [ ] **5.6 Deploy + remote checklist.** Deploy to homelab and walk the "Remote access
+- [x] **5.6 Dashboard interaction polish.** Sleek workspace layout, route-scoped
+  dashboard scrolling, tabbed Quick access (Favorites or Recent), compact card action
+  menus, and hardened drag/drop moves into folders and breadcrumb targets.
+  *Done when:* dashboard scrolls without breaking the editor canvas route; Quick access
+  tabs switch cleanly; drag/drop moves files through the existing rename API and guards
+  duplicate/self/stale drops.
+- [ ] **5.7 Deploy + remote checklist.** Deploy to homelab and walk the "Remote access
   verification checklist" in DASHBOARD_PLAN.md.
   *Progress 2026-07-06: stack promoted to Git-managed template
   (`homelab:docker-services/excalidraw/`, deploy via `deploy.sh excalidraw`);

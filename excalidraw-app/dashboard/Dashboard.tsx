@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { getMeta, toggleFavorite, updateMetaPath } from "../data/serverMeta";
 
@@ -18,12 +18,24 @@ import { themeClass } from "./theme";
 
 import "./Dashboard.scss";
 
+import type { DragEvent } from "react";
 import type { DashboardMeta } from "../data/serverMeta";
 import type { ServerFileEntry, ServerFolderEntry } from "./api";
 
 type SortMode = "mtime" | "name";
+type QuickAccessTab = "favorites" | "recent";
+type IconName =
+  | "folder"
+  | "grid"
+  | "more"
+  | "pen"
+  | "plus"
+  | "search"
+  | "star"
+  | "trash";
 
 const FILE_EXTENSION = ".excalidraw";
+const FILE_DRAG_MIME = "application/x-excalidraw-dashboard-file";
 const SEARCH_DEBOUNCE_MS = 250;
 const MAX_RECENTS_SHOWN = 6;
 
@@ -89,28 +101,107 @@ const toFolderPath = (input: string): string | null => {
 const NAME_RULES =
   "Please use a plain name (no slashes, not starting with a dot).";
 
+const pathForFolder = (file: ServerFileEntry, folder: string) => {
+  const name = file.path.split("/").pop()!;
+  return folder ? `${folder}/${name}` : name;
+};
+
+const Icon = ({ name }: { name: IconName }) => {
+  const common = {
+    fill: "none",
+    stroke: "currentColor",
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    strokeWidth: 1.8,
+  };
+
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+      {name === "folder" && (
+        <path
+          {...common}
+          d="M3.8 6.5h6l2 2h8.4v8.8a2.2 2.2 0 0 1-2.2 2.2H6a2.2 2.2 0 0 1-2.2-2.2Z"
+        />
+      )}
+      {name === "grid" && (
+        <>
+          <path
+            {...common}
+            d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"
+          />
+        </>
+      )}
+      {name === "more" && (
+        <>
+          <circle cx="5" cy="12" r="1.5" fill="currentColor" />
+          <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+          <circle cx="19" cy="12" r="1.5" fill="currentColor" />
+        </>
+      )}
+      {name === "pen" && (
+        <path
+          {...common}
+          d="m4 20 4.8-1.1L19.3 8.4a2.1 2.1 0 0 0-3-3L5.9 15.9Z"
+        />
+      )}
+      {name === "plus" && <path {...common} d="M12 5v14M5 12h14" />}
+      {name === "search" && (
+        <path
+          {...common}
+          d="m20 20-4.2-4.2M18 10.5a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"
+        />
+      )}
+      {name === "star" && (
+        <path
+          {...common}
+          d="m12 3.8 2.5 5.1 5.6.8-4 3.9.9 5.5-5-2.6-5 2.6.9-5.5-4-3.9 5.6-.8Z"
+        />
+      )}
+      {name === "trash" && (
+        <path
+          {...common}
+          d="M5 7h14M10 11v6M14 11v6M8 7l.7 12h6.6L16 7M9.5 7l.6-2h3.8l.6 2"
+        />
+      )}
+    </svg>
+  );
+};
+
 interface FileCardProps {
   file: ServerFileEntry;
   isFavorite: boolean;
+  isDragging: boolean;
+  menuOpen: boolean;
+  onDragEnd: () => void;
+  onDragStart: (event: DragEvent<HTMLElement>, file: ServerFileEntry) => void;
   onOpen: (file: ServerFileEntry) => void;
   onToggleFavorite: (file: ServerFileEntry) => void;
   onRename: (file: ServerFileEntry) => void;
   onMove: (file: ServerFileEntry) => void;
   onDelete: (file: ServerFileEntry) => void;
+  onMenuToggle: (path: string) => void;
 }
 
 const FileCard = ({
   file,
   isFavorite,
+  isDragging,
+  menuOpen,
+  onDragEnd,
+  onDragStart,
   onOpen,
   onToggleFavorite,
   onRename,
   onMove,
   onDelete,
+  onMenuToggle,
 }: FileCardProps) => (
-  <div
-    className="Dashboard__card"
+  <article
+    className={`Dashboard__card ${isDragging ? "is-dragging" : ""}`}
+    draggable
     onClick={() => onOpen(file)}
+    onDragEnd={onDragEnd}
+    onDragStart={(event) => onDragStart(event, file)}
     onKeyDown={(event) => {
       if (event.key === "Enter") {
         onOpen(file);
@@ -121,42 +212,79 @@ const FileCard = ({
   >
     <button
       className={`Dashboard__star ${isFavorite ? "is-active" : ""}`}
+      aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
       title={isFavorite ? "Remove from favorites" : "Add to favorites"}
       onClick={(event) => {
         event.stopPropagation();
         onToggleFavorite(file);
       }}
     >
-      {isFavorite ? "★" : "☆"}
+      <Icon name="star" />
     </button>
     <div className="Dashboard__thumbnail">
       {file.hasThumbnail ? (
         <img src={thumbnailUrl(file)} alt="" loading="lazy" />
       ) : (
-        <span className="Dashboard__thumbnail-placeholder">✏️</span>
+        <span className="Dashboard__thumbnail-placeholder">
+          <Icon name="pen" />
+        </span>
       )}
     </div>
-    <div className="Dashboard__card-meta">
-      <div className="Dashboard__card-name" title={file.path}>
-        {file.name}
+    <div className="Dashboard__card-body">
+      <div className="Dashboard__card-meta">
+        <div className="Dashboard__card-name" title={file.path}>
+          {file.name}
+        </div>
+        <div className="Dashboard__card-date">
+          {file.folder && <span>{file.folder} · </span>}
+          {formatModified(file.mtime)}
+        </div>
       </div>
-      <div className="Dashboard__card-date">
-        {file.folder && <span>{file.folder} · </span>}
-        {formatModified(file.mtime)}
+      <div
+        className="Dashboard__card-actions"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          aria-expanded={menuOpen}
+          aria-label={`Actions for ${file.name}`}
+          className="Dashboard__icon-button"
+          onClick={() => onMenuToggle(file.path)}
+        >
+          <Icon name="more" />
+        </button>
+        {menuOpen && (
+          <div className="Dashboard__menu" role="menu">
+            <button role="menuitem" onClick={() => onRename(file)}>
+              Rename
+            </button>
+            <button role="menuitem" onClick={() => onMove(file)}>
+              Move
+            </button>
+            <button
+              className="Dashboard__danger"
+              role="menuitem"
+              onClick={() => onDelete(file)}
+            >
+              Delete
+            </button>
+          </div>
+        )}
       </div>
     </div>
-    <div
-      className="Dashboard__card-actions"
-      onClick={(event) => event.stopPropagation()}
-    >
-      <button onClick={() => onRename(file)}>Rename</button>
-      <button onClick={() => onMove(file)}>Move</button>
-      <button className="Dashboard__danger" onClick={() => onDelete(file)}>
-        Delete
-      </button>
-    </div>
-  </div>
+  </article>
 );
+
+const filePathFromDrag = (event: DragEvent<HTMLElement>) =>
+  (() => {
+    try {
+      return (
+        event.dataTransfer.getData(FILE_DRAG_MIME) ||
+        event.dataTransfer.getData("text/plain")
+      );
+    } catch {
+      return "";
+    }
+  })();
 
 export const Dashboard = () => {
   const [files, setFiles] = useState<ServerFileEntry[] | null>(null);
@@ -164,11 +292,17 @@ export const Dashboard = () => {
   const [meta, setMeta] = useState<DashboardMeta>({});
   const [error, setError] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>("mtime");
+  const [quickAccessTab, setQuickAccessTab] =
+    useState<QuickAccessTab>("favorites");
   const [currentFolder, setCurrentFolder] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<ServerFileEntry[] | null>(
     null,
   );
+  const [openMenuPath, setOpenMenuPath] = useState<string | null>(null);
+  const [draggedFilePath, setDraggedFilePath] = useState<string | null>(null);
+  const [dropTargetFolder, setDropTargetFolder] = useState<string | null>(null);
+  const suppressNextOpenRef = useRef(false);
 
   const refresh = useCallback(async () => {
     try {
@@ -190,6 +324,12 @@ export const Dashboard = () => {
     document.title = "Drawings — Excalidraw";
     refresh();
   }, [refresh]);
+
+  useEffect(() => {
+    const onWindowClick = () => setOpenMenuPath(null);
+    window.addEventListener("click", onWindowClick);
+    return () => window.removeEventListener("click", onWindowClick);
+  }, []);
 
   // debounced server-side search (filename + text content)
   useEffect(() => {
@@ -218,6 +358,10 @@ export const Dashboard = () => {
   };
 
   const openFile = (file: ServerFileEntry) => {
+    if (suppressNextOpenRef.current) {
+      suppressNextOpenRef.current = false;
+      return;
+    }
     window.location.hash = editorHash(file.path);
   };
 
@@ -284,6 +428,11 @@ export const Dashboard = () => {
     if (to === file.path) {
       return;
     }
+    if (files?.some((entry) => entry.path === to && entry.path !== file.path)) {
+      const destination = file.folder || "All drawings";
+      window.alert(`"${name}" already exists in ${destination}.`);
+      return;
+    }
     withErrorHandling(async () => {
       await renameFile(file.path, to);
       await updateMetaPath(file.path, to);
@@ -303,9 +452,13 @@ export const Dashboard = () => {
       window.alert(NAME_RULES);
       return;
     }
-    const name = file.path.split("/").pop()!;
-    const to = folder ? `${folder}/${name}` : name;
+    const to = pathForFolder(file, folder);
     if (to === file.path) {
+      return;
+    }
+    if (files?.some((entry) => entry.path === to && entry.path !== file.path)) {
+      const destination = folder || "All drawings";
+      window.alert(`"${file.name}" already exists in ${destination}.`);
       return;
     }
     withErrorHandling(async () => {
@@ -328,6 +481,114 @@ export const Dashboard = () => {
   const isSearching = searchResults !== null;
 
   const byPath = new Map((files ?? []).map((file) => [file.path, file]));
+
+  const moveFileToFolder = useCallback(
+    async (file: ServerFileEntry, folder: string) => {
+      const to = pathForFolder(file, folder);
+      if (to === file.path) {
+        return;
+      }
+      if (
+        files?.some((entry) => entry.path === to && entry.path !== file.path)
+      ) {
+        const destination = folder || "All drawings";
+        throw new Error(`"${file.name}" already exists in ${destination}.`);
+      }
+      await renameFile(file.path, to);
+      await updateMetaPath(file.path, to);
+    },
+    [files],
+  );
+
+  const onFileDragStart = (
+    event: DragEvent<HTMLElement>,
+    file: ServerFileEntry,
+  ) => {
+    if (
+      event.target instanceof HTMLElement &&
+      event.target.closest("button, a")
+    ) {
+      event.preventDefault();
+      return;
+    }
+    suppressNextOpenRef.current = true;
+    try {
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData(FILE_DRAG_MIME, file.path);
+      event.dataTransfer.setData("text/plain", file.path);
+    } catch {
+      // Some embedded browsers expose partial DataTransfer implementations.
+    }
+    setDraggedFilePath(file.path);
+    setDropTargetFolder(null);
+    setOpenMenuPath(null);
+  };
+
+  const onFileDragEnd = () => {
+    setDraggedFilePath(null);
+    setDropTargetFolder(null);
+    window.setTimeout(() => {
+      suppressNextOpenRef.current = false;
+    }, 0);
+  };
+
+  const getDropTargetProps = (folder: string) => {
+    const canDrop = () => {
+      const dragged = draggedFilePath ? byPath.get(draggedFilePath) : null;
+      if (!dragged || dragged.folder === folder) {
+        return false;
+      }
+      const to = pathForFolder(dragged, folder);
+      return !files?.some(
+        (entry) => entry.path === to && entry.path !== dragged.path,
+      );
+    };
+
+    return {
+      "aria-label": `Move drawing to ${folder || "All drawings"}`,
+      onDragEnter: (event: DragEvent<HTMLElement>) => {
+        if (!canDrop()) {
+          return;
+        }
+        event.preventDefault();
+        setDropTargetFolder(folder);
+      },
+      onDragLeave: (event: DragEvent<HTMLElement>) => {
+        const relatedTarget = event.relatedTarget;
+        if (
+          relatedTarget instanceof Node &&
+          event.currentTarget.contains(relatedTarget)
+        ) {
+          return;
+        }
+        setDropTargetFolder((current) => (current === folder ? null : current));
+      },
+      onDragOver: (event: DragEvent<HTMLElement>) => {
+        if (!canDrop()) {
+          return;
+        }
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+        setDropTargetFolder(folder);
+      },
+      onDrop: (event: DragEvent<HTMLElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const path = filePathFromDrag(event) || draggedFilePath;
+        const file = path ? byPath.get(path) : null;
+        setDraggedFilePath(null);
+        setDropTargetFolder(null);
+        window.setTimeout(() => {
+          suppressNextOpenRef.current = false;
+        }, 0);
+        if (!file || file.folder === folder) {
+          return;
+        }
+        withErrorHandling(() => moveFileToFolder(file, folder));
+      },
+    };
+  };
+
   const favoriteFiles = favorites
     .map((path) => byPath.get(path))
     .filter((file): file is ServerFileEntry => !!file);
@@ -346,6 +607,9 @@ export const Dashboard = () => {
     (files ?? []).filter((file) => file.folder === currentFolder),
     sortMode,
   );
+  const quickAccessFiles =
+    quickAccessTab === "favorites" ? favoriteFiles : recentFiles;
+  const hasQuickAccess = favoriteFiles.length > 0 || recentFiles.length > 0;
 
   const breadcrumb = currentFolder ? currentFolder.split("/") : [];
 
@@ -355,15 +619,21 @@ export const Dashboard = () => {
     onRename,
     onMove,
     onDelete,
+    onMenuToggle: (path: string) =>
+      setOpenMenuPath((current) => (current === path ? null : path)),
+    onDragEnd: onFileDragEnd,
+    onDragStart: onFileDragStart,
   };
 
-  const renderGrid = (entries: ServerFileEntry[]) => (
-    <div className="Dashboard__grid">
+  const renderGrid = (entries: ServerFileEntry[], variant = "") => (
+    <div className={`Dashboard__grid ${variant}`}>
       {entries.map((file) => (
         <FileCard
           key={file.path}
           file={file}
+          isDragging={draggedFilePath === file.path}
           isFavorite={favorites.includes(file.path)}
+          menuOpen={openMenuPath === file.path}
           {...cardProps}
         />
       ))}
@@ -372,134 +642,212 @@ export const Dashboard = () => {
 
   return (
     <div className={themeClass("Dashboard")}>
-      <header className="Dashboard__header">
-        <h1>Drawings</h1>
-        <div className="Dashboard__controls">
-          <input
-            className="Dashboard__search"
-            type="search"
-            placeholder="Search name or contents…"
-            value={searchInput}
-            onChange={(event) => setSearchInput(event.target.value)}
-          />
-          <select
-            aria-label="Sort drawings"
-            value={sortMode}
-            onChange={(event) => setSortMode(event.target.value as SortMode)}
-          >
-            <option value="mtime">Last modified</option>
-            <option value="name">Name</option>
-          </select>
-          <button onClick={onCreateFolder}>+ Folder</button>
-          <button className="Dashboard__primary" onClick={onCreate}>
-            + New drawing
-          </button>
-          <a
-            className="Dashboard__scratch-link"
-            href="#scratch"
-            title="Open the stock scratch editor (browser-local, not saved to the server)"
-          >
-            Scratchpad
-          </a>
+      <div className="Dashboard__shell">
+        <header className="Dashboard__header">
+          <div className="Dashboard__title-block">
+            <h1>Drawings</h1>
+          </div>
+          <div className="Dashboard__actions">
+            <button className="Dashboard__secondary" onClick={onCreateFolder}>
+              <Icon name="folder" />
+              Folder
+            </button>
+            <button className="Dashboard__primary" onClick={onCreate}>
+              <Icon name="plus" />
+              New drawing
+            </button>
+            <a
+              className="Dashboard__scratch-link"
+              href="#scratch"
+              title="Open the stock scratch editor (browser-local, not saved to the server)"
+            >
+              Scratchpad
+            </a>
+          </div>
+        </header>
+
+        <div className="Dashboard__toolbar">
+          <label className="Dashboard__search">
+            <Icon name="search" />
+            <input
+              aria-label="Search drawings by name or contents"
+              type="search"
+              placeholder="Search drawings, folders, or text inside files"
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
+            />
+          </label>
+          <div className="Dashboard__toolbar-actions">
+            <select
+              aria-label="Sort drawings"
+              value={sortMode}
+              onChange={(event) => setSortMode(event.target.value as SortMode)}
+            >
+              <option value="mtime">Last modified</option>
+              <option value="name">Name</option>
+            </select>
+          </div>
         </div>
-      </header>
 
-      {error && <div className="Dashboard__error">{error}</div>}
+        {error && <div className="Dashboard__error">{error}</div>}
 
-      {isSearching ? (
-        <section>
-          <h2 className="Dashboard__section-title">
-            Results for “{searchInput.trim()}”
-          </h2>
-          {searchResults.length > 0 ? (
-            renderGrid(sortFiles(searchResults, sortMode))
-          ) : (
-            <div className="Dashboard__empty">No matching drawings.</div>
-          )}
-        </section>
-      ) : (
-        <>
-          {currentFolder === "" && favoriteFiles.length > 0 && (
-            <section>
-              <h2 className="Dashboard__section-title">★ Favorites</h2>
-              {renderGrid(favoriteFiles)}
-            </section>
-          )}
-
-          {currentFolder === "" && recentFiles.length > 0 && (
-            <section>
-              <h2 className="Dashboard__section-title">Recent</h2>
-              {renderGrid(recentFiles)}
-            </section>
-          )}
-
-          <section>
-            <div className="Dashboard__breadcrumb">
-              <button
-                className={currentFolder === "" ? "is-current" : ""}
-                onClick={() => setCurrentFolder("")}
-              >
-                All drawings
-              </button>
-              {breadcrumb.map((segment, index) => {
-                const target = breadcrumb.slice(0, index + 1).join("/");
-                return (
-                  <span key={target}>
-                    {" / "}
-                    <button
-                      className={target === currentFolder ? "is-current" : ""}
-                      onClick={() => setCurrentFolder(target)}
-                    >
-                      {segment}
-                    </button>
-                  </span>
-                );
-              })}
+        {isSearching ? (
+          <section className="Dashboard__section">
+            <div className="Dashboard__section-header">
+              <div>
+                <h2>Search results</h2>
+                <p>
+                  {searchResults.length} matches for "{searchInput.trim()}"
+                </p>
+              </div>
             </div>
-
-            {subfolders.length > 0 && (
-              <div className="Dashboard__folders">
-                {subfolders.map((folder) => (
-                  <div
-                    key={folder.path}
-                    className="Dashboard__folder"
-                    onClick={() => setCurrentFolder(folder.path)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        setCurrentFolder(folder.path);
-                      }
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <span>📁 {folder.name}</span>
+            {searchResults.length > 0 ? (
+              renderGrid(sortFiles(searchResults, sortMode))
+            ) : (
+              <div className="Dashboard__empty">No matching drawings.</div>
+            )}
+          </section>
+        ) : (
+          <>
+            {currentFolder === "" && hasQuickAccess && (
+              <section className="Dashboard__section">
+                <div className="Dashboard__section-header">
+                  <div>
+                    <h2>Quick access</h2>
+                    <p>
+                      {quickAccessTab === "favorites"
+                        ? `${favoriteFiles.length} favorite drawings`
+                        : `${recentFiles.length} recently opened drawings`}
+                    </p>
+                  </div>
+                  <div className="Dashboard__tabs" role="tablist">
                     <button
-                      className="Dashboard__danger"
-                      title="Delete folder (must be empty)"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        onDeleteFolder(folder);
-                      }}
+                      aria-selected={quickAccessTab === "favorites"}
+                      className={
+                        quickAccessTab === "favorites" ? "is-active" : ""
+                      }
+                      onClick={() => setQuickAccessTab("favorites")}
+                      role="tab"
                     >
-                      ×
+                      Favorites
+                    </button>
+                    <button
+                      aria-selected={quickAccessTab === "recent"}
+                      className={quickAccessTab === "recent" ? "is-active" : ""}
+                      onClick={() => setQuickAccessTab("recent")}
+                      role="tab"
+                    >
+                      Recent
                     </button>
                   </div>
-                ))}
-              </div>
+                </div>
+                {quickAccessFiles.length > 0 ? (
+                  renderGrid(quickAccessFiles, "Dashboard__grid--compact")
+                ) : (
+                  <div className="Dashboard__empty Dashboard__empty--compact">
+                    {quickAccessTab === "favorites"
+                      ? "No favorites yet."
+                      : "No recent drawings yet."}
+                  </div>
+                )}
+              </section>
             )}
 
-            {files && folderFiles.length === 0 && subfolders.length === 0 && (
-              <div className="Dashboard__empty">
-                {currentFolder
-                  ? "This folder is empty."
-                  : "No drawings yet — create your first one."}
+            <section className="Dashboard__section">
+              <div className="Dashboard__section-header Dashboard__section-header--library">
+                <div>
+                  <h2>
+                    {currentFolder ? currentFolder.split("/").pop() : "Library"}
+                  </h2>
+                  <p>
+                    {folderFiles.length} drawings
+                    {subfolders.length > 0 && ` · ${subfolders.length} folders`}
+                  </p>
+                </div>
+                <div className="Dashboard__breadcrumb">
+                  <button
+                    className={`${currentFolder === "" ? "is-current" : ""} ${
+                      dropTargetFolder === "" ? "is-drop-target" : ""
+                    }`}
+                    onClick={() => setCurrentFolder("")}
+                    {...getDropTargetProps("")}
+                  >
+                    All drawings
+                  </button>
+                  {breadcrumb.map((segment, index) => {
+                    const target = breadcrumb.slice(0, index + 1).join("/");
+                    return (
+                      <span key={target}>
+                        /
+                        <button
+                          className={`${
+                            target === currentFolder ? "is-current" : ""
+                          } ${
+                            dropTargetFolder === target ? "is-drop-target" : ""
+                          }`}
+                          onClick={() => setCurrentFolder(target)}
+                          {...getDropTargetProps(target)}
+                        >
+                          {segment}
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
               </div>
-            )}
 
-            {folderFiles.length > 0 && renderGrid(folderFiles)}
-          </section>
-        </>
-      )}
+              {subfolders.length > 0 && (
+                <div className="Dashboard__folders">
+                  {subfolders.map((folder) => (
+                    <div
+                      key={folder.path}
+                      className={`Dashboard__folder ${
+                        dropTargetFolder === folder.path ? "is-drop-target" : ""
+                      }`}
+                      onClick={() => setCurrentFolder(folder.path)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          setCurrentFolder(folder.path);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      {...getDropTargetProps(folder.path)}
+                    >
+                      <span>
+                        <Icon name="folder" />
+                        {folder.name}
+                      </span>
+                      <button
+                        className="Dashboard__danger"
+                        title="Delete folder (must be empty)"
+                        aria-label={`Delete folder ${folder.name}`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onDeleteFolder(folder);
+                        }}
+                      >
+                        <Icon name="trash" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {files && folderFiles.length === 0 && subfolders.length === 0 && (
+                <div className="Dashboard__empty">
+                  <Icon name="grid" />
+                  {currentFolder
+                    ? "This folder is empty."
+                    : "No drawings yet. Create your first one."}
+                </div>
+              )}
+
+              {folderFiles.length > 0 && renderGrid(folderFiles)}
+            </section>
+          </>
+        )}
+      </div>
     </div>
   );
 };
