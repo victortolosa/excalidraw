@@ -154,17 +154,17 @@ opens files.
 
 ## Phase 5 — Polish & hardening
 
-- [ ] **5.1 Conflict guard.** Client sends its baseline mtime; server 409s if disk mtime
+- [x] **5.1 Conflict guard.** Client sends its baseline mtime; server 409s if disk mtime
   is newer; UI offers reload-or-overwrite. (Step 2.3 keeps the baseline fresh so you
   don't conflict with your own writes.)
   *Done when:* a two-tab edit triggers the conflict UI.
-- [ ] **5.2 Dark mode parity** for the dashboard.
-- [ ] **5.3 Backup script** for the data dir (cron rsync or model on the NoteDiscovery
+- [x] **5.2 Dark mode parity** for the dashboard.
+- [x] **5.3 Backup script** for the data dir (cron rsync or model on the NoteDiscovery
   backup script).
-- [ ] **5.4 Offline fallback.** Server unreachable → editor falls back to localStorage
+- [x] **5.4 Offline fallback.** Server unreachable → editor falls back to localStorage
   with a banner.
   *Done when:* killing the server mid-edit doesn't lose work.
-- [ ] **5.5 Auth-expiry handling.** Non-JSON API response (Cloudflare Access login page)
+- [x] **5.5 Auth-expiry handling.** Non-JSON API response (Cloudflare Access login page)
   → detect it, show a "session expired" banner, keep unsaved work in localStorage until
   re-auth.
 - [ ] **5.6 Deploy + remote checklist.** Deploy to homelab and walk the "Remote access

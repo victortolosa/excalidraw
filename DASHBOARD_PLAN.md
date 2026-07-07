@@ -317,11 +317,11 @@ Work these in order. Each phase is a reasonable unit for one AI session.
 
 ### Phase 5 — Polish & hardening
 
-- [ ] Conflict guard: client sends its baseline mtime; server rejects PUT (409) if disk mtime is newer (covers two tabs / multi-device); UI offers reload-or-overwrite. The PUT response must return the new mtime so the client refreshes its baseline — otherwise the client false-conflicts against its *own* next save (the server bumps mtime on every write; see Phase 2 `serverStorage`)
-- [ ] Dark mode parity for dashboard
-- [ ] Backup script for the data dir (model on `~/Repos/jot/notediscovery-backup.ps1` or a simple cron rsync)
-- [ ] Error states: server unreachable → editor falls back to localStorage with a banner
-- [ ] Auth-expiry handling: when Cloudflare Access session expires mid-edit, API calls return a 302/HTML login page instead of JSON — detect non-JSON responses, show "session expired" banner, keep unsaved work in localStorage until re-auth (see Remote access section)
+- [x] Conflict guard: client sends its baseline mtime; server rejects PUT (409) if disk mtime is newer (covers two tabs / multi-device); UI offers reload-or-overwrite. The PUT response must return the new mtime so the client refreshes its baseline — otherwise the client false-conflicts against its *own* next save (the server bumps mtime on every write; see Phase 2 `serverStorage`)
+- [x] Dark mode parity for dashboard
+- [x] Backup script for the data dir (model on `~/Repos/jot/notediscovery-backup.ps1` or a simple cron rsync)
+- [x] Error states: server unreachable → editor falls back to localStorage with a banner
+- [x] Auth-expiry handling: when Cloudflare Access session expires mid-edit, API calls return a 302/HTML login page instead of JSON — detect non-JSON responses, show "session expired" banner, keep unsaved work in localStorage until re-auth (see Remote access section)
 - [ ] Deploy to homelab; work through the "Remote access" checklist below
 
 **Verify:** two-tab edit triggers the conflict UI; killing the server mid-edit doesn't lose work.
