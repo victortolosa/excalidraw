@@ -176,6 +176,9 @@ rollback mechanism.
 - **Safer default:** pin the homelab compose file to a specific `:<sha>` tag and bump it
   manually after a sync is verified, instead of tracking `:latest`. `latest` means every
   push deploys on the next `docker compose pull`, including unverified merges.
+  With SHA pinning, a source push is not enough: after GitHub Actions publishes the
+  image, update `~/Repos/homelab/docker-services/excalidraw/compose.yml` to the new
+  Excalidraw commit SHA, commit/push the homelab repo, then run the i5 deploy script.
 - **Rollback:** repoint compose at the previous known-good `:<sha>` and
   `docker compose pull && docker compose up -d`. Keep a note of the last known-good sha
   in the homelab repo's compose file as a comment.

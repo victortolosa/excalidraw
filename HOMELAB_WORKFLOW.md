@@ -114,7 +114,9 @@ The SHA tag is safer for rollback. The `latest` tag is convenient for normal pul
 
 ## Docker image
 
-The root `Dockerfile` builds the Excalidraw app and serves it with nginx.
+The root `Dockerfile` builds the Excalidraw app, then runs the fork's Node
+server from `server/`. The Node server serves both the static app and the
+`/api` file dashboard endpoints.
 
 Runtime behavior:
 
@@ -166,8 +168,32 @@ After push, confirm the `build-and-push` workflow succeeded in GitHub Actions.
 
 ## Server deploy workflow
 
-After GitHub Actions publishes the image, bump the sha in
-`~/Repos/homelab/docker-services/excalidraw/compose.yml`, commit, push, then:
+This stack is SHA-pinned on purpose. A source push to `custom` creates a new
+GHCR image, but the i5 server will keep pulling the old image until the homelab
+compose file is bumped to the new SHA tag.
+
+After GitHub Actions publishes the image, update the homelab repo first:
+
+```bash
+cd ~/Repos/homelab
+$EDITOR docker-services/excalidraw/compose.yml
+```
+
+Set:
+
+```yaml
+image: ghcr.io/victortolosa/excalidraw:<new-excalidraw-commit-sha>
+```
+
+Then commit and push the homelab config change:
+
+```bash
+git diff docker-services/excalidraw/compose.yml
+git commit -am "Update Excalidraw image"
+git push
+```
+
+Only then deploy on `docker-i5`:
 
 ```bash
 ssh victor@10.0.0.71
@@ -177,6 +203,16 @@ git pull
 docker logs excalidraw --tail=50
 curl -s http://127.0.0.1:8085/api/health
 ```
+
+If `git pull` appears to work but the UI is still old, check the image tag:
+
+```bash
+grep -n "image:" ~/homelab/docker-services/excalidraw/compose.yml /opt/stacks/excalidraw/compose.yml
+```
+
+If it still points at an older SHA, the homelab repo has not been bumped yet.
+`docker compose pull` pulls the image named in the compose file; it does not
+discover newer Excalidraw source commits automatically.
 
 Open:
 
