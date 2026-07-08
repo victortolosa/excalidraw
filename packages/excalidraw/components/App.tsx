@@ -412,6 +412,7 @@ import {
   isGridModeEnabled,
 } from "../snapping";
 import { Renderer } from "../scene/Renderer";
+import { getPatternGridSize } from "../patternGrid";
 import {
   type SetViewportOptions,
   SCROLL_TO_CONTENT_ANIMATION_KEY,
@@ -1295,6 +1296,13 @@ class App extends React.Component<AppProps, AppState> {
    * If disabled, returns null.
    */
   public getEffectiveGridSize = () => {
+    if (
+      this.state.patternGridModeEnabled &&
+      this.state.patternGridSnapEnabled
+    ) {
+      return getPatternGridSize(this.state) as NullableGridSize;
+    }
+
     return (
       isGridModeEnabled(this) ? this.state.gridSize : null
     ) as NullableGridSize;
@@ -2386,7 +2394,9 @@ class App extends React.Component<AppProps, AppState> {
                             renderConfig={{
                               imageCache: this.imageCache,
                               isExporting: false,
-                              renderGrid: isGridModeEnabled(this),
+                              renderGrid:
+                                isGridModeEnabled(this) ||
+                                this.state.patternGridModeEnabled,
                               canvasBackgroundColor:
                                 this.state.viewBackgroundColor,
                               embedsValidationStatus:

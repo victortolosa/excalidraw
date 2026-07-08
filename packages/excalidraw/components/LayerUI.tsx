@@ -36,6 +36,7 @@ import { LoadingMessage } from "./LoadingMessage";
 import { LockButton } from "./LockButton";
 import { MobileMenu } from "./MobileMenu";
 import { PasteChartDialog } from "./PasteChartDialog";
+import { PatternGridWidget } from "./PatternGridWidget";
 import { Section } from "./Section";
 import Stack from "./Stack";
 import { UserList } from "./UserList";
@@ -631,6 +632,13 @@ const LayerUI = ({
               showExitZenModeBtn={showExitZenModeBtn}
               renderWelcomeScreen={renderWelcomeScreen}
             />
+            {!appState.zenModeEnabled &&
+              appState.openDialog?.name !== "elementLinkSelector" && (
+                <PatternGridWidget
+                  appState={appState}
+                  setAppState={setAppState}
+                />
+              )}
             {(appState.toast || appState.scrolledOutside) && (
               <div className="floating-status-stack">
                 {appState.toast && (

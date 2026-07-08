@@ -11,8 +11,14 @@ import {
   STATS_PANELS,
   THEME,
   DEFAULT_GRID_STEP,
+  ROUGHNESS,
   isTestEnv,
 } from "@excalidraw/common";
+
+import {
+  DEFAULT_PATTERN_GRID_PIXELS_PER_INCH,
+  DEFAULT_PATTERN_GRID_SUBDIVISIONS,
+} from "./patternGrid";
 
 import type { AppState, NormalizedZoomValue } from "./types";
 
@@ -34,11 +40,11 @@ export const getDefaultAppState = (): Omit<
     currentItemFontFamily: DEFAULT_FONT_FAMILY,
     currentItemFontSize: DEFAULT_FONT_SIZE,
     currentItemOpacity: DEFAULT_ELEMENT_PROPS.opacity,
-    currentItemRoughness: DEFAULT_ELEMENT_PROPS.roughness,
+    currentItemRoughness: ROUGHNESS.architect,
     currentItemStrokeVariability: "constant",
     currentItemStartArrowhead: null,
     currentItemStrokeColor: DEFAULT_ELEMENT_PROPS.strokeColor,
-    currentItemRoundness: isTestEnv() ? "sharp" : "round",
+    currentItemRoundness: "sharp",
     currentItemArrowType: ARROW_TYPE.round,
     currentItemStrokeStyle: DEFAULT_ELEMENT_PROPS.strokeStyle,
     currentItemStrokeWidthKey: DEFAULT_ELEMENT_STROKE_WIDTH_KEY,
@@ -71,6 +77,13 @@ export const getDefaultAppState = (): Omit<
     gridSize: DEFAULT_GRID_SIZE,
     gridStep: DEFAULT_GRID_STEP,
     gridModeEnabled: false,
+    patternGridModeEnabled: false,
+    patternGridSnapEnabled: true,
+    patternGridLabelsEnabled: true,
+    patternGridMeasurementsEnabled: true,
+    patternGridMeasurementsSelectedOnly: true,
+    patternGridPixelsPerInch: DEFAULT_PATTERN_GRID_PIXELS_PER_INCH,
+    patternGridSubdivisions: DEFAULT_PATTERN_GRID_SUBDIVISIONS,
     isBindingEnabled: true,
     bindingPreference: "enabled",
     isMidpointSnappingEnabled: true,
@@ -159,7 +172,7 @@ const APP_STATE_STORAGE_CONF = (<
   currentItemFontFamily: { browser: true, export: false, server: false },
   currentItemFontSize: { browser: true, export: false, server: false },
   currentItemRoundness: {
-    browser: true,
+    browser: false,
     export: false,
     server: false,
   },
@@ -169,7 +182,7 @@ const APP_STATE_STORAGE_CONF = (<
     server: false,
   },
   currentItemOpacity: { browser: true, export: false, server: false },
-  currentItemRoughness: { browser: true, export: false, server: false },
+  currentItemRoughness: { browser: false, export: false, server: false },
   currentItemStrokeVariability: {
     browser: true,
     export: false,
@@ -199,6 +212,17 @@ const APP_STATE_STORAGE_CONF = (<
   gridSize: { browser: true, export: true, server: true },
   gridStep: { browser: true, export: true, server: true },
   gridModeEnabled: { browser: true, export: true, server: true },
+  patternGridModeEnabled: { browser: true, export: true, server: true },
+  patternGridSnapEnabled: { browser: true, export: true, server: true },
+  patternGridLabelsEnabled: { browser: true, export: true, server: true },
+  patternGridMeasurementsEnabled: { browser: true, export: true, server: true },
+  patternGridMeasurementsSelectedOnly: {
+    browser: true,
+    export: true,
+    server: true,
+  },
+  patternGridPixelsPerInch: { browser: true, export: true, server: true },
+  patternGridSubdivisions: { browser: true, export: true, server: true },
   height: { browser: false, export: false, server: false },
   isBindingEnabled: { browser: true, export: false, server: false },
   boxSelectionMode: { browser: true, export: false, server: false },

@@ -29,6 +29,7 @@ import type { Scene } from "@excalidraw/element";
 import DragInput from "./DragInput";
 import { getAtomicUnits, getStepSizedValue, isPropertyEditable } from "./utils";
 import { getElementsInAtomicUnit } from "./utils";
+import { getPatternGridSize } from "../../patternGrid";
 
 import type {
   DragFinishedCallbackType,
@@ -47,6 +48,37 @@ interface MultiDimensionProps {
 }
 
 const STEP_SIZE = 10;
+
+const shouldUsePatternGridUnits = (appState: AppState) => {
+  return appState.patternGridModeEnabled;
+};
+
+const getDimensionDisplayValue = (value: number, appState: AppState) => {
+  return shouldUsePatternGridUnits(appState)
+    ? Math.round((value / appState.patternGridPixelsPerInch) * 100) / 100
+    : value;
+};
+
+const toSceneDimensionValue = (value: number, appState: AppState) => {
+  return shouldUsePatternGridUnits(appState)
+    ? value * appState.patternGridPixelsPerInch
+    : value;
+};
+
+const toSceneDimensionChange = (value: number, appState: AppState) => {
+  return shouldUsePatternGridUnits(appState)
+    ? value * getPatternGridSize(appState)
+    : value;
+};
+
+const getDimensionLabel = (
+  property: MultiDimensionProps["property"],
+  appState: AppState,
+) => {
+  const label = property === "width" ? "W" : "H";
+
+  return shouldUsePatternGridUnits(appState) ? `${label}"` : label;
+};
 
 const getResizedUpdates = (
   anchorX: number,
@@ -458,15 +490,37 @@ const MultiDimension = ({
   );
 
   const value =
-    new Set(sizes).size === 1 ? Math.round(sizes[0] * 100) / 100 : "Mixed";
+    new Set(sizes).size === 1
+      ? getDimensionDisplayValue(Math.round(sizes[0] * 100) / 100, appState)
+      : "Mixed";
 
   const editable = sizes.length > 0;
 
   return (
     <DragInput
-      label={property === "width" ? "W" : "H"}
+      label={getDimensionLabel(property, appState)}
       elements={elements}
-      dragInputCallback={handleDimensionChange}
+      dragInputCallback={(props) => {
+        handleDimensionChange({
+          ...props,
+          accumulatedChange: toSceneDimensionChange(
+            props.accumulatedChange,
+            props.originalAppState,
+          ),
+          instantChange: toSceneDimensionChange(
+            props.instantChange,
+            props.originalAppState,
+          ),
+          nextValue:
+            props.nextValue === undefined
+              ? undefined
+              : toSceneDimensionValue(props.nextValue, props.originalAppState),
+          setInputValue: (value) =>
+            props.setInputValue(
+              getDimensionDisplayValue(value, props.originalAppState),
+            ),
+        });
+      }}
       value={value}
       editable={editable}
       appState={appState}

@@ -10,7 +10,9 @@ import { createPlaceholderEmbeddableLabel } from "@excalidraw/element";
 import { getBoundTextElement } from "@excalidraw/element";
 import {
   isEmbeddableElement,
+  isFreeDrawElement,
   isIframeLikeElement,
+  isLinearElement,
   isTextElement,
 } from "@excalidraw/element";
 import {
@@ -36,6 +38,7 @@ import {
 } from "../components/hyperlink/helpers";
 
 import { bootstrapCanvas, getNormalizedCanvasDimensions } from "./helpers";
+import { getPatternGridSize } from "../patternGrid";
 
 import type {
   StaticCanvasRenderConfig,
@@ -47,10 +50,14 @@ const GridLineColor = {
   [THEME.LIGHT]: {
     bold: "#dddddd",
     regular: "#e5e5e5",
+    label: "#5f6368",
+    labelBackground: "rgba(255, 255, 255, 0.82)",
   },
   [THEME.DARK]: {
     bold: applyDarkModeFilter("#dddddd"),
     regular: applyDarkModeFilter("#e5e5e5"),
+    label: applyDarkModeFilter("#5f6368"),
+    labelBackground: "rgba(35, 35, 35, 0.82)",
   },
 } as const;
 
@@ -127,6 +134,390 @@ const strokeGrid = (
     context.lineTo(Math.ceil(offsetX + width + gridSize * 2), y);
     context.stroke();
   }
+  context.restore();
+};
+
+const formatPatternGridLabel = (position: number, pixelsPerInch: number) => {
+  const value = position / pixelsPerInch;
+
+  return Number.isInteger(value) ? `${value}"` : `${value.toFixed(1)}"`;
+};
+
+const drawPatternGridLabel = (
+  context: CanvasRenderingContext2D,
+  label: string,
+  x: number,
+  y: number,
+  zoom: Zoom,
+  theme: StaticCanvasRenderConfig["theme"],
+) => {
+  const paddingX = 4 / zoom.value;
+  const paddingY = 2 / zoom.value;
+  const metrics = context.measureText(label);
+  const width = metrics.width + paddingX * 2;
+  const height = 15 / zoom.value;
+
+  context.fillStyle = GridLineColor[theme].labelBackground;
+  context.fillRect(x - paddingX, y - paddingY, width, height);
+  context.fillStyle = GridLineColor[theme].label;
+  context.fillText(label, x, y);
+};
+
+const getPolylineLength = (points: readonly (readonly [number, number])[]) => {
+  let length = 0;
+
+  for (let index = 1; index < points.length; index++) {
+    const previousPoint = points[index - 1];
+    const point = points[index];
+    length += Math.hypot(
+      point[0] - previousPoint[0],
+      point[1] - previousPoint[1],
+    );
+  }
+
+  return length;
+};
+
+type ElementMeasurement = {
+  label: "L" | "P" | "W" | "H";
+  value: number;
+};
+
+const getElementMeasurements = (
+  element: NonDeletedExcalidrawElement,
+): ElementMeasurement[] => {
+  if (isLinearElement(element) || isFreeDrawElement(element)) {
+    const length = getPolylineLength(element.points);
+
+    return length > 0 ? [{ label: "L", value: length }] : [];
+  }
+
+  const width = Math.abs(element.width);
+  const height = Math.abs(element.height);
+
+  if (width <= 0 || height <= 0) {
+    return [];
+  }
+
+  if (element.type === "rectangle") {
+    return [
+      { label: "W", value: width },
+      { label: "H", value: height },
+    ];
+  }
+
+  if (element.type === "diamond") {
+    return [{ label: "P", value: 2 * Math.hypot(width, height) }];
+  }
+
+  if (element.type === "ellipse") {
+    const a = width / 2;
+    const b = height / 2;
+
+    return [
+      {
+        label: "P",
+        value: Math.PI * (3 * (a + b) - Math.sqrt((3 * a + b) * (a + 3 * b))),
+      },
+    ];
+  }
+
+  return [];
+};
+
+const formatMeasurementValue = (
+  measurement: ElementMeasurement,
+  pixelsPerInch: number,
+) => {
+  const inches = measurement.value / pixelsPerInch;
+  const rounded = Math.round(inches * 10) / 10;
+  const value = Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
+
+  return `${measurement.label} ${value}"`;
+};
+
+const drawMeasurementLabel = (
+  context: CanvasRenderingContext2D,
+  labels: readonly string[],
+  x: number,
+  y: number,
+  zoom: Zoom,
+  theme: StaticCanvasRenderConfig["theme"],
+) => {
+  const paddingX = 6 / zoom.value;
+  const paddingY = 3 / zoom.value;
+  const lineHeight = 14 / zoom.value;
+  const metrics = labels.map((label) => context.measureText(label));
+  const width =
+    Math.max(...metrics.map((metric) => metric.width)) + paddingX * 2;
+  const height = labels.length * lineHeight + paddingY * 2;
+  const top = y - height / 2;
+
+  context.fillStyle = GridLineColor[theme].labelBackground;
+  context.fillRect(x - width / 2, y - height / 2, width, height);
+  context.strokeStyle = GridLineColor[theme].bold;
+  context.lineWidth = 1 / zoom.value;
+  context.strokeRect(x - width / 2, y - height / 2, width, height);
+  context.fillStyle = GridLineColor[theme].label;
+
+  labels.forEach((label, index) => {
+    context.fillText(
+      label,
+      x - metrics[index].width / 2,
+      top + paddingY + lineHeight * (index + 0.5),
+    );
+  });
+};
+
+const getElementsBounds = (
+  elements: readonly NonDeletedExcalidrawElement[],
+  elementsMap: ElementsMap,
+) => {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  for (const element of elements) {
+    const [x1, y1, x2, y2] = getElementAbsoluteCoords(element, elementsMap);
+    minX = Math.min(minX, x1);
+    minY = Math.min(minY, y1);
+    maxX = Math.max(maxX, x2);
+    maxY = Math.max(maxY, y2);
+  }
+
+  return Number.isFinite(minX) &&
+    Number.isFinite(minY) &&
+    Number.isFinite(maxX) &&
+    Number.isFinite(maxY)
+    ? [minX, minY, maxX, maxY]
+    : null;
+};
+
+const getBoxMeasurementLabels = (
+  title: string,
+  width: number,
+  height: number,
+  pixelsPerInch: number,
+) => [
+  title,
+  formatMeasurementValue({ label: "W", value: width }, pixelsPerInch),
+  formatMeasurementValue({ label: "H", value: height }, pixelsPerInch),
+];
+
+const renderMeasurementLabels = (
+  context: CanvasRenderingContext2D,
+  visibleElements: readonly NonDeletedExcalidrawElement[],
+  elementsMap: ElementsMap,
+  appState: StaticCanvasAppState,
+  theme: StaticCanvasRenderConfig["theme"],
+) => {
+  if (
+    !appState.patternGridModeEnabled ||
+    !appState.patternGridMeasurementsEnabled
+  ) {
+    return;
+  }
+
+  context.save();
+  context.setLineDash([]);
+  context.font = `${12 / appState.zoom.value}px sans-serif`;
+  context.textBaseline = "middle";
+
+  const selectedElements = visibleElements.filter(
+    (element) =>
+      appState.selectedElementIds[element.id] && !isIframeLikeElement(element),
+  );
+  const selectedGroupCount = Object.values(appState.selectedGroupIds).filter(
+    Boolean,
+  ).length;
+  const shouldShowSelectionMeasurement =
+    selectedGroupCount > 0 || selectedElements.length > 1;
+
+  if (shouldShowSelectionMeasurement) {
+    const bounds = getElementsBounds(selectedElements, elementsMap);
+
+    if (bounds) {
+      const [x1, y1, x2, y2] = bounds;
+      drawMeasurementLabel(
+        context,
+        getBoxMeasurementLabels(
+          selectedGroupCount === 1 ? "Group" : "Selection",
+          x2 - x1,
+          y2 - y1,
+          appState.patternGridPixelsPerInch,
+        ),
+        (x1 + x2) / 2 + appState.scrollX,
+        (y1 + y2) / 2 + appState.scrollY,
+        appState.zoom,
+        theme,
+      );
+    }
+  }
+
+  for (const element of visibleElements) {
+    if (
+      appState.patternGridMeasurementsSelectedOnly &&
+      !appState.selectedElementIds[element.id]
+    ) {
+      continue;
+    }
+
+    if (
+      shouldShowSelectionMeasurement &&
+      appState.selectedElementIds[element.id]
+    ) {
+      continue;
+    }
+
+    if (isTextElement(element) || isIframeLikeElement(element)) {
+      continue;
+    }
+
+    const measurements = getElementMeasurements(element);
+    if (!measurements.length) {
+      continue;
+    }
+
+    const [x1, y1, x2, y2] = getElementAbsoluteCoords(element, elementsMap);
+    drawMeasurementLabel(
+      context,
+      measurements.map((measurement) =>
+        formatMeasurementValue(measurement, appState.patternGridPixelsPerInch),
+      ),
+      (x1 + x2) / 2 + appState.scrollX,
+      (y1 + y2) / 2 + appState.scrollY,
+      appState.zoom,
+      theme,
+    );
+  }
+
+  context.restore();
+};
+
+const strokePatternGrid = (
+  context: CanvasRenderingContext2D,
+  appState: StaticCanvasAppState,
+  theme: StaticCanvasRenderConfig["theme"],
+  width: number,
+  height: number,
+) => {
+  const { scrollX, scrollY, zoom } = appState;
+  const gridSize = getPatternGridSize(appState);
+  const majorGridSize = appState.patternGridPixelsPerInch;
+  const offsetX = (scrollX % gridSize) - gridSize;
+  const offsetY = (scrollY % gridSize) - gridSize;
+  const actualGridSize = gridSize * zoom.value;
+  const spaceWidth = 1 / zoom.value;
+
+  context.save();
+
+  if (zoom.value === 1) {
+    context.translate(offsetX % 1 ? 0 : 0.5, offsetY % 1 ? 0 : 0.5);
+  }
+
+  for (let x = offsetX; x < offsetX + width + gridSize * 2; x += gridSize) {
+    const gridPosition = x - scrollX;
+    const isMajor =
+      Math.abs(
+        Math.round(gridPosition / majorGridSize) * majorGridSize - gridPosition,
+      ) < 0.001;
+
+    if (!isMajor && actualGridSize < 8) {
+      continue;
+    }
+
+    const lineWidth = Math.min(1 / zoom.value, isMajor ? 3 : 1);
+    const lineDash = [lineWidth * 3, spaceWidth + (lineWidth + spaceWidth)];
+
+    context.beginPath();
+    context.lineWidth = lineWidth;
+    context.setLineDash(isMajor ? [] : lineDash);
+    context.strokeStyle = isMajor
+      ? GridLineColor[theme].bold
+      : GridLineColor[theme].regular;
+    context.moveTo(x, offsetY - gridSize);
+    context.lineTo(x, Math.ceil(offsetY + height + gridSize * 2));
+    context.stroke();
+  }
+
+  for (let y = offsetY; y < offsetY + height + gridSize * 2; y += gridSize) {
+    const gridPosition = y - scrollY;
+    const isMajor =
+      Math.abs(
+        Math.round(gridPosition / majorGridSize) * majorGridSize - gridPosition,
+      ) < 0.001;
+
+    if (!isMajor && actualGridSize < 8) {
+      continue;
+    }
+
+    const lineWidth = Math.min(1 / zoom.value, isMajor ? 3 : 1);
+    const lineDash = [lineWidth * 3, spaceWidth + (lineWidth + spaceWidth)];
+
+    context.beginPath();
+    context.lineWidth = lineWidth;
+    context.setLineDash(isMajor ? [] : lineDash);
+    context.strokeStyle = isMajor
+      ? GridLineColor[theme].bold
+      : GridLineColor[theme].regular;
+    context.moveTo(offsetX - gridSize, y);
+    context.lineTo(Math.ceil(offsetX + width + gridSize * 2), y);
+    context.stroke();
+  }
+
+  if (appState.patternGridLabelsEnabled && zoom.value >= 0.25) {
+    context.setLineDash([]);
+    context.font = `${11 / zoom.value}px sans-serif`;
+    context.textBaseline = "top";
+
+    const labelInset = 8 / zoom.value;
+
+    for (let x = offsetX; x < offsetX + width + gridSize * 2; x += gridSize) {
+      const gridPosition = x - scrollX;
+      const isMajor =
+        Math.abs(
+          Math.round(gridPosition / majorGridSize) * majorGridSize -
+            gridPosition,
+        ) < 0.001;
+
+      if (!isMajor || x < labelInset) {
+        continue;
+      }
+
+      drawPatternGridLabel(
+        context,
+        formatPatternGridLabel(gridPosition, majorGridSize),
+        x + 4 / zoom.value,
+        labelInset,
+        zoom,
+        theme,
+      );
+    }
+
+    for (let y = offsetY; y < offsetY + height + gridSize * 2; y += gridSize) {
+      const gridPosition = y - scrollY;
+      const isMajor =
+        Math.abs(
+          Math.round(gridPosition / majorGridSize) * majorGridSize -
+            gridPosition,
+        ) < 0.001;
+
+      if (!isMajor || y < labelInset) {
+        continue;
+      }
+
+      drawPatternGridLabel(
+        context,
+        formatPatternGridLabel(gridPosition, majorGridSize),
+        labelInset,
+        y + 4 / zoom.value,
+        zoom,
+        theme,
+      );
+    }
+  }
+
   context.restore();
 };
 
@@ -269,17 +660,27 @@ const _renderStaticScene = ({
 
   // Grid
   if (renderGrid) {
-    strokeGrid(
-      context,
-      appState.gridSize,
-      appState.gridStep,
-      appState.scrollX,
-      appState.scrollY,
-      appState.zoom,
-      renderConfig.theme,
-      normalizedWidth / appState.zoom.value,
-      normalizedHeight / appState.zoom.value,
-    );
+    if (appState.patternGridModeEnabled) {
+      strokePatternGrid(
+        context,
+        appState,
+        renderConfig.theme,
+        normalizedWidth / appState.zoom.value,
+        normalizedHeight / appState.zoom.value,
+      );
+    } else {
+      strokeGrid(
+        context,
+        appState.gridSize,
+        appState.gridStep,
+        appState.scrollX,
+        appState.scrollY,
+        appState.zoom,
+        renderConfig.theme,
+        normalizedWidth / appState.zoom.value,
+        normalizedHeight / appState.zoom.value,
+      );
+    }
   }
 
   const groupsToBeAddedToFrame = new Set<string>();
@@ -390,6 +791,16 @@ const _renderStaticScene = ({
         );
       }
     });
+
+  if (!isExporting) {
+    renderMeasurementLabels(
+      context,
+      visibleElements,
+      elementsMap,
+      appState,
+      renderConfig.theme,
+    );
+  }
 
   // render embeddables on top
   visibleElements

@@ -87,6 +87,10 @@ import {
   getNormalizedGridStep,
   getNormalizedZoom,
 } from "../scene";
+import {
+  getNormalizedPatternGridPixelsPerInch,
+  getNormalizedPatternGridSubdivisions,
+} from "../patternGrid";
 
 import type {
   AppState,
@@ -1145,6 +1149,14 @@ export const restoreAppState = (
     ),
     gridStep: getNormalizedGridStep(
       isFiniteNumber(appState.gridStep) ? appState.gridStep : DEFAULT_GRID_STEP,
+    ),
+    currentItemRoughness: defaultAppState.currentItemRoughness,
+    currentItemRoundness: defaultAppState.currentItemRoundness,
+    patternGridPixelsPerInch: getNormalizedPatternGridPixelsPerInch(
+      nextAppState.patternGridPixelsPerInch,
+    ),
+    patternGridSubdivisions: getNormalizedPatternGridSubdivisions(
+      nextAppState.patternGridSubdivisions,
     ),
     editingFrame: null,
   };

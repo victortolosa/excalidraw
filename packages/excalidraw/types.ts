@@ -206,7 +206,14 @@ export type StaticCanvasAppState = Readonly<
     selectedElementsAreBeingDragged: AppState["selectedElementsAreBeingDragged"];
     gridSize: AppState["gridSize"];
     gridStep: AppState["gridStep"];
+    patternGridModeEnabled: AppState["patternGridModeEnabled"];
+    patternGridLabelsEnabled: AppState["patternGridLabelsEnabled"];
+    patternGridMeasurementsEnabled: AppState["patternGridMeasurementsEnabled"];
+    patternGridMeasurementsSelectedOnly: AppState["patternGridMeasurementsSelectedOnly"];
+    patternGridPixelsPerInch: AppState["patternGridPixelsPerInch"];
+    patternGridSubdivisions: AppState["patternGridSubdivisions"];
     frameRendering: AppState["frameRendering"];
+    selectedGroupIds: AppState["selectedGroupIds"];
     currentHoveredFontFamily: AppState["currentHoveredFontFamily"];
     hoveredElementIds: AppState["hoveredElementIds"];
     suggestedBinding: AppState["suggestedBinding"];
@@ -470,6 +477,13 @@ export interface AppState {
   gridSize: number;
   gridStep: number;
   gridModeEnabled: boolean;
+  patternGridModeEnabled: boolean;
+  patternGridSnapEnabled: boolean;
+  patternGridLabelsEnabled: boolean;
+  patternGridMeasurementsEnabled: boolean;
+  patternGridMeasurementsSelectedOnly: boolean;
+  patternGridPixelsPerInch: number;
+  patternGridSubdivisions: number;
   viewModeEnabled: boolean;
 
   /** top-most selected groups (i.e. does not include nested groups) */
