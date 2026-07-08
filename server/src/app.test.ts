@@ -100,6 +100,7 @@ test("thumbnail PUT/GET round-trip, stored under .thumbnails", async () => {
   const svg = "<svg xmlns='http://www.w3.org/2000/svg'></svg>";
   const put = await app.request("/api/files/sub/a.excalidraw/thumbnail", {
     method: "PUT",
+    headers: { "Content-Type": "image/svg+xml" },
     body: svg,
   });
   assert.equal(put.status, 200);
@@ -112,6 +113,7 @@ test("thumbnail PUT/GET round-trip, stored under .thumbnails", async () => {
   const get = await app.request("/api/files/sub/a.excalidraw/thumbnail");
   assert.equal(get.status, 200);
   assert.equal(get.headers.get("content-type"), "image/svg+xml");
+  assert.equal(get.headers.get("x-content-type-options"), "nosniff");
   assert.equal(await get.text(), svg);
 
   const listed = await (await app.request("/api/files")).json();
@@ -119,6 +121,58 @@ test("thumbnail PUT/GET round-trip, stored under .thumbnails", async () => {
     listed.find((f: any) => f.path === "sub/a.excalidraw").hasThumbnail,
     true,
   );
+});
+
+test("listing treats old thumbnails as stale", async () => {
+  await app.request("/api/files/stale-thumbnail.excalidraw", {
+    method: "PUT",
+    body: SCENE,
+  });
+  await app.request("/api/files/stale-thumbnail.excalidraw/thumbnail", {
+    method: "PUT",
+    headers: { "Content-Type": "image/svg+xml" },
+    body: "<svg xmlns='http://www.w3.org/2000/svg'></svg>",
+  });
+
+  let listed = await (await app.request("/api/files")).json();
+  assert.equal(
+    listed.find((f: any) => f.path === "stale-thumbnail.excalidraw")
+      .hasThumbnail,
+    true,
+  );
+
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  await app.request("/api/files/stale-thumbnail.excalidraw", {
+    method: "PUT",
+    body: SCENE.replace("[]", "[ ]"),
+  });
+
+  listed = await (await app.request("/api/files")).json();
+  assert.equal(
+    listed.find((f: any) => f.path === "stale-thumbnail.excalidraw")
+      .hasThumbnail,
+    false,
+  );
+
+  await app.request("/api/files/stale-thumbnail.excalidraw", {
+    method: "DELETE",
+  });
+});
+
+test("thumbnail PUT rejects non-SVG and oversized payloads", async () => {
+  const notSvg = await app.request("/api/files/sub/a.excalidraw/thumbnail", {
+    method: "PUT",
+    headers: { "Content-Type": "text/html" },
+    body: "<html></html>",
+  });
+  assert.equal(notSvg.status, 400);
+
+  const oversized = await app.request("/api/files/sub/a.excalidraw/thumbnail", {
+    method: "PUT",
+    headers: { "Content-Type": "image/svg+xml" },
+    body: `<svg>${"x".repeat(1_000_001)}</svg>`,
+  });
+  assert.equal(oversized.status, 400);
 });
 
 test("rename moves file and thumbnail on disk", async () => {
@@ -133,10 +187,7 @@ test("rename moves file and thumbnail on disk", async () => {
   assert.equal(typeof mtime, "number");
   await fs.access(path.join(dataDir, "moved/b.excalidraw"));
   await fs.access(path.join(dataDir, ".thumbnails/moved/b.excalidraw.svg"));
-  assert.equal(
-    (await app.request("/api/files/sub/a.excalidraw")).status,
-    404,
-  );
+  assert.equal((await app.request("/api/files/sub/a.excalidraw")).status, 404);
 });
 
 test("rename onto an existing file is a 409", async () => {
@@ -174,10 +225,7 @@ test("folders: create makes a real dir, delete only when empty", async () => {
   const stat = await fs.stat(path.join(dataDir, "projects/2026"));
   assert.ok(stat.isDirectory());
 
-  await fs.writeFile(
-    path.join(dataDir, "projects/2026/x.excalidraw"),
-    SCENE,
-  );
+  await fs.writeFile(path.join(dataDir, "projects/2026/x.excalidraw"), SCENE);
   const notEmpty = await app.request("/api/folders/projects/2026", {
     method: "DELETE",
   });

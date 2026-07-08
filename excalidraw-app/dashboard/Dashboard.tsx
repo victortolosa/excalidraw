@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getMeta, toggleFavorite, updateMetaPath } from "../data/serverMeta";
 
@@ -182,6 +182,32 @@ interface FileCardProps {
   onMenuToggle: (path: string) => void;
 }
 
+const Thumbnail = ({ file }: { file: ServerFileEntry }) => {
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setFailed(false);
+  }, [file.hasThumbnail, file.mtime, file.path]);
+
+  if (file.hasThumbnail && !failed) {
+    return (
+      <img
+        src={thumbnailUrl(file)}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        onError={() => setFailed(true)}
+      />
+    );
+  }
+
+  return (
+    <span className="Dashboard__thumbnail-placeholder">
+      <Icon name="pen" />
+    </span>
+  );
+};
+
 const FileCard = ({
   file,
   isFavorite,
@@ -222,13 +248,7 @@ const FileCard = ({
       <Icon name="star" />
     </button>
     <div className="Dashboard__thumbnail">
-      {file.hasThumbnail ? (
-        <img src={thumbnailUrl(file)} alt="" loading="lazy" />
-      ) : (
-        <span className="Dashboard__thumbnail-placeholder">
-          <Icon name="pen" />
-        </span>
-      )}
+      <Thumbnail file={file} />
     </div>
     <div className="Dashboard__card-body">
       <div className="Dashboard__card-meta">
@@ -545,7 +565,6 @@ export const Dashboard = () => {
     };
 
     return {
-      "aria-label": `Move drawing to ${folder || "All drawings"}`,
       onDragEnter: (event: DragEvent<HTMLElement>) => {
         if (!canDrop()) {
           return;

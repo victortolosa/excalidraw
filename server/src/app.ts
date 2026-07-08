@@ -4,10 +4,16 @@ import path from "node:path";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 
-import { FILE_EXT, PathError, safeFilePath, safeFolderPath } from "./safePath.ts";
+import {
+  FILE_EXT,
+  PathError,
+  safeFilePath,
+  safeFolderPath,
+} from "./safePath.ts";
 
 const THUMBNAIL_DIR = ".thumbnails";
 const META_FILE = ".dashboard.json";
+const MAX_THUMBNAIL_BYTES = 1_000_000;
 
 export interface FileEntry {
   path: string;
@@ -25,6 +31,26 @@ const exists = async (p: string) => {
   } catch {
     return false;
   }
+};
+
+const hasFreshThumbnail = async (thumbnail: string, drawingMtimeMs: number) => {
+  try {
+    const stat = await fs.stat(thumbnail);
+    return stat.mtimeMs >= drawingMtimeMs;
+  } catch {
+    return false;
+  }
+};
+
+const isSvgThumbnail = (body: string, contentType: string | null) => {
+  const isSvgType =
+    !contentType ||
+    contentType.toLowerCase().split(";")[0].trim() === "image/svg+xml";
+  return (
+    isSvgType &&
+    Buffer.byteLength(body, "utf8") <= MAX_THUMBNAIL_BYTES &&
+    /^\s*(?:<\?xml[^>]*>\s*)?<svg[\s>]/i.test(body)
+  );
 };
 
 /** Write via temp file + rename so a crash never leaves a torn file. */
@@ -60,8 +86,9 @@ async function listDrawings(dataDir: string): Promise<FileEntry[]> {
           folder: rel,
           mtime: Math.round(stat.mtimeMs),
           size: stat.size,
-          hasThumbnail: await exists(
+          hasThumbnail: await hasFreshThumbnail(
             path.join(dataDir, THUMBNAIL_DIR, `${childRel}.svg`),
+            stat.mtimeMs,
           ),
         });
       }
@@ -72,9 +99,9 @@ async function listDrawings(dataDir: string): Promise<FileEntry[]> {
   return entries;
 }
 
-async function listFolders(dataDir: string): Promise<
-  { path: string; name: string }[]
-> {
+async function listFolders(
+  dataDir: string,
+): Promise<{ path: string; name: string }[]> {
   const folders: { path: string; name: string }[] = [];
 
   const walk = async (dir: string, rel: string) => {
@@ -201,7 +228,11 @@ export function createApp(options: { dataDir: string; staticDir: string }) {
       }
       c.header("Content-Type", "image/svg+xml");
       // user-generated SVG: never let it script if opened directly
-      c.header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'");
+      c.header(
+        "Content-Security-Policy",
+        "default-src 'none'; style-src 'unsafe-inline'",
+      );
+      c.header("X-Content-Type-Options", "nosniff");
       return c.body(await fs.readFile(thumb, "utf8"));
     }
 
@@ -229,7 +260,7 @@ export function createApp(options: { dataDir: string; staticDir: string }) {
       return c.json({ error: "rename is POST-only" }, 405);
     }
     if (action === "thumbnail") {
-      if (!body.includes("<svg")) {
+      if (!isSvgThumbnail(body, c.req.header("Content-Type"))) {
         return c.json({ error: "thumbnail must be SVG" }, 400);
       }
       await atomicWrite(thumbnailPath(rel), body);
@@ -250,7 +281,10 @@ export function createApp(options: { dataDir: string; staticDir: string }) {
         const diskMtime = Math.round((await fs.stat(abs)).mtimeMs);
         if (diskMtime > baseline) {
           return c.json(
-            { error: "file changed on disk since it was loaded", mtime: diskMtime },
+            {
+              error: "file changed on disk since it was loaded",
+              mtime: diskMtime,
+            },
             409,
           );
         }
@@ -272,7 +306,10 @@ export function createApp(options: { dataDir: string; staticDir: string }) {
     const from = safeFilePath(dataDir, rel);
     const body = await c.req.json().catch(() => null);
     if (!body || typeof body.to !== "string") {
-      return c.json({ error: "body must be {\"to\": \"new/path.excalidraw\"}" }, 400);
+      return c.json(
+        { error: 'body must be {"to": "new/path.excalidraw"}' },
+        400,
+      );
     }
     const to = safeFilePath(dataDir, body.to);
 
