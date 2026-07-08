@@ -214,6 +214,11 @@ If it still points at an older SHA, the homelab repo has not been bumped yet.
 `docker compose pull` pulls the image named in the compose file; it does not
 discover newer Excalidraw source commits automatically.
 
+`/opt/stacks/excalidraw/compose.yml` is only a deployed copy of the homelab
+template. If `/opt/stacks/excalidraw/docker-compose.yml` also exists, archive
+it once (`mv docker-compose.yml docker-compose.yml.old`) so Docker Compose does
+not warn about multiple default compose files.
+
 Open:
 
 ```text
