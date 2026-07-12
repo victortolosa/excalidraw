@@ -94,6 +94,7 @@ describe("Dashboard", () => {
     expect((await screen.findAllByText("Root board")).length).toBeGreaterThan(
       0,
     );
+    expect(screen.getAllByText(/128 B/).length).toBeGreaterThan(0);
     expect(
       screen.getByRole("button", { name: "projects" }),
     ).toBeInTheDocument();
@@ -104,6 +105,7 @@ describe("Dashboard", () => {
     );
     fireEvent.click(screen.getByRole("tab", { name: "Recent" }));
     expect(screen.getAllByText("Roadmap").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/256 B/).length).toBeGreaterThan(0);
 
     const thumbnail = container.querySelector(".Dashboard__thumbnail img");
     expect(thumbnail).toBeInstanceOf(HTMLImageElement);

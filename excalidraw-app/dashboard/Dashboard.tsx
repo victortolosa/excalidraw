@@ -66,6 +66,26 @@ const formatModified = (mtime: number) => {
   return new Date(mtime).toLocaleDateString();
 };
 
+const formatFileSize = (size: number) => {
+  if (!Number.isFinite(size) || size < 0) {
+    return "";
+  }
+
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let value = size;
+  let unitIndex = 0;
+
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex++;
+  }
+
+  const formattedValue =
+    unitIndex === 0 || value >= 10 ? Math.round(value) : value.toFixed(1);
+
+  return `${formattedValue} ${units[unitIndex]}`;
+};
+
 /** display name → file basename; returns null when the name is unusable */
 const toFileName = (input: string): string | null => {
   const name = input.trim().replace(/\.excalidraw$/, "");
@@ -221,78 +241,83 @@ const FileCard = ({
   onMove,
   onDelete,
   onMenuToggle,
-}: FileCardProps) => (
-  <article
-    className={`Dashboard__card ${isDragging ? "is-dragging" : ""}`}
-    draggable
-    onClick={() => onOpen(file)}
-    onDragEnd={onDragEnd}
-    onDragStart={(event) => onDragStart(event, file)}
-    onKeyDown={(event) => {
-      if (event.key === "Enter") {
-        onOpen(file);
-      }
-    }}
-    role="button"
-    tabIndex={0}
-  >
-    <button
-      className={`Dashboard__star ${isFavorite ? "is-active" : ""}`}
-      aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-      title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-      onClick={(event) => {
-        event.stopPropagation();
-        onToggleFavorite(file);
+}: FileCardProps) => {
+  const cardDetails = [
+    file.folder,
+    formatFileSize(file.size),
+    formatModified(file.mtime),
+  ].filter(Boolean);
+
+  return (
+    <article
+      className={`Dashboard__card ${isDragging ? "is-dragging" : ""}`}
+      draggable
+      onClick={() => onOpen(file)}
+      onDragEnd={onDragEnd}
+      onDragStart={(event) => onDragStart(event, file)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          onOpen(file);
+        }
       }}
+      role="button"
+      tabIndex={0}
     >
-      <Icon name="star" />
-    </button>
-    <div className="Dashboard__thumbnail">
-      <Thumbnail file={file} />
-    </div>
-    <div className="Dashboard__card-body">
-      <div className="Dashboard__card-meta">
-        <div className="Dashboard__card-name" title={file.path}>
-          {file.name}
-        </div>
-        <div className="Dashboard__card-date">
-          {file.folder && <span>{file.folder} · </span>}
-          {formatModified(file.mtime)}
-        </div>
-      </div>
-      <div
-        className="Dashboard__card-actions"
-        onClick={(event) => event.stopPropagation()}
+      <button
+        className={`Dashboard__star ${isFavorite ? "is-active" : ""}`}
+        aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+        title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+        onClick={(event) => {
+          event.stopPropagation();
+          onToggleFavorite(file);
+        }}
       >
-        <button
-          aria-expanded={menuOpen}
-          aria-label={`Actions for ${file.name}`}
-          className="Dashboard__icon-button"
-          onClick={() => onMenuToggle(file.path)}
-        >
-          <Icon name="more" />
-        </button>
-        {menuOpen && (
-          <div className="Dashboard__menu" role="menu">
-            <button role="menuitem" onClick={() => onRename(file)}>
-              Rename
-            </button>
-            <button role="menuitem" onClick={() => onMove(file)}>
-              Move
-            </button>
-            <button
-              className="Dashboard__danger"
-              role="menuitem"
-              onClick={() => onDelete(file)}
-            >
-              Delete
-            </button>
-          </div>
-        )}
+        <Icon name="star" />
+      </button>
+      <div className="Dashboard__thumbnail">
+        <Thumbnail file={file} />
       </div>
-    </div>
-  </article>
-);
+      <div className="Dashboard__card-body">
+        <div className="Dashboard__card-meta">
+          <div className="Dashboard__card-name" title={file.path}>
+            {file.name}
+          </div>
+          <div className="Dashboard__card-date">{cardDetails.join(" · ")}</div>
+        </div>
+        <div
+          className="Dashboard__card-actions"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <button
+            aria-expanded={menuOpen}
+            aria-label={`Actions for ${file.name}`}
+            className="Dashboard__icon-button"
+            onClick={() => onMenuToggle(file.path)}
+          >
+            <Icon name="more" />
+          </button>
+          {menuOpen && (
+            <div className="Dashboard__menu" role="menu">
+              <button role="menuitem" onClick={() => onRename(file)}>
+                Rename
+              </button>
+              <button role="menuitem" onClick={() => onMove(file)}>
+                Move
+              </button>
+              <button
+                className="Dashboard__danger"
+                role="menuitem"
+                onClick={() => onDelete(file)}
+              >
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+};
 
 const filePathFromDrag = (event: DragEvent<HTMLElement>) =>
   (() => {

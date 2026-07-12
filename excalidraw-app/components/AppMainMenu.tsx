@@ -1,4 +1,5 @@
 import {
+  chevronLeftIcon,
   loginIcon,
   ExcalLogo,
   eyeIcon,
@@ -24,6 +25,15 @@ export const AppMainMenu: React.FC<{
 }> = React.memo((props) => {
   return (
     <MainMenu>
+      <MainMenu.Item
+        icon={chevronLeftIcon}
+        onSelect={() => {
+          window.location.hash = "#/";
+        }}
+      >
+        Back to dashboard
+      </MainMenu.Item>
+      <MainMenu.Separator />
       <MainMenu.DefaultItems.LoadScene />
       <MainMenu.DefaultItems.SaveToActiveFile />
       <MainMenu.DefaultItems.Export />
