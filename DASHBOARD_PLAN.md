@@ -23,7 +23,8 @@ Already done:
 - Fork remotes configured: `origin` = victortolosa/excalidraw, `upstream` = excalidraw/excalidraw (push disabled).
 - `custom` branch exists with `.github/workflows/build-custom.yml` — builds and pushes
   `ghcr.io/victortolosa/excalidraw:latest` + `:sha` on every push to `custom`.
-- Dockerfile builds the app and serves it via **nginx (static only — no backend)**.
+- Dockerfile builds the app and serves it with the fork's Node server: static app plus
+  `/api` file dashboard endpoints.
 
 Not done yet: everything below.
 
@@ -173,15 +174,12 @@ hook points semantically. Check in this order (cheap → expensive):
 `build-custom.yml` tags every image with both `:latest` and `:<sha>` — that's the
 rollback mechanism.
 
-- **Safer default:** pin the homelab compose file to a specific `:<sha>` tag and bump it
-  manually after a sync is verified, instead of tracking `:latest`. `latest` means every
-  push deploys on the next `docker compose pull`, including unverified merges.
-  With SHA pinning, a source push is not enough: after GitHub Actions publishes the
-  image, update `~/Repos/homelab/docker-services/excalidraw/compose.yml` to the new
-  Excalidraw commit SHA, commit/push the homelab repo, then run the i5 deploy script.
+- **Normal deploy:** the homelab compose file tracks `:latest`, so a verified push to
+  `custom` is enough to publish the image. The i5 deploy step pulls and recreates the
+  container.
 - **Rollback:** repoint compose at the previous known-good `:<sha>` and
-  `docker compose pull && docker compose up -d`. Keep a note of the last known-good sha
-  in the homelab repo's compose file as a comment.
+  `docker compose pull && docker compose up -d`. Switch back to `:latest` after a fixed
+  image is published.
 - Data is safe regardless: drawings are plain files in the mounted volume, untouched by
   image rollbacks.
 
@@ -359,9 +357,8 @@ Sources of truth: `~/Repos/homelab/docs/operations/remote-access.md` and
 
 ### What changes when the backend lands (do alongside Phase 5 deploy)
 
-Today the origin is a static nginx site — a misconfigured Access policy leaks nothing
-interesting. Once `/api` exists, **Access becomes the sole remote security boundary**
-for reads *and writes* to the data dir. Tasks:
+The origin includes the `/api` file dashboard endpoints. Cloudflare Access is the sole
+remote security boundary for reads *and writes* to the data dir. Tasks:
 
 - [ ] Verify the Access application covers the **entire hostname** (path filter empty,
       so `/api/*` is included), and re-confirm policy: Google only, exact emails,

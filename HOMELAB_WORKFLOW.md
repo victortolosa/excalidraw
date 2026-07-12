@@ -78,7 +78,7 @@ docs/operations/git-deploy.md
 docs/source-of-truth.md
 ```
 
-The live stack IS Git-managed (since 2026-07-06): the compose template lives in the homelab repo at `docker-services/excalidraw/compose.yml` (sha-pinned image, data volume) and deploys with `./deploy/docker-stacks/deploy.sh excalidraw`. The earlier "stay server-owned" decision was superseded when the dashboard/file API gave the compose file real config to version.
+The live stack IS Git-managed (since 2026-07-06): the compose template lives in the homelab repo at `docker-services/excalidraw/compose.yml` (`latest` image for normal deploys, data volume) and deploys with `./deploy/docker-stacks/deploy.sh excalidraw`. The earlier "stay server-owned" decision was superseded when the dashboard/file API gave the compose file real config to version.
 
 ## Build workflow
 
@@ -110,7 +110,7 @@ ghcr.io/victortolosa/excalidraw:latest
 ghcr.io/victortolosa/excalidraw:${{ github.sha }}
 ```
 
-The SHA tag is safer for rollback. The `latest` tag is convenient for normal pulls.
+Normal deploys use `latest`. The SHA tag is kept for rollback.
 
 ## Docker image
 
@@ -168,32 +168,9 @@ After push, confirm the `build-and-push` workflow succeeded in GitHub Actions.
 
 ## Server deploy workflow
 
-This stack is SHA-pinned on purpose. A source push to `custom` creates a new
-GHCR image, but the i5 server will keep pulling the old image until the homelab
-compose file is bumped to the new SHA tag.
-
-After GitHub Actions publishes the image, update the homelab repo first:
-
-```bash
-cd ~/Repos/homelab
-$EDITOR docker-services/excalidraw/compose.yml
-```
-
-Set:
-
-```yaml
-image: ghcr.io/victortolosa/excalidraw:<new-excalidraw-commit-sha>
-```
-
-Then commit and push the homelab config change:
-
-```bash
-git diff docker-services/excalidraw/compose.yml
-git commit -am "Update Excalidraw image"
-git push
-```
-
-Only then deploy on `docker-i5`:
+A source push to `custom` creates a new GHCR image and moves the
+`ghcr.io/victortolosa/excalidraw:latest` tag. After GitHub Actions publishes
+the image, deploy on `docker-i5`:
 
 ```bash
 ssh victor@10.0.0.71
@@ -204,15 +181,21 @@ docker logs excalidraw --tail=50
 curl -s http://127.0.0.1:8085/api/health
 ```
 
-If `git pull` appears to work but the UI is still old, check the image tag:
+The homelab repo only needs a commit when the stack config changes, not for
+normal Excalidraw source deploys.
+
+If the UI is still old, check the image tag and force a pull/recreate:
 
 ```bash
 grep -n "image:" ~/homelab/docker-services/excalidraw/compose.yml /opt/stacks/excalidraw/compose.yml
+cd /opt/stacks/excalidraw
+docker compose pull excalidraw
+docker compose up -d --force-recreate excalidraw
 ```
 
-If it still points at an older SHA, the homelab repo has not been bumped yet.
-`docker compose pull` pulls the image named in the compose file; it does not
-discover newer Excalidraw source commits automatically.
+The image should normally be `ghcr.io/victortolosa/excalidraw:latest`.
+`docker compose pull` pulls the image named in the compose file. If the server
+has a cached `latest`, pulling before recreate is required.
 
 `/opt/stacks/excalidraw/compose.yml` is only a deployed copy of the homelab
 template. If `/opt/stacks/excalidraw/docker-compose.yml` also exists, archive
@@ -233,7 +216,9 @@ If managing the stack through Dockge, use Dockge to pull and recreate the stack 
 Prefer rollback by immutable image tag.
 
 1. Find the last good commit SHA from GitHub Actions or GHCR.
-2. Edit `/opt/stacks/excalidraw/compose.yml` on `docker-i5`.
+2. Edit `/opt/stacks/excalidraw/compose.yml` on `docker-i5` for an emergency
+   rollback, or edit `docker-services/excalidraw/compose.yml` in the homelab
+   repo if you want the rollback tracked in Git.
 3. Temporarily set:
 
 ```yaml
@@ -249,7 +234,8 @@ docker compose up -d --force-recreate excalidraw
 curl -I http://127.0.0.1:8085
 ```
 
-After the broken `custom` branch is fixed and a new good image is published, switch the compose file back to:
+After the broken `custom` branch is fixed and a new good image is published,
+switch the compose file back to:
 
 ```yaml
 image: ghcr.io/victortolosa/excalidraw:latest
@@ -278,7 +264,7 @@ verification checklist, then `git push origin custom`.
 - Keep custom patches as readable source commits.
 - Keep the server compose file image-based.
 - Use GitHub Actions for builds.
-- Use SHA tags for rollback.
+- Use `latest` for normal deploys and SHA tags for rollback.
 - Keep the homelab repo as the deployment runbook.
 
 ### Do not
@@ -292,7 +278,8 @@ verification checklist, then `git push origin custom`.
 
 ## Collaboration and storage
 
-The current deployment is a static Excalidraw app served by nginx.
+The current deployment is the built Excalidraw app served by the fork's Node
+server. The Node server also owns the `/api` file dashboard endpoints.
 
 Real-time collaboration is a separate system. It requires additional backend and routing decisions. Do not treat it as part of the normal patch workflow.
 
