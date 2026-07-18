@@ -169,14 +169,42 @@ hook points semantically. Check in this order (cheap → expensive):
   loop — dashboard loads → open drawing → edit → autosave hits disk → reload restores
 - [ ] Only now: `git push` (kicks off the GHCR build)
 
+### Deploy target (server)
+
+The deploy host is **docker-i5** at **`10.0.0.71`** (same box that runs notediscovery),
+served on port `8085` (`8085:80`).
+
+**Two important path facts** (both easy to get wrong):
+- `~/Repos/homelab/docker-services/excalidraw/compose.yml` is only the **Git-managed
+  template**, not the running stack.
+- The **live stack** is at **`/opt/stacks/excalidraw/`** on docker-i5. `deploy.sh` copies
+  the template there, then runs `docker compose` **locally on the i5 — no SSH in the
+  script**, so it must run on docker-i5 itself (where `/opt/stacks` exists).
+
+**Deploy after a green `build-and-push`** — from the homelab repo checkout on docker-i5:
+
+```bash
+./deploy/docker-stacks/deploy.sh excalidraw   # copies template → /opt/stacks, pulls, up -d
+```
+
+Image-only changes (like a code push with no compose.yml edit) can also be deployed
+directly on docker-i5 without the script:
+
+```bash
+cd /opt/stacks/excalidraw
+docker compose pull && docker compose up -d
+```
+
+Verify: `curl -I http://localhost:8085/` (expect 200).
+
 ### Deploy safety & rollback
 
 `build-custom.yml` tags every image with both `:latest` and `:<sha>` — that's the
 rollback mechanism.
 
 - **Normal deploy:** the homelab compose file tracks `:latest`, so a verified push to
-  `custom` is enough to publish the image. The i5 deploy step pulls and recreates the
-  container.
+  `custom` is enough to publish the image. The i5 deploy step (`10.0.0.71`) pulls and
+  recreates the container.
 - **Rollback:** repoint compose at the previous known-good `:<sha>` and
   `docker compose pull && docker compose up -d`. Switch back to `:latest` after a fixed
   image is published.
