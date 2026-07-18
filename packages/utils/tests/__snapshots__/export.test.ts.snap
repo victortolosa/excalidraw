@@ -88,6 +88,7 @@ exports[`exportToSvg > with default arguments 1`] = `
   "patternGridSeamAllowanceEnabled": false,
   "patternGridSeamAllowanceInches": 0.5,
   "patternGridSnapEnabled": true,
+  "patternGridStrokeAlign": "center",
   "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,

@@ -1186,6 +1186,77 @@ export const StrokeWidthExtraBoldIcon = createIcon(
   modifiedTablerIconProps,
 );
 
+// Pattern-mode stroke alignment: a faint reference square (the vector path)
+// with a bold square showing where the drawn stroke sits relative to it.
+export const StrokeAlignInsideIcon = createIcon(
+  <>
+    <rect
+      x="4"
+      y="4"
+      width="12"
+      height="12"
+      stroke="currentColor"
+      strokeWidth="0.75"
+      opacity="0.4"
+    />
+    <rect
+      x="5.25"
+      y="5.25"
+      width="9.5"
+      height="9.5"
+      stroke="currentColor"
+      strokeWidth="1.75"
+    />
+  </>,
+  modifiedTablerIconProps,
+);
+
+export const StrokeAlignCenterIcon = createIcon(
+  <>
+    <rect
+      x="4"
+      y="4"
+      width="12"
+      height="12"
+      stroke="currentColor"
+      strokeWidth="0.75"
+      opacity="0.4"
+    />
+    <rect
+      x="4"
+      y="4"
+      width="12"
+      height="12"
+      stroke="currentColor"
+      strokeWidth="1.75"
+    />
+  </>,
+  modifiedTablerIconProps,
+);
+
+export const StrokeAlignOutsideIcon = createIcon(
+  <>
+    <rect
+      x="4"
+      y="4"
+      width="12"
+      height="12"
+      stroke="currentColor"
+      strokeWidth="0.75"
+      opacity="0.4"
+    />
+    <rect
+      x="2.75"
+      y="2.75"
+      width="14.5"
+      height="14.5"
+      stroke="currentColor"
+      strokeWidth="1.75"
+    />
+  </>,
+  modifiedTablerIconProps,
+);
+
 export const StrokeStyleSolidIcon = React.memo(({ theme }: { theme: Theme }) =>
   createIcon(
     <path

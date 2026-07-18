@@ -14,18 +14,9 @@ Config lives in `appState` under the `patternGrid*` prefix (with matching `{ bro
 
 ## Shipped
 
-- **Inch-based stroke width (pattern mode).** When `patternGridModeEnabled`, the
-  thin/medium/bold stroke picker is replaced by fraction presets (1/64", 1/32",
-  1/16") plus a numeric inch input. Values convert to a scene-pixel `strokeWidth`
-  via `patternGridPixelsPerInch`, so a line prints at the specified real-world
-  thickness. Conversion + clamping live in `packages/excalidraw/patternGrid.ts`
-  (`patternGridInchesToStrokeWidth` / `...ToInches`,
-  `getNormalizedPatternGridStrokeWidthInches`; unit-tested in
-  `patternGrid.test.ts`). The action is `actionChangeStrokeWidth` in
-  `packages/excalidraw/actions/actionProperties.tsx` (value is now
-  `StrokeWidthKey | { customInches: number }`). New-element default is tracked by
-  `appState.currentItemPatternStrokeWidth` (raw px; `null` falls back to the
-  preset key), applied in `App.tsx`'s `getCurrentItemStrokeWidth`.
+- **Inch-based stroke width (pattern mode).** When `patternGridModeEnabled`, the thin/medium/bold stroke picker is replaced by fraction presets (1/64", 1/32", 1/16") plus a numeric inch input. Values convert to a scene-pixel `strokeWidth` via `patternGridPixelsPerInch`, so a line prints at the specified real-world thickness. Conversion + clamping live in `packages/excalidraw/patternGrid.ts` (`patternGridInchesToStrokeWidth` / `...ToInches`, `getNormalizedPatternGridStrokeWidthInches`; unit-tested in `patternGrid.test.ts`). The action is `actionChangeStrokeWidth` in `packages/excalidraw/actions/actionProperties.tsx` (value is now `StrokeWidthKey | { customInches: number }`). New-element default is tracked by `appState.currentItemPatternStrokeWidth` (raw px; `null` falls back to the preset key), applied in `App.tsx`'s `getCurrentItemStrokeWidth`.
+
+- **Stroke alignment (pattern mode).** A global Inside/Center/Outside control (`actionChangePatternStrokeAlign`, shown only in pattern mode) that offsets a line/polygon's drawn stroke so one edge lands exactly on the on-grid vector path. Render-only: the offset shape is generated outside the shared `ShapeCache` (`ShapeCache.generatePatternOffsetShape` / `getRenderShape` in `packages/element/src/shape.ts`) so hit-testing and bounds keep using the true geometry. The offset primitive is `offsetPolyline` in `@excalidraw/math` (`packages/math/src/offset.ts`, unit-tested), winding-aware so "outside" always enlarges a closed piece. Threaded through canvas, PNG, and SVG export via `renderConfig.patternStrokeAlign`; the element-canvas cache regenerates on toggle the same way it does for `theme`. Stored globally in `appState.patternGridStrokeAlign`.
 
 ## Other ideas (unscoped)
 

@@ -197,6 +197,13 @@ type _CommonCanvasAppState = {
   theme: AppState["theme"];
 };
 
+/**
+ * Pattern mode: where an element's stroke sits relative to its (on-grid) path.
+ * "center" is the default centered stroke; "inside"/"outside" offset the drawn
+ * stroke so one edge lands exactly on the vector line.
+ */
+export type PatternStrokeAlign = "center" | "inside" | "outside";
+
 export type StaticCanvasAppState = Readonly<
   _CommonCanvasAppState & {
     shouldCacheIgnoreZoom: AppState["shouldCacheIgnoreZoom"];
@@ -215,6 +222,7 @@ export type StaticCanvasAppState = Readonly<
     patternGridSeamAllowanceInches: AppState["patternGridSeamAllowanceInches"];
     patternGridPixelsPerInch: AppState["patternGridPixelsPerInch"];
     patternGridSubdivisions: AppState["patternGridSubdivisions"];
+    patternGridStrokeAlign: AppState["patternGridStrokeAlign"];
     frameRendering: AppState["frameRendering"];
     selectedGroupIds: AppState["selectedGroupIds"];
     currentHoveredFontFamily: AppState["currentHoveredFontFamily"];
@@ -496,6 +504,7 @@ export interface AppState {
   patternGridSeamAllowanceInches: number;
   patternGridPixelsPerInch: number;
   patternGridSubdivisions: number;
+  patternGridStrokeAlign: PatternStrokeAlign;
   viewModeEnabled: boolean;
 
   /** top-most selected groups (i.e. does not include nested groups) */

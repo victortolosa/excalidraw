@@ -14,6 +14,7 @@ import {
 import {
   pointFrom,
   pointDistance,
+  offsetPolyline,
   type LocalPoint,
   pointRotateRads,
 } from "@excalidraw/math";
@@ -37,10 +38,13 @@ import type { Mutable } from "@excalidraw/common/utility-types";
 import type {
   AppState,
   EmbedsValidationStatus,
+  PatternStrokeAlign,
 } from "@excalidraw/excalidraw/types";
 import type {
   ElementShape,
   ElementShapes,
+  StaticCanvasRenderConfig,
+  SVGRenderConfig,
   SVGPathString,
 } from "@excalidraw/excalidraw/scene/types";
 
@@ -163,7 +167,87 @@ export class ShapeCache {
 
     return shape;
   };
+
+  /**
+   * Non-cached rough shape for a line/polygon element whose stroke is offset to
+   * one side (pattern-mode "inside"/"outside" alignment). Deliberately kept OUT
+   * of the shared ShapeCache so hit-testing and bounds keep using the true,
+   * on-grid geometry — only the drawn stroke shifts.
+   */
+  public static generatePatternOffsetShape = (
+    element: ExcalidrawLinearElement,
+    align: Exclude<PatternStrokeAlign, "center">,
+    isDarkMode: boolean,
+  ): Drawable[] | null => {
+    if (element.points.length < 2 || element.strokeWidth <= 0) {
+      return null;
+    }
+
+    const closed =
+      (element.type === "line" && (element as ExcalidrawLineElement).polygon) ||
+      isPathALoop(element.points);
+
+    const half = element.strokeWidth / 2;
+
+    let distance: number;
+    if (closed) {
+      // orient by winding so "outside" always enlarges the ring
+      const outward = signedArea(element.points) >= 0 ? 1 : -1;
+      distance = (align === "outside" ? outward : -outward) * half;
+    } else {
+      // open paths have no true inside/outside — offset to a consistent side
+      distance = (align === "outside" ? 1 : -1) * half;
+    }
+
+    const points = offsetPolyline(element.points, distance, closed);
+    const options = generateRoughOptions(element, false, isDarkMode);
+    const generator = ShapeCache.rg;
+
+    if (!element.roundness) {
+      return options.fill
+        ? [generator.polygon(points as unknown as RoughPoint[], options)]
+        : [generator.linearPath(points as unknown as RoughPoint[], options)];
+    }
+    return [generator.curve(points as unknown as RoughPoint[], options)];
+  };
+
+  /**
+   * Shape used for RENDERING. In pattern mode with a non-center stroke
+   * alignment, returns a one-off offset shape for line/polygon elements;
+   * otherwise falls back to the normal cached shape.
+   */
+  public static getRenderShape = <
+    T extends Exclude<ExcalidrawElement, ExcalidrawSelectionElement>,
+  >(
+    element: T,
+    renderConfig: StaticCanvasRenderConfig | SVGRenderConfig | null,
+  ) => {
+    const align = renderConfig?.patternStrokeAlign;
+    if (align && align !== "center" && element.type === "line") {
+      const offset = ShapeCache.generatePatternOffsetShape(
+        element as unknown as ExcalidrawLinearElement,
+        align,
+        renderConfig?.theme === THEME.DARK,
+      );
+      if (offset) {
+        return offset as T["type"] extends keyof ElementShapes
+          ? ElementShapes[T["type"]]
+          : Drawable | null;
+      }
+    }
+    return ShapeCache.generateElementShape(element, renderConfig);
+  };
 }
+
+const signedArea = (points: readonly LocalPoint[]): number => {
+  let sum = 0;
+  for (let i = 0; i < points.length; i++) {
+    const a = points[i];
+    const b = points[(i + 1) % points.length];
+    sum += a[0] * b[1] - b[0] * a[1];
+  }
+  return sum / 2;
+};
 
 const getDashArrayDashed = (strokeWidth: number) => [8, 8 + strokeWidth];
 

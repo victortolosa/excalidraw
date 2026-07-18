@@ -56,6 +56,7 @@ import { getLineHeightInPx } from "./textMeasurements";
 import {
   isTextElement,
   isLinearElement,
+  isLineElement,
   isFreeDrawElement,
   isInitializedImageElement,
   isArrowElement,
@@ -143,6 +144,7 @@ export interface ExcalidrawElementWithCanvas {
   boundTextElementVersion: number | null;
   imageCrop: ExcalidrawImageElement["crop"] | null;
   containingFrameOpacity: number;
+  patternStrokeAlign: StaticCanvasRenderConfig["patternStrokeAlign"];
   boundTextCanvas: HTMLCanvasElement;
 }
 
@@ -332,6 +334,7 @@ const generateElementCanvas = (
       getBoundTextElement(element, elementsMap)?.version || null,
     containingFrameOpacity:
       getContainingFrame(element, elementsMap)?.opacity || 100,
+    patternStrokeAlign: renderConfig.patternStrokeAlign,
     boundTextCanvas,
     angle: element.angle,
     imageCrop: isImageElement(element) ? element.crop : null,
@@ -407,11 +410,9 @@ const drawElementOnCanvas = (
       context.lineJoin = "round";
       context.lineCap = "round";
 
-      ShapeCache.generateElementShape(element, renderConfig).forEach(
-        (shape) => {
-          rc.draw(shape);
-        },
-      );
+      ShapeCache.getRenderShape(element, renderConfig).forEach((shape) => {
+        rc.draw(shape);
+      });
       break;
     }
     case "freedraw": {
@@ -635,6 +636,11 @@ const generateElementWithCanvas = (
     prevElementWithCanvas.boundTextElementVersion !== boundTextElementVersion ||
     prevElementWithCanvas.imageCrop !== imageCrop ||
     prevElementWithCanvas.containingFrameOpacity !== containingFrameOpacity ||
+    // pattern-mode stroke alignment shifts the drawn line — regenerate the
+    // cached canvas when it changes (only line/polygon elements are affected)
+    (isLineElement(element) &&
+      prevElementWithCanvas.patternStrokeAlign !==
+        renderConfig.patternStrokeAlign) ||
     // since we rotate the canvas when copying from cached canvas, we don't
     // regenerate the cached canvas. But we need to in case of labels which are
     // cached alongside the arrow, and we want the labels to remain unrotated

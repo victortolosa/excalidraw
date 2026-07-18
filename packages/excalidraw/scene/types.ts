@@ -14,6 +14,7 @@ import type {
   EmbedsValidationStatus,
   ElementsPendingErasure,
   InteractiveCanvasAppState,
+  PatternStrokeAlign,
   StaticCanvasAppState,
   SocketId,
   PendingExcalidrawElements,
@@ -37,6 +38,8 @@ export type StaticCanvasRenderConfig = {
   elementsPendingErasure: ElementsPendingErasure;
   pendingFlowchartNodes: PendingExcalidrawElements | null;
   theme: AppState["theme"];
+  /** pattern-mode stroke alignment; "center" = default centered stroke */
+  patternStrokeAlign: PatternStrokeAlign;
 };
 
 export type SVGRenderConfig = {
@@ -56,6 +59,8 @@ export type SVGRenderConfig = {
    */
   reuseImages: boolean;
   theme: AppState["theme"];
+  /** pattern-mode stroke alignment; "center" = default centered stroke */
+  patternStrokeAlign: PatternStrokeAlign;
 };
 
 export type InteractiveCanvasRenderConfig = {

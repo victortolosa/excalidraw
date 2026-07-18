@@ -2,6 +2,7 @@ export * from "./angle";
 export * from "./curve";
 export * from "./ellipse";
 export * from "./line";
+export * from "./offset";
 export * from "./point";
 export * from "./polygon";
 export * from "./range";

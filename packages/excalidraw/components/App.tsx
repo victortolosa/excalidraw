@@ -2406,6 +2406,10 @@ class App extends React.Component<AppProps, AppState> {
                               pendingFlowchartNodes:
                                 this.flowChartCreator.pendingNodes,
                               theme: this.state.theme,
+                              patternStrokeAlign: this.state
+                                .patternGridModeEnabled
+                                ? this.state.patternGridStrokeAlign
+                                : "center",
                             }}
                           />
                           {newElementCanvasElement && (
@@ -2428,6 +2432,10 @@ class App extends React.Component<AppProps, AppState> {
                                   this.elementsPendingErasure,
                                 pendingFlowchartNodes: null,
                                 theme: this.state.theme,
+                                patternStrokeAlign: this.state
+                                  .patternGridModeEnabled
+                                  ? this.state.patternGridStrokeAlign
+                                  : "center",
                               }}
                             />
                           )}

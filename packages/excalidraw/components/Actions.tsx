@@ -201,6 +201,9 @@ export const SelectedShapeActions = ({
         targetElements.some((element) => hasStrokeWidth(element.type))) &&
         renderAction("changeStrokeWidth")}
 
+      {appState.patternGridModeEnabled &&
+        renderAction("changePatternStrokeAlign")}
+
       {(hasFreedrawMode(appState.activeTool.type) ||
         targetElements.some((element) => hasFreedrawMode(element.type))) &&
         renderAction("changeFreedrawMode")}
@@ -394,6 +397,8 @@ const CombinedShapeProperties = ({
                   hasStrokeWidth(element.type),
                 )) &&
                 renderAction("changeStrokeWidth")}
+              {appState.patternGridModeEnabled &&
+                renderAction("changePatternStrokeAlign")}
               {
                 /* in compact UI the freedraw pressure setting is rendered as a
                   standalone cycle button in the compact actions list; we render

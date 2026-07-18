@@ -339,7 +339,7 @@ const renderElementToSvg = (
       }
       group.setAttribute("stroke-linecap", "round");
 
-      const shapes = ShapeCache.generateElementShape(element, renderConfig);
+      const shapes = ShapeCache.getRenderShape(element, renderConfig);
       shapes.forEach((shape) => {
         const node = roughSVGDrawWithPrecision(
           rsvg,

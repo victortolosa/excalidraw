@@ -60,7 +60,7 @@ import { renderSceneToSvg } from "../renderer/staticSvgScene";
 
 import type { RenderableElementsMap } from "./types";
 
-import type { AppState, BinaryFiles } from "../types";
+import type { AppState, BinaryFiles, PatternStrokeAlign } from "../types";
 
 const truncateText = (element: ExcalidrawTextElement, maxWidth: number) => {
   if (element.width <= maxWidth) {
@@ -273,6 +273,9 @@ export const exportToCanvas = async (
       elementsPendingErasure: new Set(),
       pendingFlowchartNodes: null,
       theme: appState.exportWithDarkMode ? THEME.DARK : THEME.LIGHT,
+      patternStrokeAlign: appState.patternGridModeEnabled
+        ? appState.patternGridStrokeAlign
+        : "center",
     },
   });
 
@@ -296,6 +299,8 @@ export const exportToSvg = async (
     exportWithDarkMode?: boolean;
     exportEmbedScene?: boolean;
     frameRendering?: AppState["frameRendering"];
+    patternGridModeEnabled?: boolean;
+    patternGridStrokeAlign?: PatternStrokeAlign;
   },
   files: BinaryFiles | null,
   opts?: {
@@ -495,6 +500,9 @@ export const exportToSvg = async (
         : new Map(),
       reuseImages: opts?.reuseImages ?? true,
       theme: exportWithDarkMode ? THEME.DARK : THEME.LIGHT,
+      patternStrokeAlign: appState.patternGridModeEnabled
+        ? appState.patternGridStrokeAlign ?? "center"
+        : "center",
     },
   );
 

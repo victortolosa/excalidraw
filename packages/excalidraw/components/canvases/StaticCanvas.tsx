@@ -103,6 +103,7 @@ const getRelevantAppStateProps = (appState: AppState): StaticCanvasAppState => {
     patternGridSeamAllowanceInches: appState.patternGridSeamAllowanceInches,
     patternGridPixelsPerInch: appState.patternGridPixelsPerInch,
     patternGridSubdivisions: appState.patternGridSubdivisions,
+    patternGridStrokeAlign: appState.patternGridStrokeAlign,
     frameRendering: appState.frameRendering,
     selectedElementIds: appState.selectedElementIds,
     selectedGroupIds: appState.selectedGroupIds,

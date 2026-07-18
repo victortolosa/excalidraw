@@ -118,6 +118,9 @@ import {
   StrokeWidthBaseIcon,
   StrokeWidthBoldIcon,
   StrokeWidthExtraBoldIcon,
+  StrokeAlignInsideIcon,
+  StrokeAlignCenterIcon,
+  StrokeAlignOutsideIcon,
   FontSizeSmallIcon,
   FontSizeMediumIcon,
   FontSizeLargeIcon,
@@ -167,6 +170,7 @@ import { register } from "./register";
 import type {
   AppClassProperties,
   AppState,
+  PatternStrokeAlign,
   Primitive,
   UIAppState,
 } from "../types";
@@ -782,6 +786,52 @@ export const actionChangeStrokeWidth = register<StrokeWidthActionValue>({
         </div>
       </fieldset>
     ),
+});
+
+// Pattern mode: where a line/polygon stroke sits relative to its on-grid path.
+// Global render setting (not per-element), so it only touches appState.
+export const actionChangePatternStrokeAlign = register<PatternStrokeAlign>({
+  name: "changePatternStrokeAlign",
+  label: "labels.strokeAlign",
+  trackEvent: false,
+  perform: (elements, appState, value) => {
+    return {
+      appState: { ...appState, patternGridStrokeAlign: value },
+      captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+    };
+  },
+  PanelComponent: ({ appState, updateData }) => (
+    <fieldset>
+      <legend>{t("labels.strokeAlign")}</legend>
+      <div className="buttonList">
+        <RadioSelection<PatternStrokeAlign>
+          group="pattern-stroke-align"
+          options={[
+            {
+              value: "inside",
+              text: t("labels.strokeAlignInside"),
+              icon: StrokeAlignInsideIcon,
+              testId: "patternStrokeAlign-inside",
+            },
+            {
+              value: "center",
+              text: t("labels.strokeAlignCenter"),
+              icon: StrokeAlignCenterIcon,
+              testId: "patternStrokeAlign-center",
+            },
+            {
+              value: "outside",
+              text: t("labels.strokeAlignOutside"),
+              icon: StrokeAlignOutsideIcon,
+              testId: "patternStrokeAlign-outside",
+            },
+          ]}
+          value={appState.patternGridStrokeAlign}
+          onChange={(value) => updateData(value)}
+        />
+      </div>
+    </fieldset>
+  ),
 });
 
 export const actionChangeSloppiness = register<ExcalidrawElement["roughness"]>({
