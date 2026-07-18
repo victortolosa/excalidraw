@@ -12,6 +12,7 @@ import {
   DEFAULT_FONT_SIZE,
   FONT_FAMILY,
   ROUNDNESS,
+  STROKE_WIDTH,
   STROKE_WIDTH_KEYS,
   VERTICAL_ALIGN,
   KEYS,
@@ -86,6 +87,11 @@ import type { Scene } from "@excalidraw/element";
 import type { CaptureUpdateActionType } from "@excalidraw/element";
 
 import { trackEvent } from "../analytics";
+import {
+  PATTERN_GRID_STROKE_WIDTH_PRESETS,
+  patternGridInchesToStrokeWidth,
+  patternGridStrokeWidthToInches,
+} from "../patternGrid";
 import { RadioSelection } from "../components/RadioSelection";
 import { ToolButton } from "../components/ToolButton";
 import { ColorPicker } from "../components/ColorPicker/ColorPicker";
@@ -158,7 +164,12 @@ import { getShortcutKey } from "../shortcut";
 
 import { register } from "./register";
 
-import type { AppClassProperties, AppState, Primitive } from "../types";
+import type {
+  AppClassProperties,
+  AppState,
+  Primitive,
+  UIAppState,
+} from "../types";
 
 const FONT_SIZE_RELATIVE_INCREASE_STEP = 0.1;
 
@@ -572,12 +583,142 @@ const getStrokeWidthForElement = (
   return getStrokeWidthByKey(element.type, strokeWidthKey);
 };
 
-export const actionChangeStrokeWidth = register<StrokeWidthKey>({
+// Either a thin/medium/bold preset key, or (pattern mode) a raw line thickness
+// entered in inches.
+type StrokeWidthActionValue = StrokeWidthKey | { customInches: number };
+
+const isCustomInchesValue = (
+  value: StrokeWidthActionValue,
+): value is { customInches: number } =>
+  typeof value === "object" && value !== null && "customInches" in value;
+
+const formatInchInput = (inches: number) =>
+  String(Math.round(inches * 10000) / 10000);
+
+// Fraction labels for the pattern-mode preset buttons.
+const STROKE_WIDTH_INCH_LABELS: Record<string, string> = {
+  "0.015625": '1/64"',
+  "0.03125": '1/32"',
+  "0.0625": '1/16"',
+};
+
+const PatternStrokeWidthPanel = ({
+  elements,
+  appState,
+  updateData,
+  app,
+}: {
+  elements: readonly ExcalidrawElement[];
+  appState: UIAppState;
+  updateData: (value: StrokeWidthActionValue) => void;
+  app: AppClassProperties;
+}) => {
+  const pixelsPerInch = appState.patternGridPixelsPerInch;
+
+  const currentStrokeWidthPx = getFormValue(
+    elements,
+    app,
+    (element) => element.strokeWidth,
+    (element) => element.hasOwnProperty("strokeWidth"),
+    (hasSelection) =>
+      hasSelection
+        ? null
+        : appState.currentItemPatternStrokeWidth ?? STROKE_WIDTH.medium,
+  );
+
+  const currentInches =
+    currentStrokeWidthPx == null
+      ? null
+      : patternGridStrokeWidthToInches(currentStrokeWidthPx, pixelsPerInch);
+
+  const activePreset =
+    currentInches == null
+      ? null
+      : PATTERN_GRID_STROKE_WIDTH_PRESETS.find(
+          (preset) => Math.abs(preset - currentInches) < 1e-4,
+        ) ?? null;
+
+  const [inchInput, setInchInput] = useState(
+    currentInches == null ? "" : formatInchInput(currentInches),
+  );
+
+  useEffect(() => {
+    setInchInput(currentInches == null ? "" : formatInchInput(currentInches));
+  }, [currentInches]);
+
+  const commitInches = () => {
+    const parsed = Number.parseFloat(inchInput);
+    if (Number.isFinite(parsed)) {
+      updateData({ customInches: parsed });
+    } else {
+      setInchInput(currentInches == null ? "" : formatInchInput(currentInches));
+    }
+  };
+
+  return (
+    <fieldset>
+      <legend>{t("labels.strokeWidth")}</legend>
+      <div className="buttonList">
+        <RadioSelection<number>
+          group="pattern-stroke-width"
+          options={PATTERN_GRID_STROKE_WIDTH_PRESETS.map((preset, index) => ({
+            value: preset,
+            text: STROKE_WIDTH_INCH_LABELS[String(preset)] ?? `${preset}"`,
+            icon: [
+              StrokeWidthBaseIcon,
+              StrokeWidthBoldIcon,
+              StrokeWidthExtraBoldIcon,
+            ][index],
+            testId: `patternStrokeWidth-${index}`,
+          }))}
+          value={activePreset}
+          onChange={(value) => updateData({ customInches: value })}
+        />
+      </div>
+      <label className="control-label" style={{ marginTop: ".5rem" }}>
+        {t("labels.strokeWidth")} (in)
+        <input
+          type="number"
+          min={0}
+          step={0.005}
+          value={inchInput}
+          data-testid="patternStrokeWidth-inches"
+          onChange={(event) => setInchInput(event.target.value)}
+          onBlur={commitInches}
+          onKeyDown={(event) => {
+            if (event.key === KEYS.ENTER) {
+              event.currentTarget.blur();
+            }
+          }}
+        />
+      </label>
+    </fieldset>
+  );
+};
+
+export const actionChangeStrokeWidth = register<StrokeWidthActionValue>({
   name: "changeStrokeWidth",
   label: "labels.strokeWidth",
   trackEvent: false,
   perform: (elements, appState, value) => {
     invariant(value, "actionChangeStrokeWidth: value must be defined");
+
+    // Pattern mode: a raw line thickness in inches, converted to scene pixels
+    // via the active grid scale and applied as-is.
+    if (isCustomInchesValue(value)) {
+      const strokeWidth = patternGridInchesToStrokeWidth(
+        value.customInches,
+        appState.patternGridPixelsPerInch,
+      );
+
+      return {
+        elements: changeProperty(elements, appState, (el) =>
+          newElementWith(el, { strokeWidth }),
+        ),
+        appState: { ...appState, currentItemPatternStrokeWidth: strokeWidth },
+        captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+      };
+    }
 
     return {
       elements: changeProperty(elements, appState, (el) =>
@@ -585,49 +726,62 @@ export const actionChangeStrokeWidth = register<StrokeWidthKey>({
           strokeWidth: getStrokeWidthForElement(el, value),
         }),
       ),
-      appState: { ...appState, currentItemStrokeWidthKey: value },
+      appState: {
+        ...appState,
+        currentItemStrokeWidthKey: value,
+        // clear any inch override so the preset takes effect for new elements
+        currentItemPatternStrokeWidth: null,
+      },
       captureUpdate: CaptureUpdateAction.IMMEDIATELY,
     };
   },
-  PanelComponent: ({ elements, appState, updateData, app, data }) => (
-    <fieldset>
-      <legend>{t("labels.strokeWidth")}</legend>
-      <div className="buttonList">
-        <RadioSelection<StrokeWidthKey>
-          group="stroke-width"
-          options={[
-            {
-              value: "thin",
-              text: t("labels.thin"),
-              icon: StrokeWidthBaseIcon,
-              testId: "strokeWidth-thin",
-            },
-            {
-              value: "medium",
-              text: t("labels.medium"),
-              icon: StrokeWidthBoldIcon,
-              testId: "strokeWidth-medium",
-            },
-            {
-              value: "bold",
-              text: t("labels.bold"),
-              icon: StrokeWidthExtraBoldIcon,
-              testId: "strokeWidth-bold",
-            },
-          ]}
-          value={getFormValue(
-            elements,
-            app,
-            getStrokeWidthKeyForElement,
-            (element) => element.hasOwnProperty("strokeWidth"),
-            (hasSelection) =>
-              hasSelection ? null : appState.currentItemStrokeWidthKey,
-          )}
-          onChange={(value) => updateData(value)}
-        />
-      </div>
-    </fieldset>
-  ),
+  PanelComponent: ({ elements, appState, updateData, app, data }) =>
+    appState.patternGridModeEnabled ? (
+      <PatternStrokeWidthPanel
+        elements={elements}
+        appState={appState}
+        updateData={updateData}
+        app={app}
+      />
+    ) : (
+      <fieldset>
+        <legend>{t("labels.strokeWidth")}</legend>
+        <div className="buttonList">
+          <RadioSelection<StrokeWidthKey>
+            group="stroke-width"
+            options={[
+              {
+                value: "thin",
+                text: t("labels.thin"),
+                icon: StrokeWidthBaseIcon,
+                testId: "strokeWidth-thin",
+              },
+              {
+                value: "medium",
+                text: t("labels.medium"),
+                icon: StrokeWidthBoldIcon,
+                testId: "strokeWidth-medium",
+              },
+              {
+                value: "bold",
+                text: t("labels.bold"),
+                icon: StrokeWidthExtraBoldIcon,
+                testId: "strokeWidth-bold",
+              },
+            ]}
+            value={getFormValue(
+              elements,
+              app,
+              getStrokeWidthKeyForElement,
+              (element) => element.hasOwnProperty("strokeWidth"),
+              (hasSelection) =>
+                hasSelection ? null : appState.currentItemStrokeWidthKey,
+            )}
+            onChange={(value) => updateData(value)}
+          />
+        </div>
+      </fieldset>
+    ),
 });
 
 export const actionChangeSloppiness = register<ExcalidrawElement["roughness"]>({

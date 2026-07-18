@@ -9775,6 +9775,11 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   private getCurrentItemStrokeWidth(elementType: ExcalidrawElement["type"]) {
+    // Pattern mode: an inch-based width overrides the thin/medium/bold preset.
+    // Applied as-is (no freedraw halving) so the drawn line matches the value.
+    if (this.state.currentItemPatternStrokeWidth != null) {
+      return this.state.currentItemPatternStrokeWidth;
+    }
     return getStrokeWidthByKey(
       elementType,
       this.state.currentItemStrokeWidthKey,

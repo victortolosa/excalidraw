@@ -412,6 +412,12 @@ export interface AppState {
   currentItemBackgroundColor: string;
   currentItemFillStyle: ExcalidrawElement["fillStyle"];
   currentItemStrokeWidthKey: StrokeWidthKey;
+  /**
+   * Pattern mode: a raw scene-pixel stroke width chosen via the inch-based
+   * control. When set it overrides currentItemStrokeWidthKey for new elements;
+   * null falls back to the preset key.
+   */
+  currentItemPatternStrokeWidth: number | null;
   currentItemStrokeStyle: ExcalidrawElement["strokeStyle"];
   currentItemRoughness: number;
   currentItemStrokeVariability: StrokeVariability;
