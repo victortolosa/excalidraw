@@ -1,7 +1,12 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { PATTERN_GRID_SUBDIVISIONS, getPatternGridSize } from "../patternGrid";
+import {
+  PATTERN_GRID_PIXELS_PER_INCH_PRESETS,
+  PATTERN_GRID_SUBDIVISIONS,
+  getNormalizedPatternGridPixelsPerInch,
+  getPatternGridSize,
+} from "../patternGrid";
 
 import { gridIcon } from "./icons";
 import { Island } from "./Island";
@@ -34,7 +39,30 @@ export const PatternGridWidget = ({
   setAppState,
 }: PatternGridWidgetProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [scaleInput, setScaleInput] = useState(
+    String(appState.patternGridPixelsPerInch),
+  );
   const minorGridSize = getPatternGridSize(appState);
+
+  // keep the custom input in sync when the scale changes elsewhere (presets, undo)
+  useEffect(() => {
+    setScaleInput(String(appState.patternGridPixelsPerInch));
+  }, [appState.patternGridPixelsPerInch]);
+
+  const setPatternGridPixelsPerInch = (value: number) => {
+    setAppState({
+      patternGridPixelsPerInch: getNormalizedPatternGridPixelsPerInch(value),
+    });
+  };
+
+  const commitScaleInput = () => {
+    const parsed = Number.parseFloat(scaleInput);
+    if (Number.isFinite(parsed)) {
+      setPatternGridPixelsPerInch(parsed);
+    } else {
+      setScaleInput(String(appState.patternGridPixelsPerInch));
+    }
+  };
 
   const setPatternGridModeEnabled = (enabled: boolean) => {
     setAppState((state) => ({
@@ -134,6 +162,45 @@ export const PatternGridWidget = ({
               }
             />
           </label>
+          <div className="PatternGridWidget__section">
+            <div className="PatternGridWidget__sectionLabel">Scale</div>
+            <div className="PatternGridWidget__segments PatternGridWidget__segments--four">
+              {PATTERN_GRID_PIXELS_PER_INCH_PRESETS.map((preset) => (
+                <button
+                  type="button"
+                  key={preset}
+                  aria-pressed={appState.patternGridPixelsPerInch === preset}
+                  className={clsx("PatternGridWidget__segment", {
+                    "PatternGridWidget__segment--active":
+                      appState.patternGridPixelsPerInch === preset,
+                  })}
+                  onClick={() => setPatternGridPixelsPerInch(preset)}
+                >
+                  {preset}
+                </button>
+              ))}
+            </div>
+            <label className="PatternGridWidget__field">
+              <span>Custom</span>
+              <span className="PatternGridWidget__fieldInput">
+                <input
+                  type="number"
+                  min={10}
+                  max={1000}
+                  step={1}
+                  value={scaleInput}
+                  onChange={(event) => setScaleInput(event.target.value)}
+                  onBlur={commitScaleInput}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.currentTarget.blur();
+                    }
+                  }}
+                />
+                <span className="PatternGridWidget__fieldSuffix">px / in</span>
+              </span>
+            </label>
+          </div>
           <div className="PatternGridWidget__section">
             <div className="PatternGridWidget__sectionLabel">Subdivision</div>
             <div className="PatternGridWidget__segments">
