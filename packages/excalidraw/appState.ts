@@ -17,6 +17,7 @@ import {
 
 import {
   DEFAULT_PATTERN_GRID_PIXELS_PER_INCH,
+  DEFAULT_PATTERN_GRID_SEAM_ALLOWANCE_INCHES,
   DEFAULT_PATTERN_GRID_SUBDIVISIONS,
 } from "./patternGrid";
 
@@ -83,6 +84,8 @@ export const getDefaultAppState = (): Omit<
     patternGridMeasurementsEnabled: true,
     patternGridMeasurementsSelectedOnly: true,
     patternGridEdgeLengthsEnabled: false,
+    patternGridSeamAllowanceEnabled: false,
+    patternGridSeamAllowanceInches: DEFAULT_PATTERN_GRID_SEAM_ALLOWANCE_INCHES,
     patternGridPixelsPerInch: DEFAULT_PATTERN_GRID_PIXELS_PER_INCH,
     patternGridSubdivisions: DEFAULT_PATTERN_GRID_SUBDIVISIONS,
     isBindingEnabled: true,
@@ -223,6 +226,12 @@ const APP_STATE_STORAGE_CONF = (<
     server: true,
   },
   patternGridEdgeLengthsEnabled: { browser: true, export: true, server: true },
+  patternGridSeamAllowanceEnabled: {
+    browser: true,
+    export: true,
+    server: true,
+  },
+  patternGridSeamAllowanceInches: { browser: true, export: true, server: true },
   patternGridPixelsPerInch: { browser: true, export: true, server: true },
   patternGridSubdivisions: { browser: true, export: true, server: true },
   height: { browser: false, export: false, server: false },

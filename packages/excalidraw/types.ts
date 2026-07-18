@@ -211,6 +211,8 @@ export type StaticCanvasAppState = Readonly<
     patternGridMeasurementsEnabled: AppState["patternGridMeasurementsEnabled"];
     patternGridMeasurementsSelectedOnly: AppState["patternGridMeasurementsSelectedOnly"];
     patternGridEdgeLengthsEnabled: AppState["patternGridEdgeLengthsEnabled"];
+    patternGridSeamAllowanceEnabled: AppState["patternGridSeamAllowanceEnabled"];
+    patternGridSeamAllowanceInches: AppState["patternGridSeamAllowanceInches"];
     patternGridPixelsPerInch: AppState["patternGridPixelsPerInch"];
     patternGridSubdivisions: AppState["patternGridSubdivisions"];
     frameRendering: AppState["frameRendering"];
@@ -484,6 +486,8 @@ export interface AppState {
   patternGridMeasurementsEnabled: boolean;
   patternGridMeasurementsSelectedOnly: boolean;
   patternGridEdgeLengthsEnabled: boolean;
+  patternGridSeamAllowanceEnabled: boolean;
+  patternGridSeamAllowanceInches: number;
   patternGridPixelsPerInch: number;
   patternGridSubdivisions: number;
   viewModeEnabled: boolean;

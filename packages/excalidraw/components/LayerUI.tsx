@@ -637,6 +637,8 @@ const LayerUI = ({
                 <PatternGridWidget
                   appState={appState}
                   setAppState={setAppState}
+                  elements={elements}
+                  elementsMap={app.scene.getNonDeletedElementsMap()}
                 />
               )}
             {(appState.toast || appState.scrolledOutside) && (

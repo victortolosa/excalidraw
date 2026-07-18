@@ -84,6 +84,8 @@ exports[`exportToSvg > with default arguments 1`] = `
   "patternGridMeasurementsSelectedOnly": true,
   "patternGridModeEnabled": false,
   "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": 0.5,
   "patternGridSnapEnabled": true,
   "patternGridSubdivisions": 4,
   "penDetected": false,

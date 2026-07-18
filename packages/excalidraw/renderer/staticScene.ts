@@ -36,6 +36,8 @@ import type {
   NonDeletedExcalidrawElement,
 } from "@excalidraw/element/types";
 
+import type { GlobalPoint } from "@excalidraw/math";
+
 import {
   EXTERNAL_LINK_IMG,
   ELEMENT_LINK_IMG,
@@ -44,7 +46,14 @@ import {
 
 import { getPatternGridSize } from "../patternGrid";
 
+import {
+  getSeamAllowanceGeometry,
+  getSeamAllowanceMeasurements,
+} from "../seamAllowance";
+
 import { bootstrapCanvas, getNormalizedCanvasDimensions } from "./helpers";
+
+import type { SeamAllowanceGeometry } from "../seamAllowance";
 
 import type {
   StaticCanvasRenderConfig,
@@ -64,6 +73,24 @@ const GridLineColor = {
     regular: applyDarkModeFilter("#e5e5e5"),
     label: applyDarkModeFilter("#5f6368"),
     labelBackground: "rgba(35, 35, 35, 0.82)",
+  },
+} as const;
+
+// Seam-allowance band (between the finished/stitch line and the cut line) plus
+// the dashed cut-line outline. `approximateBand` is the fainter fill used when
+// we fall back to a bounding-box band.
+const SeamAllowanceColor = {
+  [THEME.LIGHT]: {
+    band: "rgba(25, 113, 194, 0.12)",
+    approximateBand: "rgba(95, 99, 104, 0.10)",
+    cut: "#1971c2",
+    approximateCut: "#5f6368",
+  },
+  [THEME.DARK]: {
+    band: "rgba(102, 170, 255, 0.14)",
+    approximateBand: "rgba(200, 200, 200, 0.10)",
+    cut: applyDarkModeFilter("#1971c2"),
+    approximateCut: applyDarkModeFilter("#5f6368"),
   },
 } as const;
 
@@ -358,6 +385,135 @@ const renderEdgeLengthLabels = (
   }
 };
 
+const isSeamAllowanceEnabled = (appState: StaticCanvasAppState) =>
+  appState.patternGridModeEnabled &&
+  appState.patternGridMeasurementsEnabled &&
+  appState.patternGridSeamAllowanceEnabled &&
+  appState.patternGridSeamAllowanceInches > 0;
+
+const getSeamAllowancePx = (appState: StaticCanvasAppState) =>
+  appState.patternGridSeamAllowanceInches * appState.patternGridPixelsPerInch;
+
+const traceRing = (
+  context: CanvasRenderingContext2D,
+  ring: readonly GlobalPoint[],
+  scrollX: number,
+  scrollY: number,
+) => {
+  ring.forEach((point, index) => {
+    const x = point[0] + scrollX;
+    const y = point[1] + scrollY;
+    if (index === 0) {
+      context.moveTo(x, y);
+    } else {
+      context.lineTo(x, y);
+    }
+  });
+  context.closePath();
+};
+
+// Adds the seam-allowance outline(s) to the current path. `which` = "both"
+// traces the finished + cut rings (for the even-odd band fill); "cut" traces
+// only the cut ring (for the dashed cut line).
+const traceSeamPaths = (
+  context: CanvasRenderingContext2D,
+  geometry: SeamAllowanceGeometry,
+  scrollX: number,
+  scrollY: number,
+  which: "both" | "cut",
+) => {
+  if (geometry.type === "ellipse") {
+    const { cx, cy, rx, ry, angle, allowance } = geometry;
+    if (which === "both") {
+      context.ellipse(
+        cx + scrollX,
+        cy + scrollY,
+        rx,
+        ry,
+        angle,
+        0,
+        Math.PI * 2,
+      );
+    }
+    context.ellipse(
+      cx + scrollX,
+      cy + scrollY,
+      rx + allowance,
+      ry + allowance,
+      angle,
+      0,
+      Math.PI * 2,
+    );
+    return;
+  }
+
+  if (which === "both") {
+    traceRing(context, geometry.finished, scrollX, scrollY);
+  }
+  traceRing(context, geometry.cut, scrollX, scrollY);
+};
+
+// Seam-allowance band + dashed cut line for every eligible visible piece.
+// Drawn beneath the elements so each piece's own stroke reads as the finished
+// (stitch) line. Shown for all pieces regardless of selection.
+const renderSeamAllowance = (
+  context: CanvasRenderingContext2D,
+  visibleElements: readonly NonDeletedExcalidrawElement[],
+  elementsMap: ElementsMap,
+  appState: StaticCanvasAppState,
+  theme: StaticCanvasRenderConfig["theme"],
+) => {
+  if (!isSeamAllowanceEnabled(appState)) {
+    return;
+  }
+
+  const allowance = getSeamAllowancePx(appState);
+  const colors = SeamAllowanceColor[theme];
+
+  context.save();
+
+  for (const element of visibleElements) {
+    const geometry = getSeamAllowanceGeometry(element, elementsMap, allowance);
+    if (!geometry) {
+      continue;
+    }
+
+    const approximate = geometry.type === "rings" && geometry.approximate;
+
+    // band fill (even-odd between finished + cut outlines)
+    context.beginPath();
+    traceSeamPaths(
+      context,
+      geometry,
+      appState.scrollX,
+      appState.scrollY,
+      "both",
+    );
+    context.fillStyle = approximate ? colors.approximateBand : colors.band;
+    context.fill("evenodd");
+
+    // dashed cut line
+    context.beginPath();
+    traceSeamPaths(
+      context,
+      geometry,
+      appState.scrollX,
+      appState.scrollY,
+      "cut",
+    );
+    context.strokeStyle = approximate ? colors.approximateCut : colors.cut;
+    context.lineWidth = 1 / appState.zoom.value;
+    context.setLineDash(
+      approximate
+        ? [2 / appState.zoom.value, 3 / appState.zoom.value]
+        : [6 / appState.zoom.value, 4 / appState.zoom.value],
+    );
+    context.stroke();
+  }
+
+  context.restore();
+};
+
 const renderMeasurementLabels = (
   context: CanvasRenderingContext2D,
   visibleElements: readonly NonDeletedExcalidrawElement[],
@@ -431,6 +587,45 @@ const renderMeasurementLabels = (
     // single total-length label.
     if (appState.patternGridEdgeLengthsEnabled && isLineElement(element)) {
       renderEdgeLengthLabels(context, element, elementsMap, appState, theme);
+    }
+
+    // Seam allowance on: replace the standard size label with finished vs. cut
+    // dimensions for eligible pieces.
+    if (isSeamAllowanceEnabled(appState)) {
+      const geometry = getSeamAllowanceGeometry(
+        element,
+        elementsMap,
+        getSeamAllowancePx(appState),
+      );
+
+      if (geometry) {
+        const { finished, cut } = getSeamAllowanceMeasurements(geometry);
+        const ppi = appState.patternGridPixelsPerInch;
+        const [x1, y1, x2, y2] = getElementAbsoluteCoords(element, elementsMap);
+
+        drawMeasurementLabel(
+          context,
+          [
+            `Finished ${formatInches(finished.width, ppi)} × ${formatInches(
+              finished.height,
+              ppi,
+            )}`,
+            `Cut ${formatInches(cut.width, ppi)} × ${formatInches(
+              cut.height,
+              ppi,
+            )}`,
+          ],
+          (x1 + x2) / 2 + appState.scrollX,
+          (y1 + y2) / 2 + appState.scrollY,
+          appState.zoom,
+          theme,
+        );
+        continue;
+      }
+    }
+
+    // Per-edge labels already drawn above; skip the single total-length label.
+    if (appState.patternGridEdgeLengthsEnabled && isLineElement(element)) {
       continue;
     }
 
@@ -742,6 +937,16 @@ const _renderStaticScene = ({
       );
     }
   }
+
+  // Seam-allowance band + cut line render beneath the pieces (drawn shape = the
+  // finished/stitch line), so this goes after the grid but before elements.
+  renderSeamAllowance(
+    context,
+    visibleElements,
+    elementsMap,
+    appState,
+    renderConfig.theme,
+  );
 
   const groupsToBeAddedToFrame = new Set<string>();
 

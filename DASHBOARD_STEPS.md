@@ -210,13 +210,22 @@ Already landed:
 - [x] **6.3 Measurements + per-edge lengths.** Element W/H/perimeter labels, plus a
   per-edge length label on each segment of line/polygon pieces
   (`patternGridEdgeLengthsEnabled`).
+- [x] **6.4 + 6.5 Seam allowance.** Config `patternGridSeamAllowanceEnabled` +
+  `patternGridSeamAllowanceInches` (0.5 default; 3/8·1/2·5/8 chips + custom). Geometry
+  lives in `packages/excalidraw/seamAllowance.ts` (unit-tested in `seamAllowance.test.ts`):
+  exact grow for rect/diamond/ellipse, true miter-join contour offset for closed
+  line/polygon pieces (bevel past a miter limit), bounding-box-band fallback when the
+  offset self-intersects. Rendered in `staticScene.ts` as a translucent band + dashed cut
+  line beneath the pieces, with `Finished W×H` / `Cut W×H` on-canvas labels and a widget
+  selection summary. Notes: the band/cut line draw for **all** eligible visible pieces
+  (a cut line is a persistent property), while the finished/cut text labels follow the
+  Measurements "Always on" / selected-only setting and replace the standard size label.
 
-Next — **seam allowance visualization** (print-bleed analogy: the drawn shape is the
+Seam allowance visualization — done (print-bleed analogy: the drawn shape is the
 finished/stitch line, the offset outline is the cut line, the band between is the
-allowance). Build in two commits; the geometry is the riskiest part we've added, so land
-it first and eyeball it before wiring the calc.
+allowance).
 
-- [ ] **6.4 Seam allowance — geometry + band (commit 1).** New config
+- [x] **6.4 Seam allowance — geometry + band (commit 1).** New config
   `patternGridSeamAllowanceEnabled` (bool, default off) + `patternGridSeamAllowanceInches`
   (number, default `0.5`; widget offers 3/8 · 1/2 · 5/8 preset chips + a custom input,
   disabled unless Measurements is on). Gated by
@@ -237,7 +246,7 @@ it first and eyeball it before wiring the calc.
   *Done when:* enabling the toggle draws a dashed cut line offset by the set allowance
   around a rectangle and a triangle; a shape shrunk below the allowance degrades to the
   bbox band instead of drawing garbage; nothing renders when pattern-grid mode is off.
-- [ ] **6.5 Seam allowance — calc (commit 2).** Compute **finished** size (shape bbox W×H
+- [x] **6.5 Seam allowance — calc (commit 2).** Compute **finished** size (shape bbox W×H
   + area via shoelace) and **with-allowance** size (offset-ring bbox W×H + area). Surface
   both: on-canvas `Finished W×H` / `Cut W×H` label lines near each shape (reuse
   `drawMeasurementLabel`), **and** a selection summary line in the widget

@@ -1,12 +1,25 @@
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 
+import type {
+  ElementsMap,
+  NonDeletedExcalidrawElement,
+} from "@excalidraw/element/types";
+
 import {
   PATTERN_GRID_PIXELS_PER_INCH_PRESETS,
+  PATTERN_GRID_SEAM_ALLOWANCE_PRESETS,
   PATTERN_GRID_SUBDIVISIONS,
+  MAX_PATTERN_GRID_SEAM_ALLOWANCE_INCHES,
+  MIN_PATTERN_GRID_SEAM_ALLOWANCE_INCHES,
   getNormalizedPatternGridPixelsPerInch,
+  getNormalizedPatternGridSeamAllowanceInches,
   getPatternGridSize,
 } from "../patternGrid";
+import {
+  getSeamAllowanceGeometry,
+  getSeamAllowanceMeasurements,
+} from "../seamAllowance";
 
 import { gridIcon } from "./icons";
 import { Island } from "./Island";
@@ -24,24 +37,50 @@ type PatternGridWidgetProps = {
     | "patternGridMeasurementsEnabled"
     | "patternGridMeasurementsSelectedOnly"
     | "patternGridEdgeLengthsEnabled"
+    | "patternGridSeamAllowanceEnabled"
+    | "patternGridSeamAllowanceInches"
     | "patternGridPixelsPerInch"
     | "patternGridSubdivisions"
+    | "selectedElementIds"
     | "objectsSnapModeEnabled"
   >;
   setAppState: React.Component<any, AppState>["setState"];
+  elements: readonly NonDeletedExcalidrawElement[];
+  elementsMap: ElementsMap;
 };
 
 const getSubdivisionLabel = (subdivision: number) => {
   return subdivision === 1 ? `1"` : `1/${subdivision}"`;
 };
 
+const SEAM_ALLOWANCE_FRACTION_LABELS: Record<string, string> = {
+  "0.375": "3/8",
+  "0.5": "1/2",
+  "0.625": "5/8",
+};
+
+const getSeamAllowanceLabel = (value: number) =>
+  `${SEAM_ALLOWANCE_FRACTION_LABELS[String(value)] ?? value}"`;
+
+const formatWidgetInches = (value: number, pixelsPerInch: number) => {
+  const inches = value / pixelsPerInch;
+  const rounded = Math.round(inches * 10) / 10;
+
+  return Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
+};
+
 export const PatternGridWidget = ({
   appState,
   setAppState,
+  elements,
+  elementsMap,
 }: PatternGridWidgetProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [scaleInput, setScaleInput] = useState(
     String(appState.patternGridPixelsPerInch),
+  );
+  const [seamAllowanceInput, setSeamAllowanceInput] = useState(
+    String(appState.patternGridSeamAllowanceInches),
   );
   const minorGridSize = getPatternGridSize(appState);
 
@@ -49,6 +88,10 @@ export const PatternGridWidget = ({
   useEffect(() => {
     setScaleInput(String(appState.patternGridPixelsPerInch));
   }, [appState.patternGridPixelsPerInch]);
+
+  useEffect(() => {
+    setSeamAllowanceInput(String(appState.patternGridSeamAllowanceInches));
+  }, [appState.patternGridSeamAllowanceInches]);
 
   const setPatternGridPixelsPerInch = (value: number) => {
     setAppState({
@@ -64,6 +107,61 @@ export const PatternGridWidget = ({
       setScaleInput(String(appState.patternGridPixelsPerInch));
     }
   };
+
+  const setPatternGridSeamAllowanceInches = (value: number) => {
+    setAppState({
+      patternGridSeamAllowanceInches:
+        getNormalizedPatternGridSeamAllowanceInches(value),
+    });
+  };
+
+  const commitSeamAllowanceInput = () => {
+    const parsed = Number.parseFloat(seamAllowanceInput);
+    if (Number.isFinite(parsed)) {
+      setPatternGridSeamAllowanceInches(parsed);
+    } else {
+      setSeamAllowanceInput(String(appState.patternGridSeamAllowanceInches));
+    }
+  };
+
+  const seamAllowanceDisabled = !appState.patternGridMeasurementsEnabled;
+
+  // Selection summary: finished vs. cut size for a single selected piece.
+  let seamAllowanceSummary: string | null = null;
+  if (
+    appState.patternGridSeamAllowanceEnabled &&
+    appState.patternGridMeasurementsEnabled &&
+    appState.patternGridSeamAllowanceInches > 0
+  ) {
+    const selected = elements.filter(
+      (element) => appState.selectedElementIds[element.id],
+    );
+
+    if (selected.length === 1) {
+      const geometry = getSeamAllowanceGeometry(
+        selected[0],
+        elementsMap,
+        appState.patternGridSeamAllowanceInches *
+          appState.patternGridPixelsPerInch,
+      );
+
+      if (geometry) {
+        const { finished, cut } = getSeamAllowanceMeasurements(geometry);
+        const ppi = appState.patternGridPixelsPerInch;
+
+        seamAllowanceSummary = `Finished ${formatWidgetInches(
+          finished.width,
+          ppi,
+        )}×${formatWidgetInches(
+          finished.height,
+          ppi,
+        )}" · Cut ${formatWidgetInches(cut.width, ppi)}×${formatWidgetInches(
+          cut.height,
+          ppi,
+        )}"`;
+      }
+    }
+  }
 
   const setPatternGridModeEnabled = (enabled: boolean) => {
     setAppState((state) => ({
@@ -177,6 +275,72 @@ export const PatternGridWidget = ({
               }
             />
           </label>
+          <label className="PatternGridWidget__toggle">
+            <span>Seam allowance</span>
+            <input
+              type="checkbox"
+              checked={appState.patternGridSeamAllowanceEnabled}
+              disabled={seamAllowanceDisabled}
+              onChange={() =>
+                setAppState({
+                  patternGridSeamAllowanceEnabled:
+                    !appState.patternGridSeamAllowanceEnabled,
+                })
+              }
+            />
+          </label>
+          {appState.patternGridSeamAllowanceEnabled && (
+            <div className="PatternGridWidget__section">
+              <div className="PatternGridWidget__sectionLabel">Allowance</div>
+              <div className="PatternGridWidget__segments">
+                {PATTERN_GRID_SEAM_ALLOWANCE_PRESETS.map((preset) => (
+                  <button
+                    type="button"
+                    key={preset}
+                    disabled={seamAllowanceDisabled}
+                    aria-pressed={
+                      appState.patternGridSeamAllowanceInches === preset
+                    }
+                    className={clsx("PatternGridWidget__segment", {
+                      "PatternGridWidget__segment--active":
+                        appState.patternGridSeamAllowanceInches === preset,
+                    })}
+                    onClick={() => setPatternGridSeamAllowanceInches(preset)}
+                  >
+                    {getSeamAllowanceLabel(preset)}
+                  </button>
+                ))}
+              </div>
+              <label className="PatternGridWidget__field">
+                <span>Custom</span>
+                <span className="PatternGridWidget__fieldInput">
+                  <input
+                    type="number"
+                    min={MIN_PATTERN_GRID_SEAM_ALLOWANCE_INCHES}
+                    max={MAX_PATTERN_GRID_SEAM_ALLOWANCE_INCHES}
+                    step={0.125}
+                    disabled={seamAllowanceDisabled}
+                    value={seamAllowanceInput}
+                    onChange={(event) =>
+                      setSeamAllowanceInput(event.target.value)
+                    }
+                    onBlur={commitSeamAllowanceInput}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.currentTarget.blur();
+                      }
+                    }}
+                  />
+                  <span className="PatternGridWidget__fieldSuffix">in</span>
+                </span>
+              </label>
+              {seamAllowanceSummary && (
+                <div className="PatternGridWidget__meta">
+                  {seamAllowanceSummary}
+                </div>
+              )}
+            </div>
+          )}
           <div className="PatternGridWidget__section">
             <div className="PatternGridWidget__sectionLabel">Scale</div>
             <div className="PatternGridWidget__segments PatternGridWidget__segments--four">

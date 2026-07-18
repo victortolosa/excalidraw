@@ -89,6 +89,7 @@ import {
 } from "../scene";
 import {
   getNormalizedPatternGridPixelsPerInch,
+  getNormalizedPatternGridSeamAllowanceInches,
   getNormalizedPatternGridSubdivisions,
 } from "../patternGrid";
 
@@ -1157,6 +1158,9 @@ export const restoreAppState = (
     ),
     patternGridSubdivisions: getNormalizedPatternGridSubdivisions(
       nextAppState.patternGridSubdivisions,
+    ),
+    patternGridSeamAllowanceInches: getNormalizedPatternGridSeamAllowanceInches(
+      nextAppState.patternGridSeamAllowanceInches,
     ),
     editingFrame: null,
   };
