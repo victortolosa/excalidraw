@@ -25,7 +25,8 @@ exports[`given element A and group of elements B and given both are selected whe
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -77,6 +78,16 @@ exports[`given element A and group of elements B and given both are selected whe
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -128,7 +139,7 @@ exports[`given element A and group of elements B and given both are selected whe
 
 exports[`given element A and group of elements B and given both are selected when user clicks on B, on pointer up only elements from B should be selected > [end of test] number of elements 1`] = `0`;
 
-exports[`given element A and group of elements B and given both are selected when user clicks on B, on pointer up only elements from B should be selected > [end of test] number of renders 1`] = `18`;
+exports[`given element A and group of elements B and given both are selected when user clicks on B, on pointer up only elements from B should be selected > [end of test] number of renders 1`] = `19`;
 
 exports[`given element A and group of elements B and given both are selected when user clicks on B, on pointer up only elements from B should be selected > [end of test] redo stack 1`] = `[]`;
 
@@ -165,7 +176,7 @@ exports[`given element A and group of elements B and given both are selected whe
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -219,7 +230,7 @@ exports[`given element A and group of elements B and given both are selected whe
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -273,7 +284,7 @@ exports[`given element A and group of elements B and given both are selected whe
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -453,7 +464,8 @@ exports[`given element A and group of elements B and given both are selected whe
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -505,6 +517,16 @@ exports[`given element A and group of elements B and given both are selected whe
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -558,7 +580,7 @@ exports[`given element A and group of elements B and given both are selected whe
 
 exports[`given element A and group of elements B and given both are selected when user shift-clicks on B, on pointer up only element A should be selected > [end of test] number of elements 1`] = `0`;
 
-exports[`given element A and group of elements B and given both are selected when user shift-clicks on B, on pointer up only element A should be selected > [end of test] number of renders 1`] = `16`;
+exports[`given element A and group of elements B and given both are selected when user shift-clicks on B, on pointer up only element A should be selected > [end of test] number of renders 1`] = `17`;
 
 exports[`given element A and group of elements B and given both are selected when user shift-clicks on B, on pointer up only element A should be selected > [end of test] redo stack 1`] = `[]`;
 
@@ -595,7 +617,7 @@ exports[`given element A and group of elements B and given both are selected whe
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -649,7 +671,7 @@ exports[`given element A and group of elements B and given both are selected whe
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -703,7 +725,7 @@ exports[`given element A and group of elements B and given both are selected whe
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -871,7 +893,8 @@ exports[`regression tests > Cmd/Ctrl-click exclusively select element under poin
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -923,6 +946,16 @@ exports[`regression tests > Cmd/Ctrl-click exclusively select element under poin
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -967,7 +1000,7 @@ exports[`regression tests > Cmd/Ctrl-click exclusively select element under poin
 
 exports[`regression tests > Cmd/Ctrl-click exclusively select element under pointer > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > Cmd/Ctrl-click exclusively select element under pointer > [end of test] number of renders 1`] = `26`;
+exports[`regression tests > Cmd/Ctrl-click exclusively select element under pointer > [end of test] number of renders 1`] = `29`;
 
 exports[`regression tests > Cmd/Ctrl-click exclusively select element under pointer > [end of test] redo stack 1`] = `[]`;
 
@@ -1004,7 +1037,7 @@ exports[`regression tests > Cmd/Ctrl-click exclusively select element under poin
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -1058,7 +1091,7 @@ exports[`regression tests > Cmd/Ctrl-click exclusively select element under poin
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -1227,7 +1260,7 @@ exports[`regression tests > Cmd/Ctrl-click exclusively select element under poin
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -1439,7 +1472,8 @@ exports[`regression tests > Drags selected element when hitting only bounding bo
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -1491,6 +1525,16 @@ exports[`regression tests > Drags selected element when hitting only bounding bo
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -1535,7 +1579,7 @@ exports[`regression tests > Drags selected element when hitting only bounding bo
 
 exports[`regression tests > Drags selected element when hitting only bounding box and keeps element selected > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > Drags selected element when hitting only bounding box and keeps element selected > [end of test] number of renders 1`] = `10`;
+exports[`regression tests > Drags selected element when hitting only bounding box and keeps element selected > [end of test] number of renders 1`] = `11`;
 
 exports[`regression tests > Drags selected element when hitting only bounding box and keeps element selected > [end of test] redo stack 1`] = `[]`;
 
@@ -1572,7 +1616,7 @@ exports[`regression tests > Drags selected element when hitting only bounding bo
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -1648,7 +1692,8 @@ exports[`regression tests > adjusts z order when grouping > [end of test] appSta
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -1700,6 +1745,16 @@ exports[`regression tests > adjusts z order when grouping > [end of test] appSta
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -1749,7 +1804,7 @@ exports[`regression tests > adjusts z order when grouping > [end of test] appSta
 
 exports[`regression tests > adjusts z order when grouping > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > adjusts z order when grouping > [end of test] number of renders 1`] = `15`;
+exports[`regression tests > adjusts z order when grouping > [end of test] number of renders 1`] = `16`;
 
 exports[`regression tests > adjusts z order when grouping > [end of test] redo stack 1`] = `[]`;
 
@@ -1786,7 +1841,7 @@ exports[`regression tests > adjusts z order when grouping > [end of test] undo s
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -1840,7 +1895,7 @@ exports[`regression tests > adjusts z order when grouping > [end of test] undo s
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -1894,7 +1949,7 @@ exports[`regression tests > adjusts z order when grouping > [end of test] undo s
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -2034,7 +2089,8 @@ exports[`regression tests > alt-drag duplicates an element > [end of test] appSt
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -2086,6 +2142,16 @@ exports[`regression tests > alt-drag duplicates an element > [end of test] appSt
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -2132,7 +2198,7 @@ exports[`regression tests > alt-drag duplicates an element > [end of test] appSt
 
 exports[`regression tests > alt-drag duplicates an element > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > alt-drag duplicates an element > [end of test] number of renders 1`] = `8`;
+exports[`regression tests > alt-drag duplicates an element > [end of test] number of renders 1`] = `9`;
 
 exports[`regression tests > alt-drag duplicates an element > [end of test] redo stack 1`] = `[]`;
 
@@ -2169,7 +2235,7 @@ exports[`regression tests > alt-drag duplicates an element > [end of test] undo 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -2223,7 +2289,7 @@ exports[`regression tests > alt-drag duplicates an element > [end of test] undo 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -2281,7 +2347,8 @@ exports[`regression tests > arrow keys > [end of test] appState 1`] = `
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -2333,6 +2400,16 @@ exports[`regression tests > arrow keys > [end of test] appState 1`] = `
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -2377,7 +2454,7 @@ exports[`regression tests > arrow keys > [end of test] appState 1`] = `
 
 exports[`regression tests > arrow keys > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > arrow keys > [end of test] number of renders 1`] = `12`;
+exports[`regression tests > arrow keys > [end of test] number of renders 1`] = `13`;
 
 exports[`regression tests > arrow keys > [end of test] redo stack 1`] = `[]`;
 
@@ -2414,7 +2491,7 @@ exports[`regression tests > arrow keys > [end of test] undo stack 1`] = `
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -2463,7 +2540,8 @@ exports[`regression tests > can drag element that covers another element, while 
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -2515,6 +2593,16 @@ exports[`regression tests > can drag element that covers another element, while 
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -2561,7 +2649,7 @@ exports[`regression tests > can drag element that covers another element, while 
 
 exports[`regression tests > can drag element that covers another element, while another elem is selected > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > can drag element that covers another element, while another elem is selected > [end of test] number of renders 1`] = `15`;
+exports[`regression tests > can drag element that covers another element, while another elem is selected > [end of test] number of renders 1`] = `16`;
 
 exports[`regression tests > can drag element that covers another element, while another elem is selected > [end of test] redo stack 1`] = `[]`;
 
@@ -2598,7 +2686,7 @@ exports[`regression tests > can drag element that covers another element, while 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -2652,7 +2740,7 @@ exports[`regression tests > can drag element that covers another element, while 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -2706,7 +2794,7 @@ exports[`regression tests > can drag element that covers another element, while 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -2790,7 +2878,8 @@ exports[`regression tests > change the properties of a shape > [end of test] app
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1971c2",
@@ -2842,6 +2931,16 @@ exports[`regression tests > change the properties of a shape > [end of test] app
   "openPopup": "elementStroke",
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -2886,7 +2985,7 @@ exports[`regression tests > change the properties of a shape > [end of test] app
 
 exports[`regression tests > change the properties of a shape > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > change the properties of a shape > [end of test] number of renders 1`] = `9`;
+exports[`regression tests > change the properties of a shape > [end of test] number of renders 1`] = `10`;
 
 exports[`regression tests > change the properties of a shape > [end of test] redo stack 1`] = `[]`;
 
@@ -2923,7 +3022,7 @@ exports[`regression tests > change the properties of a shape > [end of test] und
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -3047,7 +3146,8 @@ exports[`regression tests > click on an element and drag it > [dragged] appState
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -3099,6 +3199,16 @@ exports[`regression tests > click on an element and drag it > [dragged] appState
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -3159,7 +3269,7 @@ exports[`regression tests > click on an element and drag it > [dragged] element 
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -3177,7 +3287,7 @@ exports[`regression tests > click on an element and drag it > [dragged] element 
 
 exports[`regression tests > click on an element and drag it > [dragged] number of elements 1`] = `1`;
 
-exports[`regression tests > click on an element and drag it > [dragged] number of renders 1`] = `8`;
+exports[`regression tests > click on an element and drag it > [dragged] number of renders 1`] = `9`;
 
 exports[`regression tests > click on an element and drag it > [dragged] redo stack 1`] = `[]`;
 
@@ -3214,7 +3324,7 @@ exports[`regression tests > click on an element and drag it > [dragged] undo sta
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -3290,7 +3400,8 @@ exports[`regression tests > click on an element and drag it > [end of test] appS
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -3342,6 +3453,16 @@ exports[`regression tests > click on an element and drag it > [end of test] appS
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -3388,7 +3509,7 @@ exports[`regression tests > click on an element and drag it > [end of test] appS
 
 exports[`regression tests > click on an element and drag it > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > click on an element and drag it > [end of test] number of renders 1`] = `10`;
+exports[`regression tests > click on an element and drag it > [end of test] number of renders 1`] = `11`;
 
 exports[`regression tests > click on an element and drag it > [end of test] redo stack 1`] = `[]`;
 
@@ -3425,7 +3546,7 @@ exports[`regression tests > click on an element and drag it > [end of test] undo
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -3528,7 +3649,8 @@ exports[`regression tests > click to select a shape > [end of test] appState 1`]
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -3580,6 +3702,16 @@ exports[`regression tests > click to select a shape > [end of test] appState 1`]
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -3626,7 +3758,7 @@ exports[`regression tests > click to select a shape > [end of test] appState 1`]
 
 exports[`regression tests > click to select a shape > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > click to select a shape > [end of test] number of renders 1`] = `10`;
+exports[`regression tests > click to select a shape > [end of test] number of renders 1`] = `11`;
 
 exports[`regression tests > click to select a shape > [end of test] redo stack 1`] = `[]`;
 
@@ -3663,7 +3795,7 @@ exports[`regression tests > click to select a shape > [end of test] undo stack 1
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -3717,7 +3849,7 @@ exports[`regression tests > click to select a shape > [end of test] undo stack 1
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -3788,7 +3920,8 @@ exports[`regression tests > click-drag to select a group > [end of test] appStat
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -3840,6 +3973,16 @@ exports[`regression tests > click-drag to select a group > [end of test] appStat
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -3887,7 +4030,7 @@ exports[`regression tests > click-drag to select a group > [end of test] appStat
 
 exports[`regression tests > click-drag to select a group > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > click-drag to select a group > [end of test] number of renders 1`] = `14`;
+exports[`regression tests > click-drag to select a group > [end of test] number of renders 1`] = `16`;
 
 exports[`regression tests > click-drag to select a group > [end of test] redo stack 1`] = `[]`;
 
@@ -3924,7 +4067,7 @@ exports[`regression tests > click-drag to select a group > [end of test] undo st
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -3978,7 +4121,7 @@ exports[`regression tests > click-drag to select a group > [end of test] undo st
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -4032,7 +4175,7 @@ exports[`regression tests > click-drag to select a group > [end of test] undo st
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -4104,7 +4247,8 @@ exports[`regression tests > deleting last but one element in editing group shoul
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -4156,6 +4300,16 @@ exports[`regression tests > deleting last but one element in editing group shoul
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -4202,7 +4356,7 @@ exports[`regression tests > deleting last but one element in editing group shoul
 
 exports[`regression tests > deleting last but one element in editing group should unselect the group > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > deleting last but one element in editing group should unselect the group > [end of test] number of renders 1`] = `17`;
+exports[`regression tests > deleting last but one element in editing group should unselect the group > [end of test] number of renders 1`] = `18`;
 
 exports[`regression tests > deleting last but one element in editing group should unselect the group > [end of test] redo stack 1`] = `[]`;
 
@@ -4239,7 +4393,7 @@ exports[`regression tests > deleting last but one element in editing group shoul
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -4293,7 +4447,7 @@ exports[`regression tests > deleting last but one element in editing group shoul
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -4542,7 +4696,8 @@ exports[`regression tests > deselects group of selected elements on pointer down
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -4594,6 +4749,16 @@ exports[`regression tests > deselects group of selected elements on pointer down
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -4629,7 +4794,7 @@ exports[`regression tests > deselects group of selected elements on pointer down
     "link": null,
     "locked": false,
     "opacity": 100,
-    "roughness": 1,
+    "roughness": 0,
     "roundness": null,
     "seed": 493213705,
     "strokeColor": "#1e1e1e",
@@ -4667,7 +4832,7 @@ exports[`regression tests > deselects group of selected elements on pointer down
 
 exports[`regression tests > deselects group of selected elements on pointer down when pointer doesn't hit any element > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > deselects group of selected elements on pointer down when pointer doesn't hit any element > [end of test] number of renders 1`] = `11`;
+exports[`regression tests > deselects group of selected elements on pointer down when pointer doesn't hit any element > [end of test] number of renders 1`] = `12`;
 
 exports[`regression tests > deselects group of selected elements on pointer down when pointer doesn't hit any element > [end of test] redo stack 1`] = `[]`;
 
@@ -4704,7 +4869,7 @@ exports[`regression tests > deselects group of selected elements on pointer down
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -4758,7 +4923,7 @@ exports[`regression tests > deselects group of selected elements on pointer down
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -4827,7 +4992,8 @@ exports[`regression tests > deselects group of selected elements on pointer up w
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -4879,6 +5045,16 @@ exports[`regression tests > deselects group of selected elements on pointer up w
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -4924,7 +5100,7 @@ exports[`regression tests > deselects group of selected elements on pointer up w
 
 exports[`regression tests > deselects group of selected elements on pointer up when pointer hits common bounding box without hitting any element > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > deselects group of selected elements on pointer up when pointer hits common bounding box without hitting any element > [end of test] number of renders 1`] = `11`;
+exports[`regression tests > deselects group of selected elements on pointer up when pointer hits common bounding box without hitting any element > [end of test] number of renders 1`] = `12`;
 
 exports[`regression tests > deselects group of selected elements on pointer up when pointer hits common bounding box without hitting any element > [end of test] redo stack 1`] = `[]`;
 
@@ -4961,7 +5137,7 @@ exports[`regression tests > deselects group of selected elements on pointer up w
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -5015,7 +5191,7 @@ exports[`regression tests > deselects group of selected elements on pointer up w
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -5105,7 +5281,8 @@ exports[`regression tests > deselects selected element on pointer down when poin
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -5157,6 +5334,16 @@ exports[`regression tests > deselects selected element on pointer down when poin
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -5191,7 +5378,7 @@ exports[`regression tests > deselects selected element on pointer down when poin
     "link": null,
     "locked": false,
     "opacity": 100,
-    "roughness": 1,
+    "roughness": 0,
     "roundness": null,
     "seed": 1116226695,
     "strokeColor": "#1e1e1e",
@@ -5229,7 +5416,7 @@ exports[`regression tests > deselects selected element on pointer down when poin
 
 exports[`regression tests > deselects selected element on pointer down when pointer doesn't hit any element > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > deselects selected element on pointer down when pointer doesn't hit any element > [end of test] number of renders 1`] = `7`;
+exports[`regression tests > deselects selected element on pointer down when pointer doesn't hit any element > [end of test] number of renders 1`] = `8`;
 
 exports[`regression tests > deselects selected element on pointer down when pointer doesn't hit any element > [end of test] redo stack 1`] = `[]`;
 
@@ -5266,7 +5453,7 @@ exports[`regression tests > deselects selected element on pointer down when poin
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -5315,7 +5502,8 @@ exports[`regression tests > deselects selected element, on pointer up, when clic
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -5367,6 +5555,16 @@ exports[`regression tests > deselects selected element, on pointer up, when clic
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -5411,7 +5609,7 @@ exports[`regression tests > deselects selected element, on pointer up, when clic
 
 exports[`regression tests > deselects selected element, on pointer up, when click hits element bounding box but doesn't hit the element > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > deselects selected element, on pointer up, when click hits element bounding box but doesn't hit the element > [end of test] number of renders 1`] = `7`;
+exports[`regression tests > deselects selected element, on pointer up, when click hits element bounding box but doesn't hit the element > [end of test] number of renders 1`] = `8`;
 
 exports[`regression tests > deselects selected element, on pointer up, when click hits element bounding box but doesn't hit the element > [end of test] redo stack 1`] = `[]`;
 
@@ -5448,7 +5646,7 @@ exports[`regression tests > deselects selected element, on pointer up, when clic
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -5517,7 +5715,8 @@ exports[`regression tests > double click to edit a group > [end of test] appStat
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -5569,6 +5768,16 @@ exports[`regression tests > double click to edit a group > [end of test] appStat
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -5613,7 +5822,7 @@ exports[`regression tests > double click to edit a group > [end of test] appStat
 
 exports[`regression tests > double click to edit a group > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > double click to edit a group > [end of test] number of renders 1`] = `15`;
+exports[`regression tests > double click to edit a group > [end of test] number of renders 1`] = `16`;
 
 exports[`regression tests > double click to edit a group > [end of test] redo stack 1`] = `[]`;
 
@@ -5650,7 +5859,7 @@ exports[`regression tests > double click to edit a group > [end of test] undo st
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -5704,7 +5913,7 @@ exports[`regression tests > double click to edit a group > [end of test] undo st
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -5758,7 +5967,7 @@ exports[`regression tests > double click to edit a group > [end of test] undo st
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -5912,7 +6121,8 @@ exports[`regression tests > drags selected elements from point inside common bou
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -5964,6 +6174,16 @@ exports[`regression tests > drags selected elements from point inside common bou
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -6012,7 +6232,7 @@ exports[`regression tests > drags selected elements from point inside common bou
 
 exports[`regression tests > drags selected elements from point inside common bounding box that doesn't hit any element and keeps elements selected after dragging > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > drags selected elements from point inside common bounding box that doesn't hit any element and keeps elements selected after dragging > [end of test] number of renders 1`] = `12`;
+exports[`regression tests > drags selected elements from point inside common bounding box that doesn't hit any element and keeps elements selected after dragging > [end of test] number of renders 1`] = `13`;
 
 exports[`regression tests > drags selected elements from point inside common bounding box that doesn't hit any element and keeps elements selected after dragging > [end of test] redo stack 1`] = `[]`;
 
@@ -6049,7 +6269,7 @@ exports[`regression tests > drags selected elements from point inside common bou
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -6103,7 +6323,7 @@ exports[`regression tests > drags selected elements from point inside common bou
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -6211,7 +6431,8 @@ exports[`regression tests > draw every type of shape > [end of test] appState 1`
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -6263,6 +6484,16 @@ exports[`regression tests > draw every type of shape > [end of test] appState 1`
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -6305,7 +6536,7 @@ exports[`regression tests > draw every type of shape > [end of test] appState 1`
 
 exports[`regression tests > draw every type of shape > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > draw every type of shape > [end of test] number of renders 1`] = `35`;
+exports[`regression tests > draw every type of shape > [end of test] number of renders 1`] = `36`;
 
 exports[`regression tests > draw every type of shape > [end of test] redo stack 1`] = `[]`;
 
@@ -6342,7 +6573,7 @@ exports[`regression tests > draw every type of shape > [end of test] undo stack 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -6396,7 +6627,7 @@ exports[`regression tests > draw every type of shape > [end of test] undo stack 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -6450,7 +6681,7 @@ exports[`regression tests > draw every type of shape > [end of test] undo stack 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -6522,7 +6753,7 @@ exports[`regression tests > draw every type of shape > [end of test] undo stack 
                 10,
               ],
             ],
-            "roughness": 1,
+            "roughness": 0,
             "roundness": {
               "type": 2,
             },
@@ -6601,7 +6832,7 @@ exports[`regression tests > draw every type of shape > [end of test] undo stack 
               ],
             ],
             "polygon": false,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "startArrowhead": null,
             "startBinding": null,
@@ -6678,7 +6909,7 @@ exports[`regression tests > draw every type of shape > [end of test] undo stack 
                 10,
               ],
             ],
-            "roughness": 1,
+            "roughness": 0,
             "roundness": {
               "type": 2,
             },
@@ -6808,7 +7039,7 @@ exports[`regression tests > draw every type of shape > [end of test] undo stack 
               ],
             ],
             "polygon": false,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "startArrowhead": null,
             "startBinding": null,
@@ -6951,7 +7182,7 @@ exports[`regression tests > draw every type of shape > [end of test] undo stack 
               0,
               0,
             ],
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "simulatePressure": false,
             "strokeColor": "#1e1e1e",
@@ -7005,7 +7236,8 @@ exports[`regression tests > given a group of selected elements with an element t
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -7057,6 +7289,16 @@ exports[`regression tests > given a group of selected elements with an element t
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -7104,7 +7346,7 @@ exports[`regression tests > given a group of selected elements with an element t
 
 exports[`regression tests > given a group of selected elements with an element that is not selected inside the group common bounding box when element that is not selected is clicked should switch selection to not selected element on pointer up > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > given a group of selected elements with an element that is not selected inside the group common bounding box when element that is not selected is clicked should switch selection to not selected element on pointer up > [end of test] number of renders 1`] = `14`;
+exports[`regression tests > given a group of selected elements with an element that is not selected inside the group common bounding box when element that is not selected is clicked should switch selection to not selected element on pointer up > [end of test] number of renders 1`] = `15`;
 
 exports[`regression tests > given a group of selected elements with an element that is not selected inside the group common bounding box when element that is not selected is clicked should switch selection to not selected element on pointer up > [end of test] redo stack 1`] = `[]`;
 
@@ -7141,7 +7383,7 @@ exports[`regression tests > given a group of selected elements with an element t
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -7195,7 +7437,7 @@ exports[`regression tests > given a group of selected elements with an element t
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -7249,7 +7491,7 @@ exports[`regression tests > given a group of selected elements with an element t
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -7341,7 +7583,8 @@ exports[`regression tests > given a selected element A and a not selected elemen
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -7393,6 +7636,16 @@ exports[`regression tests > given a selected element A and a not selected elemen
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -7440,7 +7693,7 @@ exports[`regression tests > given a selected element A and a not selected elemen
 
 exports[`regression tests > given a selected element A and a not selected element B with higher z-index than A and given B partially overlaps A when there's a shift-click on the overlapped section B is added to the selection > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > given a selected element A and a not selected element B with higher z-index than A and given B partially overlaps A when there's a shift-click on the overlapped section B is added to the selection > [end of test] number of renders 1`] = `12`;
+exports[`regression tests > given a selected element A and a not selected element B with higher z-index than A and given B partially overlaps A when there's a shift-click on the overlapped section B is added to the selection > [end of test] number of renders 1`] = `13`;
 
 exports[`regression tests > given a selected element A and a not selected element B with higher z-index than A and given B partially overlaps A when there's a shift-click on the overlapped section B is added to the selection > [end of test] redo stack 1`] = `[]`;
 
@@ -7477,7 +7730,7 @@ exports[`regression tests > given a selected element A and a not selected elemen
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -7531,7 +7784,7 @@ exports[`regression tests > given a selected element A and a not selected elemen
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -7622,7 +7875,8 @@ exports[`regression tests > given selected element A with lower z-index than uns
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -7674,6 +7928,16 @@ exports[`regression tests > given selected element A with lower z-index than uns
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -7720,7 +7984,7 @@ exports[`regression tests > given selected element A with lower z-index than uns
 
 exports[`regression tests > given selected element A with lower z-index than unselected element B and given B is partially over A when clicking intersection between A and B B should be selected on pointer up > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > given selected element A with lower z-index than unselected element B and given B is partially over A when clicking intersection between A and B B should be selected on pointer up > [end of test] number of renders 1`] = `7`;
+exports[`regression tests > given selected element A with lower z-index than unselected element B and given B is partially over A when clicking intersection between A and B B should be selected on pointer up > [end of test] number of renders 1`] = `8`;
 
 exports[`regression tests > given selected element A with lower z-index than unselected element B and given B is partially over A when clicking intersection between A and B B should be selected on pointer up > [end of test] redo stack 1`] = `[]`;
 
@@ -7757,7 +8021,7 @@ exports[`regression tests > given selected element A with lower z-index than uns
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -7788,7 +8052,7 @@ exports[`regression tests > given selected element A with lower z-index than uns
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -7859,7 +8123,8 @@ exports[`regression tests > given selected element A with lower z-index than uns
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -7911,6 +8176,16 @@ exports[`regression tests > given selected element A with lower z-index than uns
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -7957,7 +8232,7 @@ exports[`regression tests > given selected element A with lower z-index than uns
 
 exports[`regression tests > given selected element A with lower z-index than unselected element B and given B is partially over A when dragging on intersection between A and B A should be dragged and keep being selected > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > given selected element A with lower z-index than unselected element B and given B is partially over A when dragging on intersection between A and B A should be dragged and keep being selected > [end of test] number of renders 1`] = `8`;
+exports[`regression tests > given selected element A with lower z-index than unselected element B and given B is partially over A when dragging on intersection between A and B A should be dragged and keep being selected > [end of test] number of renders 1`] = `9`;
 
 exports[`regression tests > given selected element A with lower z-index than unselected element B and given B is partially over A when dragging on intersection between A and B A should be dragged and keep being selected > [end of test] redo stack 1`] = `[]`;
 
@@ -7994,7 +8269,7 @@ exports[`regression tests > given selected element A with lower z-index than uns
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -8025,7 +8300,7 @@ exports[`regression tests > given selected element A with lower z-index than uns
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -8101,7 +8376,8 @@ exports[`regression tests > key 2 selects rectangle tool > [end of test] appStat
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -8153,6 +8429,16 @@ exports[`regression tests > key 2 selects rectangle tool > [end of test] appStat
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -8197,7 +8483,7 @@ exports[`regression tests > key 2 selects rectangle tool > [end of test] appStat
 
 exports[`regression tests > key 2 selects rectangle tool > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > key 2 selects rectangle tool > [end of test] number of renders 1`] = `6`;
+exports[`regression tests > key 2 selects rectangle tool > [end of test] number of renders 1`] = `7`;
 
 exports[`regression tests > key 2 selects rectangle tool > [end of test] redo stack 1`] = `[]`;
 
@@ -8234,7 +8520,7 @@ exports[`regression tests > key 2 selects rectangle tool > [end of test] undo st
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -8283,7 +8569,8 @@ exports[`regression tests > key 3 selects diamond tool > [end of test] appState 
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -8335,6 +8622,16 @@ exports[`regression tests > key 3 selects diamond tool > [end of test] appState 
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -8379,7 +8676,7 @@ exports[`regression tests > key 3 selects diamond tool > [end of test] appState 
 
 exports[`regression tests > key 3 selects diamond tool > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > key 3 selects diamond tool > [end of test] number of renders 1`] = `6`;
+exports[`regression tests > key 3 selects diamond tool > [end of test] number of renders 1`] = `7`;
 
 exports[`regression tests > key 3 selects diamond tool > [end of test] redo stack 1`] = `[]`;
 
@@ -8416,7 +8713,7 @@ exports[`regression tests > key 3 selects diamond tool > [end of test] undo stac
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -8465,7 +8762,8 @@ exports[`regression tests > key 4 selects ellipse tool > [end of test] appState 
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -8517,6 +8815,16 @@ exports[`regression tests > key 4 selects ellipse tool > [end of test] appState 
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -8561,7 +8869,7 @@ exports[`regression tests > key 4 selects ellipse tool > [end of test] appState 
 
 exports[`regression tests > key 4 selects ellipse tool > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > key 4 selects ellipse tool > [end of test] number of renders 1`] = `6`;
+exports[`regression tests > key 4 selects ellipse tool > [end of test] number of renders 1`] = `7`;
 
 exports[`regression tests > key 4 selects ellipse tool > [end of test] redo stack 1`] = `[]`;
 
@@ -8598,7 +8906,7 @@ exports[`regression tests > key 4 selects ellipse tool > [end of test] undo stac
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -8647,7 +8955,8 @@ exports[`regression tests > key 5 selects arrow tool > [end of test] appState 1`
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -8699,6 +9008,16 @@ exports[`regression tests > key 5 selects arrow tool > [end of test] appState 1`
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -8773,7 +9092,7 @@ exports[`regression tests > key 5 selects arrow tool > [end of test] appState 1`
 
 exports[`regression tests > key 5 selects arrow tool > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > key 5 selects arrow tool > [end of test] number of renders 1`] = `7`;
+exports[`regression tests > key 5 selects arrow tool > [end of test] number of renders 1`] = `8`;
 
 exports[`regression tests > key 5 selects arrow tool > [end of test] redo stack 1`] = `[]`;
 
@@ -8828,7 +9147,7 @@ exports[`regression tests > key 5 selects arrow tool > [end of test] undo stack 
                 30,
               ],
             ],
-            "roughness": 1,
+            "roughness": 0,
             "roundness": {
               "type": 2,
             },
@@ -8881,7 +9200,8 @@ exports[`regression tests > key 6 selects line tool > [end of test] appState 1`]
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -8933,6 +9253,16 @@ exports[`regression tests > key 6 selects line tool > [end of test] appState 1`]
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -9007,7 +9337,7 @@ exports[`regression tests > key 6 selects line tool > [end of test] appState 1`]
 
 exports[`regression tests > key 6 selects line tool > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > key 6 selects line tool > [end of test] number of renders 1`] = `7`;
+exports[`regression tests > key 6 selects line tool > [end of test] number of renders 1`] = `8`;
 
 exports[`regression tests > key 6 selects line tool > [end of test] redo stack 1`] = `[]`;
 
@@ -9062,7 +9392,7 @@ exports[`regression tests > key 6 selects line tool > [end of test] undo stack 1
               ],
             ],
             "polygon": false,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "startArrowhead": null,
             "startBinding": null,
@@ -9113,7 +9443,8 @@ exports[`regression tests > key 7 selects freedraw tool > [end of test] appState
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -9165,6 +9496,16 @@ exports[`regression tests > key 7 selects freedraw tool > [end of test] appState
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -9207,7 +9548,7 @@ exports[`regression tests > key 7 selects freedraw tool > [end of test] appState
 
 exports[`regression tests > key 7 selects freedraw tool > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > key 7 selects freedraw tool > [end of test] number of renders 1`] = `6`;
+exports[`regression tests > key 7 selects freedraw tool > [end of test] number of renders 1`] = `7`;
 
 exports[`regression tests > key 7 selects freedraw tool > [end of test] redo stack 1`] = `[]`;
 
@@ -9257,7 +9598,7 @@ exports[`regression tests > key 7 selects freedraw tool > [end of test] undo sta
               0,
               0,
             ],
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "simulatePressure": false,
             "strokeColor": "#1e1e1e",
@@ -9311,7 +9652,8 @@ exports[`regression tests > key a selects arrow tool > [end of test] appState 1`
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -9363,6 +9705,16 @@ exports[`regression tests > key a selects arrow tool > [end of test] appState 1`
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -9437,7 +9789,7 @@ exports[`regression tests > key a selects arrow tool > [end of test] appState 1`
 
 exports[`regression tests > key a selects arrow tool > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > key a selects arrow tool > [end of test] number of renders 1`] = `7`;
+exports[`regression tests > key a selects arrow tool > [end of test] number of renders 1`] = `8`;
 
 exports[`regression tests > key a selects arrow tool > [end of test] redo stack 1`] = `[]`;
 
@@ -9492,7 +9844,7 @@ exports[`regression tests > key a selects arrow tool > [end of test] undo stack 
                 30,
               ],
             ],
-            "roughness": 1,
+            "roughness": 0,
             "roundness": {
               "type": 2,
             },
@@ -9545,7 +9897,8 @@ exports[`regression tests > key d selects diamond tool > [end of test] appState 
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -9597,6 +9950,16 @@ exports[`regression tests > key d selects diamond tool > [end of test] appState 
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -9641,7 +10004,7 @@ exports[`regression tests > key d selects diamond tool > [end of test] appState 
 
 exports[`regression tests > key d selects diamond tool > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > key d selects diamond tool > [end of test] number of renders 1`] = `6`;
+exports[`regression tests > key d selects diamond tool > [end of test] number of renders 1`] = `7`;
 
 exports[`regression tests > key d selects diamond tool > [end of test] redo stack 1`] = `[]`;
 
@@ -9678,7 +10041,7 @@ exports[`regression tests > key d selects diamond tool > [end of test] undo stac
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -9727,7 +10090,8 @@ exports[`regression tests > key l selects line tool > [end of test] appState 1`]
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -9779,6 +10143,16 @@ exports[`regression tests > key l selects line tool > [end of test] appState 1`]
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -9853,7 +10227,7 @@ exports[`regression tests > key l selects line tool > [end of test] appState 1`]
 
 exports[`regression tests > key l selects line tool > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > key l selects line tool > [end of test] number of renders 1`] = `7`;
+exports[`regression tests > key l selects line tool > [end of test] number of renders 1`] = `8`;
 
 exports[`regression tests > key l selects line tool > [end of test] redo stack 1`] = `[]`;
 
@@ -9908,7 +10282,7 @@ exports[`regression tests > key l selects line tool > [end of test] undo stack 1
               ],
             ],
             "polygon": false,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "startArrowhead": null,
             "startBinding": null,
@@ -9959,7 +10333,8 @@ exports[`regression tests > key o selects ellipse tool > [end of test] appState 
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -10011,6 +10386,16 @@ exports[`regression tests > key o selects ellipse tool > [end of test] appState 
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -10055,7 +10440,7 @@ exports[`regression tests > key o selects ellipse tool > [end of test] appState 
 
 exports[`regression tests > key o selects ellipse tool > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > key o selects ellipse tool > [end of test] number of renders 1`] = `6`;
+exports[`regression tests > key o selects ellipse tool > [end of test] number of renders 1`] = `7`;
 
 exports[`regression tests > key o selects ellipse tool > [end of test] redo stack 1`] = `[]`;
 
@@ -10092,7 +10477,7 @@ exports[`regression tests > key o selects ellipse tool > [end of test] undo stac
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -10141,7 +10526,8 @@ exports[`regression tests > key p selects freedraw tool > [end of test] appState
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -10193,6 +10579,16 @@ exports[`regression tests > key p selects freedraw tool > [end of test] appState
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -10235,7 +10631,7 @@ exports[`regression tests > key p selects freedraw tool > [end of test] appState
 
 exports[`regression tests > key p selects freedraw tool > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > key p selects freedraw tool > [end of test] number of renders 1`] = `6`;
+exports[`regression tests > key p selects freedraw tool > [end of test] number of renders 1`] = `7`;
 
 exports[`regression tests > key p selects freedraw tool > [end of test] redo stack 1`] = `[]`;
 
@@ -10285,7 +10681,7 @@ exports[`regression tests > key p selects freedraw tool > [end of test] undo sta
               0,
               0,
             ],
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "simulatePressure": false,
             "strokeColor": "#1e1e1e",
@@ -10339,7 +10735,8 @@ exports[`regression tests > key r selects rectangle tool > [end of test] appStat
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -10391,6 +10788,16 @@ exports[`regression tests > key r selects rectangle tool > [end of test] appStat
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -10435,7 +10842,7 @@ exports[`regression tests > key r selects rectangle tool > [end of test] appStat
 
 exports[`regression tests > key r selects rectangle tool > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > key r selects rectangle tool > [end of test] number of renders 1`] = `6`;
+exports[`regression tests > key r selects rectangle tool > [end of test] number of renders 1`] = `7`;
 
 exports[`regression tests > key r selects rectangle tool > [end of test] redo stack 1`] = `[]`;
 
@@ -10472,7 +10879,7 @@ exports[`regression tests > key r selects rectangle tool > [end of test] undo st
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -10521,7 +10928,8 @@ exports[`regression tests > make a group and duplicate it > [end of test] appSta
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -10573,6 +10981,16 @@ exports[`regression tests > make a group and duplicate it > [end of test] appSta
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -10625,7 +11043,7 @@ exports[`regression tests > make a group and duplicate it > [end of test] appSta
 
 exports[`regression tests > make a group and duplicate it > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > make a group and duplicate it > [end of test] number of renders 1`] = `17`;
+exports[`regression tests > make a group and duplicate it > [end of test] number of renders 1`] = `19`;
 
 exports[`regression tests > make a group and duplicate it > [end of test] redo stack 1`] = `[]`;
 
@@ -10662,7 +11080,7 @@ exports[`regression tests > make a group and duplicate it > [end of test] undo s
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -10716,7 +11134,7 @@ exports[`regression tests > make a group and duplicate it > [end of test] undo s
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -10770,7 +11188,7 @@ exports[`regression tests > make a group and duplicate it > [end of test] undo s
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -10914,7 +11332,7 @@ exports[`regression tests > make a group and duplicate it > [end of test] undo s
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -10947,7 +11365,7 @@ exports[`regression tests > make a group and duplicate it > [end of test] undo s
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -10980,7 +11398,7 @@ exports[`regression tests > make a group and duplicate it > [end of test] undo s
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -11054,7 +11472,8 @@ exports[`regression tests > noop interaction after undo shouldn't create history
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -11106,6 +11525,16 @@ exports[`regression tests > noop interaction after undo shouldn't create history
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -11152,7 +11581,7 @@ exports[`regression tests > noop interaction after undo shouldn't create history
 
 exports[`regression tests > noop interaction after undo shouldn't create history entry > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > noop interaction after undo shouldn't create history entry > [end of test] number of renders 1`] = `14`;
+exports[`regression tests > noop interaction after undo shouldn't create history entry > [end of test] number of renders 1`] = `15`;
 
 exports[`regression tests > noop interaction after undo shouldn't create history entry > [end of test] redo stack 1`] = `[]`;
 
@@ -11189,7 +11618,7 @@ exports[`regression tests > noop interaction after undo shouldn't create history
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -11243,7 +11672,7 @@ exports[`regression tests > noop interaction after undo shouldn't create history
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -11336,7 +11765,8 @@ exports[`regression tests > pinch-to-zoom works > [end of test] appState 1`] = `
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -11388,6 +11818,16 @@ exports[`regression tests > pinch-to-zoom works > [end of test] appState 1`] = `
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -11430,7 +11870,7 @@ exports[`regression tests > pinch-to-zoom works > [end of test] appState 1`] = `
 
 exports[`regression tests > pinch-to-zoom works > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > pinch-to-zoom works > [end of test] number of renders 1`] = `7`;
+exports[`regression tests > pinch-to-zoom works > [end of test] number of renders 1`] = `9`;
 
 exports[`regression tests > pinch-to-zoom works > [end of test] redo stack 1`] = `[]`;
 
@@ -11461,7 +11901,8 @@ exports[`regression tests > shift click on selected element should deselect it o
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -11513,6 +11954,16 @@ exports[`regression tests > shift click on selected element should deselect it o
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -11557,7 +12008,7 @@ exports[`regression tests > shift click on selected element should deselect it o
 
 exports[`regression tests > shift click on selected element should deselect it on pointer up > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > shift click on selected element should deselect it on pointer up > [end of test] number of renders 1`] = `7`;
+exports[`regression tests > shift click on selected element should deselect it on pointer up > [end of test] number of renders 1`] = `8`;
 
 exports[`regression tests > shift click on selected element should deselect it on pointer up > [end of test] redo stack 1`] = `[]`;
 
@@ -11594,7 +12045,7 @@ exports[`regression tests > shift click on selected element should deselect it o
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -11663,7 +12114,8 @@ exports[`regression tests > shift-click to multiselect, then drag > [end of test
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -11715,6 +12167,16 @@ exports[`regression tests > shift-click to multiselect, then drag > [end of test
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -11763,7 +12225,7 @@ exports[`regression tests > shift-click to multiselect, then drag > [end of test
 
 exports[`regression tests > shift-click to multiselect, then drag > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > shift-click to multiselect, then drag > [end of test] number of renders 1`] = `13`;
+exports[`regression tests > shift-click to multiselect, then drag > [end of test] number of renders 1`] = `14`;
 
 exports[`regression tests > shift-click to multiselect, then drag > [end of test] redo stack 1`] = `[]`;
 
@@ -11800,7 +12262,7 @@ exports[`regression tests > shift-click to multiselect, then drag > [end of test
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -11854,7 +12316,7 @@ exports[`regression tests > shift-click to multiselect, then drag > [end of test
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -11984,7 +12446,8 @@ exports[`regression tests > should group elements and ungroup them > [end of tes
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -12036,6 +12499,16 @@ exports[`regression tests > should group elements and ungroup them > [end of tes
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -12086,7 +12559,7 @@ exports[`regression tests > should group elements and ungroup them > [end of tes
 
 exports[`regression tests > should group elements and ungroup them > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > should group elements and ungroup them > [end of test] number of renders 1`] = `18`;
+exports[`regression tests > should group elements and ungroup them > [end of test] number of renders 1`] = `21`;
 
 exports[`regression tests > should group elements and ungroup them > [end of test] redo stack 1`] = `[]`;
 
@@ -12123,7 +12596,7 @@ exports[`regression tests > should group elements and ungroup them > [end of tes
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -12177,7 +12650,7 @@ exports[`regression tests > should group elements and ungroup them > [end of tes
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -12231,7 +12704,7 @@ exports[`regression tests > should group elements and ungroup them > [end of tes
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -12415,7 +12888,8 @@ exports[`regression tests > single-clicking on a subgroup of a selected group sh
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -12467,6 +12941,16 @@ exports[`regression tests > single-clicking on a subgroup of a selected group sh
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -12521,7 +13005,7 @@ exports[`regression tests > single-clicking on a subgroup of a selected group sh
 
 exports[`regression tests > single-clicking on a subgroup of a selected group should not alter selection > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > single-clicking on a subgroup of a selected group should not alter selection > [end of test] number of renders 1`] = `25`;
+exports[`regression tests > single-clicking on a subgroup of a selected group should not alter selection > [end of test] number of renders 1`] = `27`;
 
 exports[`regression tests > single-clicking on a subgroup of a selected group should not alter selection > [end of test] redo stack 1`] = `[]`;
 
@@ -12558,7 +13042,7 @@ exports[`regression tests > single-clicking on a subgroup of a selected group sh
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -12612,7 +13096,7 @@ exports[`regression tests > single-clicking on a subgroup of a selected group sh
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -12758,7 +13242,7 @@ exports[`regression tests > single-clicking on a subgroup of a selected group sh
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -12812,7 +13296,7 @@ exports[`regression tests > single-clicking on a subgroup of a selected group sh
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -13057,7 +13541,8 @@ exports[`regression tests > spacebar + drag scrolls the canvas > [end of test] a
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -13112,6 +13597,16 @@ exports[`regression tests > spacebar + drag scrolls the canvas > [end of test] a
     "x": 0,
     "y": 0,
   },
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -13185,7 +13680,8 @@ exports[`regression tests > supports nested groups > [end of test] appState 1`] 
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -13237,6 +13733,16 @@ exports[`regression tests > supports nested groups > [end of test] appState 1`] 
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -13283,7 +13789,7 @@ exports[`regression tests > supports nested groups > [end of test] appState 1`] 
 
 exports[`regression tests > supports nested groups > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > supports nested groups > [end of test] number of renders 1`] = `23`;
+exports[`regression tests > supports nested groups > [end of test] number of renders 1`] = `24`;
 
 exports[`regression tests > supports nested groups > [end of test] redo stack 1`] = `[]`;
 
@@ -13320,7 +13826,7 @@ exports[`regression tests > supports nested groups > [end of test] undo stack 1`
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -13374,7 +13880,7 @@ exports[`regression tests > supports nested groups > [end of test] undo stack 1`
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -13428,7 +13934,7 @@ exports[`regression tests > supports nested groups > [end of test] undo stack 1`
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -13818,7 +14324,8 @@ exports[`regression tests > switches from group of selected elements to another 
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -13870,6 +14377,16 @@ exports[`regression tests > switches from group of selected elements to another 
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -13907,7 +14424,7 @@ exports[`regression tests > switches from group of selected elements to another 
     "link": null,
     "locked": false,
     "opacity": 100,
-    "roughness": 1,
+    "roughness": 0,
     "roundness": null,
     "seed": 1006504105,
     "strokeColor": "#1e1e1e",
@@ -13945,7 +14462,7 @@ exports[`regression tests > switches from group of selected elements to another 
 
 exports[`regression tests > switches from group of selected elements to another element on pointer down > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > switches from group of selected elements to another element on pointer down > [end of test] number of renders 1`] = `14`;
+exports[`regression tests > switches from group of selected elements to another element on pointer down > [end of test] number of renders 1`] = `15`;
 
 exports[`regression tests > switches from group of selected elements to another element on pointer down > [end of test] redo stack 1`] = `[]`;
 
@@ -13982,7 +14499,7 @@ exports[`regression tests > switches from group of selected elements to another 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -14036,7 +14553,7 @@ exports[`regression tests > switches from group of selected elements to another 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -14090,7 +14607,7 @@ exports[`regression tests > switches from group of selected elements to another 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -14159,7 +14676,8 @@ exports[`regression tests > switches selected element on pointer down > [end of 
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -14211,6 +14729,16 @@ exports[`regression tests > switches selected element on pointer down > [end of 
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -14247,7 +14775,7 @@ exports[`regression tests > switches selected element on pointer down > [end of 
     "link": null,
     "locked": false,
     "opacity": 100,
-    "roughness": 1,
+    "roughness": 0,
     "roundness": null,
     "seed": 23633383,
     "strokeColor": "#1e1e1e",
@@ -14285,7 +14813,7 @@ exports[`regression tests > switches selected element on pointer down > [end of 
 
 exports[`regression tests > switches selected element on pointer down > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > switches selected element on pointer down > [end of test] number of renders 1`] = `10`;
+exports[`regression tests > switches selected element on pointer down > [end of test] number of renders 1`] = `11`;
 
 exports[`regression tests > switches selected element on pointer down > [end of test] redo stack 1`] = `[]`;
 
@@ -14322,7 +14850,7 @@ exports[`regression tests > switches selected element on pointer down > [end of 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -14376,7 +14904,7 @@ exports[`regression tests > switches selected element on pointer down > [end of 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -14425,7 +14953,8 @@ exports[`regression tests > two-finger scroll works > [end of test] appState 1`]
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -14477,6 +15006,16 @@ exports[`regression tests > two-finger scroll works > [end of test] appState 1`]
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -14519,7 +15058,7 @@ exports[`regression tests > two-finger scroll works > [end of test] appState 1`]
 
 exports[`regression tests > two-finger scroll works > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > two-finger scroll works > [end of test] number of renders 1`] = `8`;
+exports[`regression tests > two-finger scroll works > [end of test] number of renders 1`] = `9`;
 
 exports[`regression tests > two-finger scroll works > [end of test] redo stack 1`] = `[]`;
 
@@ -14550,7 +15089,8 @@ exports[`regression tests > undo/redo drawing an element > [end of test] appStat
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -14602,6 +15142,16 @@ exports[`regression tests > undo/redo drawing an element > [end of test] appStat
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -14646,7 +15196,7 @@ exports[`regression tests > undo/redo drawing an element > [end of test] appStat
 
 exports[`regression tests > undo/redo drawing an element > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > undo/redo drawing an element > [end of test] number of renders 1`] = `19`;
+exports[`regression tests > undo/redo drawing an element > [end of test] number of renders 1`] = `20`;
 
 exports[`regression tests > undo/redo drawing an element > [end of test] redo stack 1`] = `
 [
@@ -14755,7 +15305,7 @@ exports[`regression tests > undo/redo drawing an element > [end of test] redo st
                 10,
               ],
             ],
-            "roughness": 1,
+            "roughness": 0,
             "roundness": {
               "type": 2,
             },
@@ -14813,7 +15363,7 @@ exports[`regression tests > undo/redo drawing an element > [end of test] undo st
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -14867,7 +15417,7 @@ exports[`regression tests > undo/redo drawing an element > [end of test] undo st
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -14916,7 +15466,8 @@ exports[`regression tests > updates fontSize & fontFamily appState > [end of tes
   "currentItemFontFamily": 8,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -14968,6 +15519,16 @@ exports[`regression tests > updates fontSize & fontFamily appState > [end of tes
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -15010,7 +15571,7 @@ exports[`regression tests > updates fontSize & fontFamily appState > [end of tes
 
 exports[`regression tests > updates fontSize & fontFamily appState > [end of test] number of elements 1`] = `0`;
 
-exports[`regression tests > updates fontSize & fontFamily appState > [end of test] number of renders 1`] = `5`;
+exports[`regression tests > updates fontSize & fontFamily appState > [end of test] number of renders 1`] = `6`;
 
 exports[`regression tests > updates fontSize & fontFamily appState > [end of test] redo stack 1`] = `[]`;
 
@@ -15041,7 +15602,8 @@ exports[`regression tests > zoom hotkeys > [end of test] appState 1`] = `
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -15096,6 +15658,16 @@ exports[`regression tests > zoom hotkeys > [end of test] appState 1`] = `
     "x": 0,
     "y": 0,
   },
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {

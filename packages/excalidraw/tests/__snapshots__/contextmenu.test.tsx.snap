@@ -899,7 +899,8 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -954,6 +955,16 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
     "x": 0,
     "y": 0,
   },
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -1017,7 +1028,7 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1,
   "strokeColor": "#1e1e1e",
@@ -1051,7 +1062,7 @@ exports[`contextMenu element > right-clicking on a group should select whole gro
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1,
   "strokeColor": "#1e1e1e",
@@ -1100,7 +1111,8 @@ exports[`contextMenu element > selecting 'Add to library' in context menu adds e
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -1152,6 +1164,16 @@ exports[`contextMenu element > selecting 'Add to library' in context menu adds e
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -1212,7 +1234,7 @@ exports[`contextMenu element > selecting 'Add to library' in context menu adds e
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -1230,7 +1252,7 @@ exports[`contextMenu element > selecting 'Add to library' in context menu adds e
 
 exports[`contextMenu element > selecting 'Add to library' in context menu adds element to library > [end of test] number of elements 1`] = `1`;
 
-exports[`contextMenu element > selecting 'Add to library' in context menu adds element to library > [end of test] number of renders 1`] = `5`;
+exports[`contextMenu element > selecting 'Add to library' in context menu adds element to library > [end of test] number of renders 1`] = `6`;
 
 exports[`contextMenu element > selecting 'Add to library' in context menu adds element to library > [end of test] redo stack 1`] = `[]`;
 
@@ -1267,7 +1289,7 @@ exports[`contextMenu element > selecting 'Add to library' in context menu adds e
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -1316,7 +1338,8 @@ exports[`contextMenu element > selecting 'Bring forward' in context menu brings 
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -1368,6 +1391,16 @@ exports[`contextMenu element > selecting 'Bring forward' in context menu brings 
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -1426,7 +1459,7 @@ exports[`contextMenu element > selecting 'Bring forward' in context menu brings 
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1014066025,
   "strokeColor": "#1e1e1e",
@@ -1458,7 +1491,7 @@ exports[`contextMenu element > selecting 'Bring forward' in context menu brings 
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -1476,7 +1509,7 @@ exports[`contextMenu element > selecting 'Bring forward' in context menu brings 
 
 exports[`contextMenu element > selecting 'Bring forward' in context menu brings element forward > [end of test] number of elements 1`] = `2`;
 
-exports[`contextMenu element > selecting 'Bring forward' in context menu brings element forward > [end of test] number of renders 1`] = `10`;
+exports[`contextMenu element > selecting 'Bring forward' in context menu brings element forward > [end of test] number of renders 1`] = `11`;
 
 exports[`contextMenu element > selecting 'Bring forward' in context menu brings element forward > [end of test] redo stack 1`] = `[]`;
 
@@ -1513,7 +1546,7 @@ exports[`contextMenu element > selecting 'Bring forward' in context menu brings 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -1567,7 +1600,7 @@ exports[`contextMenu element > selecting 'Bring forward' in context menu brings 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -1649,7 +1682,8 @@ exports[`contextMenu element > selecting 'Bring to front' in context menu brings
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -1701,6 +1735,16 @@ exports[`contextMenu element > selecting 'Bring to front' in context menu brings
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -1759,7 +1803,7 @@ exports[`contextMenu element > selecting 'Bring to front' in context menu brings
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1014066025,
   "strokeColor": "#1e1e1e",
@@ -1791,7 +1835,7 @@ exports[`contextMenu element > selecting 'Bring to front' in context menu brings
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -1809,7 +1853,7 @@ exports[`contextMenu element > selecting 'Bring to front' in context menu brings
 
 exports[`contextMenu element > selecting 'Bring to front' in context menu brings element to front > [end of test] number of elements 1`] = `2`;
 
-exports[`contextMenu element > selecting 'Bring to front' in context menu brings element to front > [end of test] number of renders 1`] = `10`;
+exports[`contextMenu element > selecting 'Bring to front' in context menu brings element to front > [end of test] number of renders 1`] = `11`;
 
 exports[`contextMenu element > selecting 'Bring to front' in context menu brings element to front > [end of test] redo stack 1`] = `[]`;
 
@@ -1846,7 +1890,7 @@ exports[`contextMenu element > selecting 'Bring to front' in context menu brings
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -1900,7 +1944,7 @@ exports[`contextMenu element > selecting 'Bring to front' in context menu brings
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -1982,7 +2026,8 @@ exports[`contextMenu element > selecting 'Copy styles' in context menu copies st
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -2034,6 +2079,16 @@ exports[`contextMenu element > selecting 'Copy styles' in context menu copies st
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -2094,7 +2149,7 @@ exports[`contextMenu element > selecting 'Copy styles' in context menu copies st
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -2112,7 +2167,7 @@ exports[`contextMenu element > selecting 'Copy styles' in context menu copies st
 
 exports[`contextMenu element > selecting 'Copy styles' in context menu copies styles > [end of test] number of elements 1`] = `1`;
 
-exports[`contextMenu element > selecting 'Copy styles' in context menu copies styles > [end of test] number of renders 1`] = `5`;
+exports[`contextMenu element > selecting 'Copy styles' in context menu copies styles > [end of test] number of renders 1`] = `6`;
 
 exports[`contextMenu element > selecting 'Copy styles' in context menu copies styles > [end of test] redo stack 1`] = `[]`;
 
@@ -2149,7 +2204,7 @@ exports[`contextMenu element > selecting 'Copy styles' in context menu copies st
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -2198,7 +2253,8 @@ exports[`contextMenu element > selecting 'Delete' in context menu deletes elemen
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -2250,6 +2306,16 @@ exports[`contextMenu element > selecting 'Delete' in context menu deletes elemen
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -2306,7 +2372,7 @@ exports[`contextMenu element > selecting 'Delete' in context menu deletes elemen
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -2324,7 +2390,7 @@ exports[`contextMenu element > selecting 'Delete' in context menu deletes elemen
 
 exports[`contextMenu element > selecting 'Delete' in context menu deletes element > [end of test] number of elements 1`] = `1`;
 
-exports[`contextMenu element > selecting 'Delete' in context menu deletes element > [end of test] number of renders 1`] = `6`;
+exports[`contextMenu element > selecting 'Delete' in context menu deletes element > [end of test] number of renders 1`] = `7`;
 
 exports[`contextMenu element > selecting 'Delete' in context menu deletes element > [end of test] redo stack 1`] = `[]`;
 
@@ -2361,7 +2427,7 @@ exports[`contextMenu element > selecting 'Delete' in context menu deletes elemen
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -2441,7 +2507,8 @@ exports[`contextMenu element > selecting 'Duplicate' in context menu duplicates 
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -2493,6 +2560,16 @@ exports[`contextMenu element > selecting 'Duplicate' in context menu duplicates 
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -2551,7 +2628,7 @@ exports[`contextMenu element > selecting 'Duplicate' in context menu duplicates 
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -2583,7 +2660,7 @@ exports[`contextMenu element > selecting 'Duplicate' in context menu duplicates 
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1014066025,
   "strokeColor": "#1e1e1e",
@@ -2601,7 +2678,7 @@ exports[`contextMenu element > selecting 'Duplicate' in context menu duplicates 
 
 exports[`contextMenu element > selecting 'Duplicate' in context menu duplicates element > [end of test] number of elements 1`] = `2`;
 
-exports[`contextMenu element > selecting 'Duplicate' in context menu duplicates element > [end of test] number of renders 1`] = `6`;
+exports[`contextMenu element > selecting 'Duplicate' in context menu duplicates element > [end of test] number of renders 1`] = `7`;
 
 exports[`contextMenu element > selecting 'Duplicate' in context menu duplicates element > [end of test] redo stack 1`] = `[]`;
 
@@ -2638,7 +2715,7 @@ exports[`contextMenu element > selecting 'Duplicate' in context menu duplicates 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -2692,7 +2769,7 @@ exports[`contextMenu element > selecting 'Duplicate' in context menu duplicates 
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -2741,7 +2818,8 @@ exports[`contextMenu element > selecting 'Group selection' in context menu group
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -2793,6 +2871,16 @@ exports[`contextMenu element > selecting 'Group selection' in context menu group
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -2858,7 +2946,7 @@ exports[`contextMenu element > selecting 'Group selection' in context menu group
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -2892,7 +2980,7 @@ exports[`contextMenu element > selecting 'Group selection' in context menu group
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1014066025,
   "strokeColor": "#1e1e1e",
@@ -2910,7 +2998,7 @@ exports[`contextMenu element > selecting 'Group selection' in context menu group
 
 exports[`contextMenu element > selecting 'Group selection' in context menu groups selected elements > [end of test] number of elements 1`] = `2`;
 
-exports[`contextMenu element > selecting 'Group selection' in context menu groups selected elements > [end of test] number of renders 1`] = `10`;
+exports[`contextMenu element > selecting 'Group selection' in context menu groups selected elements > [end of test] number of renders 1`] = `11`;
 
 exports[`contextMenu element > selecting 'Group selection' in context menu groups selected elements > [end of test] redo stack 1`] = `[]`;
 
@@ -2947,7 +3035,7 @@ exports[`contextMenu element > selecting 'Group selection' in context menu group
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -3001,7 +3089,7 @@ exports[`contextMenu element > selecting 'Group selection' in context menu group
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -3115,6 +3203,7 @@ exports[`contextMenu element > selecting 'Paste styles' in context menu pastes s
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 60,
+  "currentItemPatternStrokeWidth": null,
   "currentItemRoughness": 2,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
@@ -3167,6 +3256,16 @@ exports[`contextMenu element > selecting 'Paste styles' in context menu pastes s
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -3277,7 +3376,7 @@ exports[`contextMenu element > selecting 'Paste styles' in context menu pastes s
 
 exports[`contextMenu element > selecting 'Paste styles' in context menu pastes styles > [end of test] number of elements 1`] = `2`;
 
-exports[`contextMenu element > selecting 'Paste styles' in context menu pastes styles > [end of test] number of renders 1`] = `17`;
+exports[`contextMenu element > selecting 'Paste styles' in context menu pastes styles > [end of test] number of renders 1`] = `18`;
 
 exports[`contextMenu element > selecting 'Paste styles' in context menu pastes styles > [end of test] redo stack 1`] = `[]`;
 
@@ -3314,7 +3413,7 @@ exports[`contextMenu element > selecting 'Paste styles' in context menu pastes s
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -3368,7 +3467,7 @@ exports[`contextMenu element > selecting 'Paste styles' in context menu pastes s
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -3531,7 +3630,7 @@ exports[`contextMenu element > selecting 'Paste styles' in context menu pastes s
             "version": 9,
           },
           "inserted": {
-            "roughness": 1,
+            "roughness": 0,
             "version": 8,
           },
         },
@@ -3598,7 +3697,7 @@ exports[`contextMenu element > selecting 'Paste styles' in context menu pastes s
             "backgroundColor": "transparent",
             "fillStyle": "solid",
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
             "strokeWidth": 2,
@@ -3637,7 +3736,8 @@ exports[`contextMenu element > selecting 'Send backward' in context menu sends e
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -3689,6 +3789,16 @@ exports[`contextMenu element > selecting 'Send backward' in context menu sends e
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -3747,7 +3857,7 @@ exports[`contextMenu element > selecting 'Send backward' in context menu sends e
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 238820263,
   "strokeColor": "#1e1e1e",
@@ -3779,7 +3889,7 @@ exports[`contextMenu element > selecting 'Send backward' in context menu sends e
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -3797,7 +3907,7 @@ exports[`contextMenu element > selecting 'Send backward' in context menu sends e
 
 exports[`contextMenu element > selecting 'Send backward' in context menu sends element backward > [end of test] number of elements 1`] = `2`;
 
-exports[`contextMenu element > selecting 'Send backward' in context menu sends element backward > [end of test] number of renders 1`] = `9`;
+exports[`contextMenu element > selecting 'Send backward' in context menu sends element backward > [end of test] number of renders 1`] = `10`;
 
 exports[`contextMenu element > selecting 'Send backward' in context menu sends element backward > [end of test] redo stack 1`] = `[]`;
 
@@ -3834,7 +3944,7 @@ exports[`contextMenu element > selecting 'Send backward' in context menu sends e
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -3888,7 +3998,7 @@ exports[`contextMenu element > selecting 'Send backward' in context menu sends e
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -3962,7 +4072,8 @@ exports[`contextMenu element > selecting 'Send to back' in context menu sends el
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -4014,6 +4125,16 @@ exports[`contextMenu element > selecting 'Send to back' in context menu sends el
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -4072,7 +4193,7 @@ exports[`contextMenu element > selecting 'Send to back' in context menu sends el
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1014066025,
   "strokeColor": "#1e1e1e",
@@ -4104,7 +4225,7 @@ exports[`contextMenu element > selecting 'Send to back' in context menu sends el
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -4122,7 +4243,7 @@ exports[`contextMenu element > selecting 'Send to back' in context menu sends el
 
 exports[`contextMenu element > selecting 'Send to back' in context menu sends element to back > [end of test] number of elements 1`] = `2`;
 
-exports[`contextMenu element > selecting 'Send to back' in context menu sends element to back > [end of test] number of renders 1`] = `9`;
+exports[`contextMenu element > selecting 'Send to back' in context menu sends element to back > [end of test] number of renders 1`] = `10`;
 
 exports[`contextMenu element > selecting 'Send to back' in context menu sends element to back > [end of test] redo stack 1`] = `[]`;
 
@@ -4159,7 +4280,7 @@ exports[`contextMenu element > selecting 'Send to back' in context menu sends el
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -4213,7 +4334,7 @@ exports[`contextMenu element > selecting 'Send to back' in context menu sends el
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -4287,7 +4408,8 @@ exports[`contextMenu element > selecting 'Ungroup selection' in context menu ung
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -4339,6 +4461,16 @@ exports[`contextMenu element > selecting 'Ungroup selection' in context menu ung
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -4400,7 +4532,7 @@ exports[`contextMenu element > selecting 'Ungroup selection' in context menu ung
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -4432,7 +4564,7 @@ exports[`contextMenu element > selecting 'Ungroup selection' in context menu ung
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 400692809,
   "strokeColor": "#1e1e1e",
@@ -4450,7 +4582,7 @@ exports[`contextMenu element > selecting 'Ungroup selection' in context menu ung
 
 exports[`contextMenu element > selecting 'Ungroup selection' in context menu ungroups selected group > [end of test] number of elements 1`] = `2`;
 
-exports[`contextMenu element > selecting 'Ungroup selection' in context menu ungroups selected group > [end of test] number of renders 1`] = `11`;
+exports[`contextMenu element > selecting 'Ungroup selection' in context menu ungroups selected group > [end of test] number of renders 1`] = `12`;
 
 exports[`contextMenu element > selecting 'Ungroup selection' in context menu ungroups selected group > [end of test] redo stack 1`] = `[]`;
 
@@ -4487,7 +4619,7 @@ exports[`contextMenu element > selecting 'Ungroup selection' in context menu ung
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -4541,7 +4673,7 @@ exports[`contextMenu element > selecting 'Ungroup selection' in context menu ung
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -5574,7 +5706,8 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -5626,6 +5759,16 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -5687,7 +5830,7 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -5719,7 +5862,7 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 400692809,
   "strokeColor": "#1e1e1e",
@@ -5737,7 +5880,7 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
 
 exports[`contextMenu element > shows 'Group selection' in context menu for multiple selected elements > [end of test] number of elements 1`] = `2`;
 
-exports[`contextMenu element > shows 'Group selection' in context menu for multiple selected elements > [end of test] number of renders 1`] = `10`;
+exports[`contextMenu element > shows 'Group selection' in context menu for multiple selected elements > [end of test] number of renders 1`] = `11`;
 
 exports[`contextMenu element > shows 'Group selection' in context menu for multiple selected elements > [end of test] redo stack 1`] = `[]`;
 
@@ -5774,7 +5917,7 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -5828,7 +5971,7 @@ exports[`contextMenu element > shows 'Group selection' in context menu for multi
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -6793,7 +6936,8 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -6845,6 +6989,16 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -6910,7 +7064,7 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -6944,7 +7098,7 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 400692809,
   "strokeColor": "#1e1e1e",
@@ -6962,7 +7116,7 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
 
 exports[`contextMenu element > shows 'Ungroup selection' in context menu for group inside selected elements > [end of test] number of elements 1`] = `2`;
 
-exports[`contextMenu element > shows 'Ungroup selection' in context menu for group inside selected elements > [end of test] number of renders 1`] = `11`;
+exports[`contextMenu element > shows 'Ungroup selection' in context menu for group inside selected elements > [end of test] number of renders 1`] = `12`;
 
 exports[`contextMenu element > shows 'Ungroup selection' in context menu for group inside selected elements > [end of test] redo stack 1`] = `[]`;
 
@@ -6999,7 +7153,7 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -7053,7 +7207,7 @@ exports[`contextMenu element > shows 'Ungroup selection' in context menu for gro
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",
@@ -7752,7 +7906,8 @@ exports[`contextMenu element > shows context menu for canvas > [end of test] app
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -7807,6 +7962,16 @@ exports[`contextMenu element > shows context menu for canvas > [end of test] app
     "x": 0,
     "y": 0,
   },
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -8754,7 +8919,8 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -8806,6 +8972,16 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
   "openPopup": null,
   "openSidebar": null,
   "originSnapOffset": null,
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -9747,7 +9923,8 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
   "currentItemFontFamily": 5,
   "currentItemFontSize": 20,
   "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
+  "currentItemPatternStrokeWidth": null,
+  "currentItemRoughness": 0,
   "currentItemRoundness": "sharp",
   "currentItemStartArrowhead": null,
   "currentItemStrokeColor": "#1e1e1e",
@@ -9802,6 +9979,16 @@ exports[`contextMenu element > shows context menu for element > [end of test] ap
     "x": 0,
     "y": 0,
   },
+  "patternGridEdgeLengthsEnabled": false,
+  "patternGridLabelsEnabled": true,
+  "patternGridMeasurementsEnabled": true,
+  "patternGridMeasurementsSelectedOnly": true,
+  "patternGridModeEnabled": false,
+  "patternGridPixelsPerInch": 100,
+  "patternGridSeamAllowanceEnabled": false,
+  "patternGridSeamAllowanceInches": "0.50000",
+  "patternGridSnapEnabled": true,
+  "patternGridSubdivisions": 4,
   "penDetected": false,
   "penMode": false,
   "preferredSelectionTool": {
@@ -9860,7 +10047,7 @@ exports[`contextMenu element > shows context menu for element > [end of test] el
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1278240551,
   "strokeColor": "#1e1e1e",
@@ -9892,7 +10079,7 @@ exports[`contextMenu element > shows context menu for element > [end of test] el
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1,
   "strokeColor": "#1e1e1e",
@@ -9924,7 +10111,7 @@ exports[`contextMenu element > shows context menu for element > [end of test] el
   "link": null,
   "locked": false,
   "opacity": 100,
-  "roughness": 1,
+  "roughness": 0,
   "roundness": null,
   "seed": 1,
   "strokeColor": "#1e1e1e",
@@ -9944,7 +10131,7 @@ exports[`contextMenu element > shows context menu for element > [end of test] nu
 
 exports[`contextMenu element > shows context menu for element > [end of test] number of elements 2`] = `2`;
 
-exports[`contextMenu element > shows context menu for element > [end of test] number of renders 1`] = `5`;
+exports[`contextMenu element > shows context menu for element > [end of test] number of renders 1`] = `6`;
 
 exports[`contextMenu element > shows context menu for element > [end of test] number of renders 2`] = `6`;
 
@@ -9985,7 +10172,7 @@ exports[`contextMenu element > shows context menu for element > [end of test] un
             "link": null,
             "locked": false,
             "opacity": 100,
-            "roughness": 1,
+            "roughness": 0,
             "roundness": null,
             "strokeColor": "#1e1e1e",
             "strokeStyle": "solid",

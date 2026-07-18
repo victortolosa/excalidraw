@@ -49,7 +49,7 @@ describe("move element", () => {
       expect(renderInteractiveScene.mock.calls.length).toMatchInlineSnapshot(
         `5`,
       );
-      expect(renderStaticScene.mock.calls.length).toMatchInlineSnapshot(`5`);
+      expect(renderStaticScene.mock.calls.length).toMatchInlineSnapshot(`6`);
       expect(h.state.selectionElement).toBeNull();
       expect(h.elements.length).toEqual(1);
       expect(h.state.selectedElementIds[h.elements[0].id]).toBeTruthy();
@@ -104,7 +104,7 @@ describe("move element", () => {
     expect(renderInteractiveScene.mock.calls.length).toMatchInlineSnapshot(
       `16`,
     );
-    expect(renderStaticScene.mock.calls.length).toMatchInlineSnapshot(`15`);
+    expect(renderStaticScene.mock.calls.length).toMatchInlineSnapshot(`16`);
     expect(h.state.selectionElement).toBeNull();
     expect(h.elements.length).toEqual(3);
     expect(h.state.selectedElementIds[rectB.id]).toBeTruthy();
@@ -158,7 +158,7 @@ describe("duplicate element on move when ALT is clicked", () => {
       expect(renderInteractiveScene.mock.calls.length).toMatchInlineSnapshot(
         `5`,
       );
-      expect(renderStaticScene.mock.calls.length).toMatchInlineSnapshot(`5`);
+      expect(renderStaticScene.mock.calls.length).toMatchInlineSnapshot(`6`);
       expect(h.state.selectionElement).toBeNull();
       expect(h.elements.length).toEqual(1);
       expect(h.state.selectedElementIds[h.elements[0].id]).toBeTruthy();
