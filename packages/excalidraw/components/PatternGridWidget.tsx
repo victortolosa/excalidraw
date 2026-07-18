@@ -23,6 +23,7 @@ type PatternGridWidgetProps = {
     | "patternGridLabelsEnabled"
     | "patternGridMeasurementsEnabled"
     | "patternGridMeasurementsSelectedOnly"
+    | "patternGridEdgeLengthsEnabled"
     | "patternGridPixelsPerInch"
     | "patternGridSubdivisions"
     | "objectsSnapModeEnabled"
@@ -158,6 +159,20 @@ export const PatternGridWidget = ({
                 setAppState({
                   patternGridMeasurementsSelectedOnly:
                     !appState.patternGridMeasurementsSelectedOnly,
+                })
+              }
+            />
+          </label>
+          <label className="PatternGridWidget__toggle">
+            <span>Edge lengths</span>
+            <input
+              type="checkbox"
+              checked={appState.patternGridEdgeLengthsEnabled}
+              disabled={!appState.patternGridMeasurementsEnabled}
+              onChange={() =>
+                setAppState({
+                  patternGridEdgeLengthsEnabled:
+                    !appState.patternGridEdgeLengthsEnabled,
                 })
               }
             />

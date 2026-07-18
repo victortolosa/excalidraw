@@ -13,8 +13,11 @@ import {
   isFreeDrawElement,
   isIframeLikeElement,
   isLinearElement,
+  isLineElement,
   isTextElement,
+  LinearElementEditor,
 } from "@excalidraw/element";
+import { pointDistance } from "@excalidraw/math";
 import {
   elementOverlapsWithFrame,
   getTargetFrame,
@@ -28,6 +31,8 @@ import { getElementAbsoluteCoords } from "@excalidraw/element";
 import type {
   ElementsMap,
   ExcalidrawFrameLikeElement,
+  ExcalidrawLinearElement,
+  NonDeleted,
   NonDeletedExcalidrawElement,
 } from "@excalidraw/element/types";
 
@@ -37,8 +42,9 @@ import {
   getLinkHandleFromCoords,
 } from "../components/hyperlink/helpers";
 
-import { bootstrapCanvas, getNormalizedCanvasDimensions } from "./helpers";
 import { getPatternGridSize } from "../patternGrid";
+
+import { bootstrapCanvas, getNormalizedCanvasDimensions } from "./helpers";
 
 import type {
   StaticCanvasRenderConfig,
@@ -225,16 +231,20 @@ const getElementMeasurements = (
   return [];
 };
 
+const formatInches = (value: number, pixelsPerInch: number) => {
+  const inches = value / pixelsPerInch;
+  const rounded = Math.round(inches * 10) / 10;
+  const formatted = Number.isInteger(rounded)
+    ? `${rounded}`
+    : rounded.toFixed(1);
+
+  return `${formatted}"`;
+};
+
 const formatMeasurementValue = (
   measurement: ElementMeasurement,
   pixelsPerInch: number,
-) => {
-  const inches = measurement.value / pixelsPerInch;
-  const rounded = Math.round(inches * 10) / 10;
-  const value = Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
-
-  return `${measurement.label} ${value}"`;
-};
+) => `${measurement.label} ${formatInches(measurement.value, pixelsPerInch)}`;
 
 const drawMeasurementLabel = (
   context: CanvasRenderingContext2D,
@@ -305,6 +315,49 @@ const getBoxMeasurementLabels = (
   formatMeasurementValue({ label: "H", value: height }, pixelsPerInch),
 ];
 
+// Minimum on-screen length (px) an edge must have to get its own length label —
+// keeps short/dense segments from overlapping. Zoom-aware, so labels naturally
+// drop out as you zoom out rather than needing a hard zoom gate.
+const MIN_EDGE_LABEL_SCREEN_PX = 24;
+
+// Per-edge length labels for line/polygon elements (pattern seams). Replaces the
+// single total-length ("L") label for these elements when enabled. Freedraw and
+// arrows are intentionally excluded (see the caller).
+const renderEdgeLengthLabels = (
+  context: CanvasRenderingContext2D,
+  element: NonDeleted<ExcalidrawLinearElement>,
+  elementsMap: ElementsMap,
+  appState: StaticCanvasAppState,
+  theme: StaticCanvasRenderConfig["theme"],
+) => {
+  const points = LinearElementEditor.getPointsGlobalCoordinates(
+    element,
+    elementsMap,
+  );
+
+  // A closed polygon stores its closing edge as an explicit final point pair
+  // (points[0] === points[last]), so iterating consecutive pairs measures every
+  // edge — including the closing one — with no special-casing.
+  for (let i = 0; i < points.length - 1; i++) {
+    const start = points[i];
+    const end = points[i + 1];
+    const length = pointDistance(start, end);
+
+    if (length * appState.zoom.value < MIN_EDGE_LABEL_SCREEN_PX) {
+      continue;
+    }
+
+    drawMeasurementLabel(
+      context,
+      [formatInches(length, appState.patternGridPixelsPerInch)],
+      (start[0] + end[0]) / 2 + appState.scrollX,
+      (start[1] + end[1]) / 2 + appState.scrollY,
+      appState.zoom,
+      theme,
+    );
+  }
+};
+
 const renderMeasurementLabels = (
   context: CanvasRenderingContext2D,
   visibleElements: readonly NonDeletedExcalidrawElement[],
@@ -371,6 +424,13 @@ const renderMeasurementLabels = (
     }
 
     if (isTextElement(element) || isIframeLikeElement(element)) {
+      continue;
+    }
+
+    // Line/polygon elements: show a length label on each edge instead of the
+    // single total-length label.
+    if (appState.patternGridEdgeLengthsEnabled && isLineElement(element)) {
+      renderEdgeLengthLabels(context, element, elementsMap, appState, theme);
       continue;
     }
 

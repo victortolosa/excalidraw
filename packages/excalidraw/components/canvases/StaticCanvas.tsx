@@ -98,6 +98,7 @@ const getRelevantAppStateProps = (appState: AppState): StaticCanvasAppState => {
     patternGridMeasurementsEnabled: appState.patternGridMeasurementsEnabled,
     patternGridMeasurementsSelectedOnly:
       appState.patternGridMeasurementsSelectedOnly,
+    patternGridEdgeLengthsEnabled: appState.patternGridEdgeLengthsEnabled,
     patternGridPixelsPerInch: appState.patternGridPixelsPerInch,
     patternGridSubdivisions: appState.patternGridSubdivisions,
     frameRendering: appState.frameRendering,
