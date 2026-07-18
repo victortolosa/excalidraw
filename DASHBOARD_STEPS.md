@@ -187,3 +187,66 @@ opens files.
 
 **Phase verify:** two-tab edit triggers the conflict UI; killing the server mid-edit
 doesn't lose work; remote checklist passes.
+
+---
+
+## Phase 6 — Sewing pattern tools
+
+This fork doubles as a sewing-pattern editor. Every feature here is **gated behind the
+pattern grid config** — nothing renders outside pattern-grid mode. State lives in
+`appState` under the `patternGrid*` prefix (with matching `{ browser, export, server }`
+persistence and a `types.ts` entry in both `AppState` and the `StaticCanvasAppState`
+pick, threaded through `StaticCanvas.tsx`); rendering is in
+`packages/excalidraw/renderer/staticScene.ts`; the control UI is
+`packages/excalidraw/components/PatternGridWidget.tsx`. Follow the existing toggles when
+adding a new one.
+
+Already landed:
+
+- [x] **6.1 Pattern grid overlay.** Real-world inch grid with pixels-per-inch scale,
+  1/4"–1/10" subdivisions, snap, and inch labels.
+- [x] **6.2 Configurable scale + zoom range.** Preset + custom px-per-inch (10–1000);
+  `MIN_ZOOM` lowered to 0.02 so large patterns fit on screen.
+- [x] **6.3 Measurements + per-edge lengths.** Element W/H/perimeter labels, plus a
+  per-edge length label on each segment of line/polygon pieces
+  (`patternGridEdgeLengthsEnabled`).
+
+Next — **seam allowance visualization** (print-bleed analogy: the drawn shape is the
+finished/stitch line, the offset outline is the cut line, the band between is the
+allowance). Build in two commits; the geometry is the riskiest part we've added, so land
+it first and eyeball it before wiring the calc.
+
+- [ ] **6.4 Seam allowance — geometry + band (commit 1).** New config
+  `patternGridSeamAllowanceEnabled` (bool, default off) + `patternGridSeamAllowanceInches`
+  (number, default `0.5`; widget offers 3/8 · 1/2 · 5/8 preset chips + a custom input,
+  disabled unless Measurements is on). Gated by
+  `patternGridModeEnabled && patternGridMeasurementsEnabled && patternGridSeamAllowanceEnabled`.
+  Convert the allowance to px via `patternGridPixelsPerInch`, then draw an outward offset
+  of each shape:
+  - **rect / ellipse:** exact grow (W+2a × H+2a / radii + a).
+  - **closed line/polygon:** true contour offset — push each edge along its outward normal
+    (winding from signed area) by `a`, reconnect corners with a **miter join, beveling past
+    a miter limit** so acute corners don't spike. Build from `vectorNormal` / `vectorScale`
+    / segment-intersection in `@excalidraw/math`.
+  - **fallback:** if the offset self-intersects (shape too small for the allowance, or a
+    nasty concave corner), draw the **bounding-box band** for that shape, styled as
+    approximate. This bounds the blast radius.
+  - **open polylines:** skip — no enclosed piece.
+  - **draw:** translucent/hatched fill in the band (even-odd path between finished + cut
+    rings) + a dashed cut-line outline, themed via `GridLineColor`.
+  *Done when:* enabling the toggle draws a dashed cut line offset by the set allowance
+  around a rectangle and a triangle; a shape shrunk below the allowance degrades to the
+  bbox band instead of drawing garbage; nothing renders when pattern-grid mode is off.
+- [ ] **6.5 Seam allowance — calc (commit 2).** Compute **finished** size (shape bbox W×H
+  + area via shoelace) and **with-allowance** size (offset-ring bbox W×H + area). Surface
+  both: on-canvas `Finished W×H` / `Cut W×H` label lines near each shape (reuse
+  `drawMeasurementLabel`), **and** a selection summary line in the widget
+  (e.g. `Finished 8×10" · Cut 9×11"`).
+  *Done when:* selecting a piece shows finished vs. cut dimensions both on-canvas and in
+  the widget, and the numbers track the allowance setting live.
+
+Deferred (revisit after v1): per-edge allowances (hem ≠ seam), notches, inner offset.
+
+**Phase verify:** toggling seam allowance on a rectangle and a triangle shows a correct
+offset cut line and matching finished/cut sizes; a tiny shape falls back to the bbox band;
+everything is off outside pattern-grid mode.
