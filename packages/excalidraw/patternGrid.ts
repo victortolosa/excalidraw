@@ -21,7 +21,9 @@ export const PATTERN_GRID_STROKE_WIDTH_PRESETS = [
   0.0625, // 1/16"
 ] as const;
 export const MIN_PATTERN_GRID_STROKE_WIDTH_INCHES = 0.005;
-export const MAX_PATTERN_GRID_STROKE_WIDTH_INCHES = 0.5;
+// Generous upper bound: guards against absurd/NaN input without clamping real
+// values. (Was 0.5", which silently capped anything thicker.)
+export const MAX_PATTERN_GRID_STROKE_WIDTH_INCHES = 4;
 // A middle-of-the-range fallback, only used when normalizing a non-finite input.
 export const DEFAULT_PATTERN_GRID_STROKE_WIDTH_INCHES = 0.03125; // 1/32"
 
