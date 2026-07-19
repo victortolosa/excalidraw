@@ -6,9 +6,7 @@ This fork is the patched source for the self-hosted Excalidraw instance running 
 
 The server does not build Excalidraw. The server only pulls and runs a Docker image built by GitHub Actions.
 
-> **This is a personal fork — never open a PR against `excalidraw/excalidraw` and never
-> push to `upstream`.** See [FORK_POLICY.md](FORK_POLICY.md) for the full policy and how
-> to enforce it locally.
+> **This is a personal fork — never open a PR against `excalidraw/excalidraw` and never push to `upstream`.** See [FORK_POLICY.md](FORK_POLICY.md) for the full policy and how to enforce it locally.
 
 ## System map
 
@@ -114,9 +112,7 @@ Normal deploys use `latest`. The SHA tag is kept for rollback.
 
 ## Docker image
 
-The root `Dockerfile` builds the Excalidraw app, then runs the fork's Node
-server from `server/`. The Node server serves both the static app and the
-`/api` file dashboard endpoints.
+The root `Dockerfile` builds the Excalidraw app, then runs the fork's Node server from `server/`. The Node server serves both the static app and the `/api` file dashboard endpoints.
 
 Runtime behavior:
 
@@ -168,9 +164,7 @@ After push, confirm the `build-and-push` workflow succeeded in GitHub Actions.
 
 ## Server deploy workflow
 
-A source push to `custom` creates a new GHCR image and moves the
-`ghcr.io/victortolosa/excalidraw:latest` tag. After GitHub Actions publishes
-the image, deploy on `docker-i5`:
+A source push to `custom` creates a new GHCR image and moves the `ghcr.io/victortolosa/excalidraw:latest` tag. After GitHub Actions publishes the image, deploy on `docker-i5`:
 
 ```bash
 ssh victor@10.0.0.71
@@ -181,8 +175,7 @@ docker logs excalidraw --tail=50
 curl -s http://127.0.0.1:8085/api/health
 ```
 
-The homelab repo only needs a commit when the stack config changes, not for
-normal Excalidraw source deploys.
+The homelab repo only needs a commit when the stack config changes, not for normal Excalidraw source deploys.
 
 If the UI is still old, check the image tag and force a pull/recreate:
 
@@ -193,14 +186,9 @@ docker compose pull excalidraw
 docker compose up -d --force-recreate excalidraw
 ```
 
-The image should normally be `ghcr.io/victortolosa/excalidraw:latest`.
-`docker compose pull` pulls the image named in the compose file. If the server
-has a cached `latest`, pulling before recreate is required.
+The image should normally be `ghcr.io/victortolosa/excalidraw:latest`. `docker compose pull` pulls the image named in the compose file. If the server has a cached `latest`, pulling before recreate is required.
 
-`/opt/stacks/excalidraw/compose.yml` is only a deployed copy of the homelab
-template. If `/opt/stacks/excalidraw/docker-compose.yml` also exists, archive
-it once (`mv docker-compose.yml docker-compose.yml.old`) so Docker Compose does
-not warn about multiple default compose files.
+`/opt/stacks/excalidraw/compose.yml` is only a deployed copy of the homelab template. If `/opt/stacks/excalidraw/docker-compose.yml` also exists, archive it once (`mv docker-compose.yml docker-compose.yml.old`) so Docker Compose does not warn about multiple default compose files.
 
 Open:
 
@@ -216,9 +204,7 @@ If managing the stack through Dockge, use Dockge to pull and recreate the stack 
 Prefer rollback by immutable image tag.
 
 1. Find the last good commit SHA from GitHub Actions or GHCR.
-2. Edit `/opt/stacks/excalidraw/compose.yml` on `docker-i5` for an emergency
-   rollback, or edit `docker-services/excalidraw/compose.yml` in the homelab
-   repo if you want the rollback tracked in Git.
+2. Edit `/opt/stacks/excalidraw/compose.yml` on `docker-i5` for an emergency rollback, or edit `docker-services/excalidraw/compose.yml` in the homelab repo if you want the rollback tracked in Git.
 3. Temporarily set:
 
 ```yaml
@@ -234,8 +220,7 @@ docker compose up -d --force-recreate excalidraw
 curl -I http://127.0.0.1:8085
 ```
 
-After the broken `custom` branch is fixed and a new good image is published,
-switch the compose file back to:
+After the broken `custom` branch is fixed and a new good image is published, switch the compose file back to:
 
 ```yaml
 image: ghcr.io/victortolosa/excalidraw:latest
@@ -243,19 +228,68 @@ image: ghcr.io/victortolosa/excalidraw:latest
 
 ## Updating from upstream
 
-Use the upstream sync runbook in [DASHBOARD_PLAN.md](DASHBOARD_PLAN.md):
-**merge, never rebase** — `custom` is pushed and deployed, so history must
-not be rewritten. Sync at phase boundaries only.
+Upstream (excalidraw/excalidraw) moves fast — often several commits a day. Don't chase it; sync deliberately. The fork works fine without syncing, so a sync is always _optional_, driven by wanting an upstream fix/feature or avoiding drift. **Merge, never rebase** — `custom` is pushed and deployed, so history must not be rewritten.
+
+### When to sync
+
+- At **phase/feature boundaries only** — never mid-feature (a half-built feature plus a merge is two problems at once).
+- Roughly **monthly**, or when upstream ships something you specifically want.
+- Before syncing, skim upstream changes for danger zones: `git log --oneline custom..upstream/master -- excalidraw-app/ Dockerfile package.json`
+
+### Procedure
 
 ```bash
-cd /Users/victortolosa/Repos/excalidraw
+# 1. Preconditions: clean working tree, current work committed
 git fetch upstream
 git checkout custom
-git merge upstream/master
+git merge upstream/master        # merge, never rebase — custom is pushed & deployed
+# 2. Resolve conflicts per the playbook below
+# 3. Run the post-merge verification checklist
+# 4. Push only after verification passes (push triggers the GHCR image build)
 ```
 
-Resolve conflicts per the plan's conflict playbook, run its post-merge
-verification checklist, then `git push origin custom`.
+If the merge turns into a mess: `git merge --abort`, stay on the last good state, and investigate the offending upstream refactor as its own task. Never resolve conflicts you don't understand just to get the merge through.
+
+### Conflict playbook
+
+| File / area | Expected? | Strategy |
+| --- | --- | --- |
+| `server/`, `excalidraw-app/dashboard/`, `serverStorage.ts` | Never (ours only) | No action |
+| `excalidraw-app/App.tsx` | Occasionally | Re-apply the _intent_ of our patch (routing + the server-save branch inside `onChange`) onto upstream's new code — don't blindly keep "ours". Our diff is deliberately <30 lines to make this easy |
+| `Dockerfile` | Rare (~2×/year upstream) | Take upstream's **build stage** changes (node version bumps etc.), keep our **runtime stage** (Node server instead of nginx) |
+| `package.json` / `yarn.lock` (root) | If we added workspace deps | Take upstream's version, re-add our deps, re-run `yarn` to regenerate the lockfile |
+| `.github/workflows/` | Rare | Upstream workflows: take theirs. `build-custom.yml` is ours only |
+| Anything else | Shouldn't happen | If a third upstream file has our changes in it, that's scope creep — note it in the fork surface manifest below and consider refactoring the patch to be additive |
+
+### Post-merge verification checklist
+
+The dangerous failures are **silent** — a merge that succeeds textually but breaks our hook points semantically. Check in this order (cheap → expensive):
+
+- [ ] `yarn test:typecheck` — catches renamed/removed APIs we depend on
+- [ ] Grep that our integration points still exist and look the same:
+  - the app-level `onChange` save hook (the `LocalData.save` call, ~line 689) in `excalidraw-app/App.tsx` — our server-save branch sits here
+  - hash-route dispatch (`#json=`, `#url=`, our `#/d/`) in `excalidraw-app/App.tsx`
+  - `exportToSvg` signature in `@excalidraw/utils` (thumbnails)
+  - `.excalidraw` format `version` field — if bumped, test loading an old file
+- [ ] `yarn test:update`
+- [ ] Docker smoke test: `docker build` locally, run with a mounted dir, then the full loop — dashboard loads → open drawing → edit → autosave hits disk → reload restores
+- [ ] Only now: `git push origin custom` (kicks off the GHCR build)
+
+### Fork surface manifest
+
+Every upstream file we modify, and why. **Keep this current** — during a conflict, this table is what tells you the intent to re-apply. Additive files/dirs (`server/`, `excalidraw-app/dashboard/`, `serverStorage.ts`) don't belong here.
+
+| Upstream file | Why we touch it | Patch size target |
+| --- | --- | --- |
+| `Dockerfile` | Runtime stage: Node server instead of nginx | Runtime stage only |
+| `excalidraw-app/App.tsx` | `#/d/<path>` routing + server-save branch inside the existing `onChange`; does **not** touch `LocalData.ts` | 29 lines (landed) |
+| `vitest.config.mts` | Exclude `server/**` (has its own node:test suite) | 2 lines |
+| `excalidraw-app/index.tsx` | Mount `DashboardRoot` instead of `ExcalidrawApp` | 3 lines (landed) |
+| `excalidraw-app/vite.config.mts` | Dev proxy `/api` → local server (port 3011) | <10 lines |
+| `.dockerignore` | Allowlist entry for `server/` | 1 line |
+| `.gitignore` | Unignore `server/package-lock.json` | 2 lines |
+
+(If this table grows past ~8 rows, patches are getting too invasive — refactor toward additive files.)
 
 ## Boundaries
 
@@ -278,8 +312,7 @@ verification checklist, then `git push origin custom`.
 
 ## Collaboration and storage
 
-The current deployment is the built Excalidraw app served by the fork's Node
-server. The Node server also owns the `/api` file dashboard endpoints.
+The current deployment is the built Excalidraw app served by the fork's Node server. The Node server also owns the `/api` file dashboard endpoints.
 
 Real-time collaboration is a separate system. It requires additional backend and routing decisions. Do not treat it as part of the normal patch workflow.
 

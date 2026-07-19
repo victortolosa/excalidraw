@@ -1,12 +1,34 @@
 import {
   applyDarkModeFilter,
   COLOR_PALETTE,
+  getColorAlpha,
   rgbToHex,
+  setColorAlpha,
 } from "@excalidraw/common";
 
 describe("COLOR_PALETTE", () => {
   it("color palette doesn't regress", () => {
     expect(COLOR_PALETTE).toMatchSnapshot();
+  });
+});
+
+describe("color alpha", () => {
+  it("reads alpha as a percentage", () => {
+    expect(getColorAlpha("#ff000080")).toBe(50);
+    expect(getColorAlpha("rgba(255, 0, 0, 0.25)")).toBe(25);
+    expect(getColorAlpha("#ff0000")).toBe(100);
+  });
+
+  it("sets alpha while preserving the color", () => {
+    expect(setColorAlpha("#ff0000", 50)).toBe("#ff000080");
+    expect(setColorAlpha("#abcdef80", 100)).toBe("#abcdef");
+    expect(setColorAlpha("transparent", 25)).toBe("#00000040");
+  });
+
+  it("clamps alpha and rejects invalid colors", () => {
+    expect(setColorAlpha("#ff0000", -1)).toBe("#ff000000");
+    expect(setColorAlpha("#ff0000", 101)).toBe("#ff0000");
+    expect(setColorAlpha("not-a-color", 50)).toBe(null);
   });
 });
 

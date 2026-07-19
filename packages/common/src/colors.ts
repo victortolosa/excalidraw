@@ -295,6 +295,24 @@ export const colorToHex = (color: string): string | null => {
   return rgbToHex(r, g, b, a);
 };
 
+export const getColorAlpha = (color: string): number => {
+  const tc = tinycolor(color);
+  return tc.isValid() ? Math.round(tc.getAlpha() * 100) : 100;
+};
+
+export const setColorAlpha = (
+  color: string,
+  alphaPercent: number,
+): string | null => {
+  const tc = tinycolor(color);
+  if (!tc.isValid()) {
+    return null;
+  }
+
+  const { r, g, b } = tc.toRgb();
+  return rgbToHex(r, g, b, clamp(alphaPercent, 0, 100) / 100);
+};
+
 export const isTransparent = (color: string) => {
   return tinycolor(color).getAlpha() === 0;
 };

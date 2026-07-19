@@ -27,6 +27,7 @@ import {
 } from "../../hooks/useTextEditorFocus";
 
 import { ColorInput } from "./ColorInput";
+import { ColorAlpha } from "./ColorAlpha";
 import { Picker } from "./Picker";
 import PickerHeading from "./PickerHeading";
 import { TopPicks } from "./TopPicks";
@@ -97,6 +98,9 @@ const ColorPickerPopupContent = ({
         colorPickerType={type}
         placeholder={t("colorPicker.color")}
       />
+      {color && type !== "canvasBackground" && (
+        <ColorAlpha color={color} onChange={onChange} />
+      )}
     </div>
   );
 

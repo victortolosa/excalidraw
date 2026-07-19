@@ -49,6 +49,21 @@
   </figure>
 </div>
 
+## Sewing pattern tools in this fork
+
+This personal fork extends Excalidraw with tools for drafting sewing patterns on an infinite canvas. These features are specific to the `custom` branch and are not part of upstream Excalidraw or excalidraw.com.
+
+- Inch-scaled pattern grid with configurable pixels per inch and 1/4-inch or 1/10-inch subdivisions.
+- Optional snapping to the pattern grid.
+- On-canvas dimensions in inches, with controls for all elements or selected elements only.
+- Individual edge-length labels for line and polygon pieces.
+- Outward seam-allowance previews for closed pattern pieces, with preset and custom inch values.
+- Pattern stroke widths entered as real-world inch measurements.
+- Inside, center, and outside stroke alignment for placing line weight relative to the drafted path.
+- Canvas, PNG, and SVG rendering support for pattern stroke alignment.
+
+Current limitations and planned additions such as per-edge seam allowances, notches, and inward offsets are tracked in [PATTERN_TOOLS_BACKLOG.md](./PATTERN_TOOLS_BACKLOG.md).
+
 ## Features
 
 The Excalidraw editor (npm package) supports:

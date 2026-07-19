@@ -54,6 +54,7 @@ const getSubdivisionLabel = (subdivision: number) => {
 };
 
 const SEAM_ALLOWANCE_FRACTION_LABELS: Record<string, string> = {
+  "0.25": "1/4",
   "0.375": "3/8",
   "0.5": "1/2",
   "0.625": "5/8",

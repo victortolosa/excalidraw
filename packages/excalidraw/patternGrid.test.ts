@@ -2,10 +2,19 @@ import {
   DEFAULT_PATTERN_GRID_STROKE_WIDTH_INCHES,
   MAX_PATTERN_GRID_STROKE_WIDTH_INCHES,
   MIN_PATTERN_GRID_STROKE_WIDTH_INCHES,
+  PATTERN_GRID_SEAM_ALLOWANCE_PRESETS,
   getNormalizedPatternGridStrokeWidthInches,
   patternGridInchesToStrokeWidth,
   patternGridStrokeWidthToInches,
 } from "./patternGrid";
+
+describe("pattern grid seam allowance", () => {
+  it("offers the common quarter-inch through five-eighths presets", () => {
+    expect(PATTERN_GRID_SEAM_ALLOWANCE_PRESETS).toEqual([
+      0.25, 0.375, 0.5, 0.625,
+    ]);
+  });
+});
 
 describe("pattern grid stroke width (inches)", () => {
   describe("getNormalizedPatternGridStrokeWidthInches", () => {
