@@ -101,6 +101,11 @@ const getCanvasPadding = (element: ExcalidrawElement) => {
         return 40;
       }
       return 20;
+    case "line":
+      // Outside pattern bands allow miter tips up to 4 * full stroke width. The
+      // canvas sizing code treats padding as device pixels, so convert the
+      // required scene-space reach before allocating the offscreen canvas.
+      return Math.max(20, element.strokeWidth * 4 * window.devicePixelRatio);
     default:
       return 20;
   }
@@ -145,6 +150,7 @@ export interface ExcalidrawElementWithCanvas {
   imageCrop: ExcalidrawImageElement["crop"] | null;
   containingFrameOpacity: number;
   patternStrokeAlign: StaticCanvasRenderConfig["patternStrokeAlign"];
+  patternGridModeEnabled: StaticCanvasRenderConfig["patternGridModeEnabled"];
   boundTextCanvas: HTMLCanvasElement;
 }
 
@@ -335,6 +341,7 @@ const generateElementCanvas = (
     containingFrameOpacity:
       getContainingFrame(element, elementsMap)?.opacity || 100,
     patternStrokeAlign: renderConfig.patternStrokeAlign,
+    patternGridModeEnabled: renderConfig.patternGridModeEnabled,
     boundTextCanvas,
     angle: element.angle,
     imageCrop: isImageElement(element) ? element.crop : null,
@@ -639,8 +646,10 @@ const generateElementWithCanvas = (
     // pattern-mode stroke alignment shifts the drawn line — regenerate the
     // cached canvas when it changes (only line/polygon elements are affected)
     (isLineElement(element) &&
-      prevElementWithCanvas.patternStrokeAlign !==
-        renderConfig.patternStrokeAlign) ||
+      (prevElementWithCanvas.patternStrokeAlign !==
+        renderConfig.patternStrokeAlign ||
+        prevElementWithCanvas.patternGridModeEnabled !==
+          renderConfig.patternGridModeEnabled)) ||
     // since we rotate the canvas when copying from cached canvas, we don't
     // regenerate the cached canvas. But we need to in case of labels which are
     // cached alongside the arrow, and we want the labels to remain unrotated

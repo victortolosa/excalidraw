@@ -2410,6 +2410,8 @@ class App extends React.Component<AppProps, AppState> {
                                 .patternGridModeEnabled
                                 ? this.state.patternGridStrokeAlign
                                 : "center",
+                              patternGridModeEnabled:
+                                this.state.patternGridModeEnabled,
                             }}
                           />
                           {newElementCanvasElement && (
@@ -2436,6 +2438,8 @@ class App extends React.Component<AppProps, AppState> {
                                   .patternGridModeEnabled
                                   ? this.state.patternGridStrokeAlign
                                   : "center",
+                                patternGridModeEnabled:
+                                  this.state.patternGridModeEnabled,
                               }}
                             />
                           )}

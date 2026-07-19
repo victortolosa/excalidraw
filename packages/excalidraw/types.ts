@@ -199,12 +199,10 @@ type _CommonCanvasAppState = {
 
 /**
  * Pattern mode: where an element's stroke sits relative to its (on-grid) path.
- * "center" is the default centered stroke; "inside" offsets the drawn stroke so
- * its outer edge lands exactly on the vector line (ink entirely inside the path).
- * ("outside" was dropped — a thick outward stroke exceeds the element canvas and
- * gets clipped.)
+ * "center" straddles the path; "inside" and "outside" place all ink on the
+ * corresponding side. For open paths, outside is the opposite side from inside.
  */
-export type PatternStrokeAlign = "center" | "inside";
+export type PatternStrokeAlign = "inside" | "center" | "outside";
 
 export type StaticCanvasAppState = Readonly<
   _CommonCanvasAppState & {

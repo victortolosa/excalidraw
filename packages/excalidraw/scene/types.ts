@@ -40,6 +40,8 @@ export type StaticCanvasRenderConfig = {
   theme: AppState["theme"];
   /** pattern-mode stroke alignment; "center" = default centered stroke */
   patternStrokeAlign: PatternStrokeAlign;
+  /** whether pattern grid mode is active (gates pattern-only stroke rendering) */
+  patternGridModeEnabled: boolean;
 };
 
 export type SVGRenderConfig = {
@@ -61,6 +63,8 @@ export type SVGRenderConfig = {
   theme: AppState["theme"];
   /** pattern-mode stroke alignment; "center" = default centered stroke */
   patternStrokeAlign: PatternStrokeAlign;
+  /** whether pattern grid mode is active (gates pattern-only stroke rendering) */
+  patternGridModeEnabled: boolean;
 };
 
 export type InteractiveCanvasRenderConfig = {

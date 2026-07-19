@@ -39,6 +39,7 @@ import type { Mutable } from "@excalidraw/common/utility-types";
 import type {
   AppState,
   EmbedsValidationStatus,
+  PatternStrokeAlign,
 } from "@excalidraw/excalidraw/types";
 import type {
   ElementShape,
@@ -169,13 +170,14 @@ export class ShapeCache {
   };
 
   /**
-   * Non-cached rough shape for a line/polygon element whose stroke is offset to
-   * one side (pattern-mode "inside"/"outside" alignment). Deliberately kept OUT
+   * Non-cached filled stroke band for a pattern-mode line/polygon. Deliberately
+   * kept OUT
    * of the shared ShapeCache so hit-testing and bounds keep using the true,
    * on-grid geometry — only the drawn stroke shifts.
    */
   public static generatePatternOffsetShape = (
     element: ExcalidrawLinearElement,
+    align: PatternStrokeAlign,
     isDarkMode: boolean,
   ): Drawable[] | null => {
     if (element.points.length < 2 || element.strokeWidth <= 0) {
@@ -186,29 +188,90 @@ export class ShapeCache {
       (element.type === "line" && (element as ExcalidrawLineElement).polygon) ||
       isPathALoop(element.points);
 
-    // "inside" alignment renders as a FILLED band between the path (outer edge)
-    // and the path offset inward by the full stroke width (inner edge). Filling
-    // the region gives exact polygon corners; stroking an offset centerline
-    // leaves join notches at corners that rough.js won't miter cleanly.
-    const inwardSign = closed ? (signedArea(element.points) >= 0 ? -1 : 1) : -1;
-    const inner = offsetPolyline(
-      element.points,
-      inwardSign * element.strokeWidth,
-      closed,
-    );
-    if (inner.length < 2) {
-      return null;
-    }
+    // Render pattern strokes as FILLED bands. Rough.js builds a polyline from
+    // separately perturbed strokes, which leaves visible gaps at thick miter
+    // joins. A single filled contour has one shared corner instead.
+    const outwardSign = closed ? (signedArea(element.points) >= 0 ? 1 : -1) : 1;
+    const distanceMultipliers: Record<
+      PatternStrokeAlign,
+      { outer: number; inner: number }
+    > = {
+      inside: { outer: 0, inner: -1 },
+      center: { outer: 0.5, inner: -0.5 },
+      outside: { outer: 1, inner: 0 },
+    };
+    const distances = distanceMultipliers[align];
+    const outerDistance = distances.outer * outwardSign * element.strokeWidth;
+    const innerDistance = distances.inner * outwardSign * element.strokeWidth;
 
-    // outer boundary = the path itself; strip any closing duplicate so we
-    // control closure explicitly
-    let outer = element.points as readonly LocalPoint[];
+    let pathPoints = element.points as readonly LocalPoint[];
     if (
       closed &&
-      outer.length > 1 &&
-      pointsEqual(outer[0], outer[outer.length - 1])
+      pathPoints.length > 1 &&
+      pointsEqual(pathPoints[0], pathPoints[pathPoints.length - 1])
     ) {
-      outer = outer.slice(0, -1);
+      pathPoints = pathPoints.slice(0, -1);
+    }
+
+    const base = generateRoughOptions(element, false, isDarkMode);
+
+    // Filled contours cannot represent dashes, and offsetting the control
+    // points as a polygon would turn rounded lines into sharp segments. Those
+    // cases use a shifted Rough.js centerline instead. Curved joins do not have
+    // the thick-miter gap which requires the filled-band renderer.
+    if (element.strokeStyle !== "solid" || element.roundness) {
+      const renderedStrokeWidth = base.strokeWidth ?? element.strokeWidth;
+      const centerlineDistance =
+        ((distances.outer + distances.inner) / 2) *
+        outwardSign *
+        renderedStrokeWidth;
+      const centerline =
+        centerlineDistance === 0
+          ? [...pathPoints]
+          : offsetPolyline(pathPoints, centerlineDistance, closed);
+      const strokePoints = closed ? [...centerline, centerline[0]] : centerline;
+      const backgroundPoints = closed
+        ? [...pathPoints, pathPoints[0]]
+        : pathPoints;
+      const strokeOptions = { ...base, fill: undefined };
+      const shapes: Drawable[] = [];
+
+      if (closed && base.fill && base.fill !== "transparent") {
+        const backgroundOptions = { ...base, stroke: "none" };
+        shapes.push(
+          element.roundness
+            ? ShapeCache.rg.curve(
+                backgroundPoints as unknown as RoughPoint[],
+                backgroundOptions,
+              )
+            : ShapeCache.rg.polygon(
+                pathPoints as unknown as RoughPoint[],
+                backgroundOptions,
+              ),
+        );
+      }
+
+      shapes.push(
+        element.roundness
+          ? ShapeCache.rg.curve(
+              strokePoints as unknown as RoughPoint[],
+              strokeOptions,
+            )
+          : ShapeCache.rg.linearPath(
+              strokePoints as unknown as RoughPoint[],
+              strokeOptions,
+            ),
+      );
+      return shapes;
+    }
+
+    const outer =
+      outerDistance === 0
+        ? [...pathPoints]
+        : offsetPolyline(pathPoints, outerDistance, closed);
+    const inner = offsetPolyline(pathPoints, innerDistance, closed);
+    if (outer.length < 2 || inner.length < 2) {
+      return null;
     }
 
     const d = (pts: readonly LocalPoint[]) =>
@@ -219,24 +282,37 @@ export class ShapeCache {
     // nonzero rule. open: one closed ribbon from outer to reversed inner.
     const path = closed
       ? `${d(outer)} Z ${d(innerReversed)} Z`
-      : `${d(outer)} L${innerReversed.map((p) => `${p[0]},${p[1]}`).join(" L")} Z`;
+      : `${d(outer)} L${innerReversed
+          .map((p) => `${p[0]},${p[1]}`)
+          .join(" L")} Z`;
 
-    const base = generateRoughOptions(element, false, isDarkMode);
-    // fill the band with the (dark-mode-adjusted) stroke color; no outline
+    // Pattern geometry must land exactly on its calculated contour. Disabling
+    // Rough.js randomness also prevents adjacent fill edges from separating.
     const options = {
       ...base,
       fill: base.stroke,
       fillStyle: "solid" as const,
       stroke: "none",
+      roughness: 0,
+      maxRandomnessOffset: 0,
     };
 
-    return [ShapeCache.rg.path(path, options)];
+    const shapes: Drawable[] = [];
+    if (closed && base.fill && base.fill !== "transparent") {
+      shapes.push(
+        ShapeCache.rg.path(`${d(pathPoints)} Z`, {
+          ...base,
+          stroke: "none",
+        }),
+      );
+    }
+    shapes.push(ShapeCache.rg.path(path, options));
+    return shapes;
   };
 
   /**
-   * Shape used for RENDERING. In pattern mode with a non-center stroke
-   * alignment, returns a one-off offset shape for line/polygon elements;
-   * otherwise falls back to the normal cached shape.
+   * Shape used for RENDERING. In pattern mode, returns a one-off filled band
+   * for line/polygon elements; otherwise falls back to the normal cached shape.
    */
   public static getRenderShape = <
     T extends Exclude<ExcalidrawElement, ExcalidrawSelectionElement>,
@@ -244,9 +320,10 @@ export class ShapeCache {
     element: T,
     renderConfig: StaticCanvasRenderConfig | SVGRenderConfig | null,
   ) => {
-    if (renderConfig?.patternStrokeAlign === "inside" && element.type === "line") {
+    if (renderConfig?.patternGridModeEnabled && element.type === "line") {
       const offset = ShapeCache.generatePatternOffsetShape(
         element as unknown as ExcalidrawLinearElement,
+        renderConfig.patternStrokeAlign,
         renderConfig?.theme === THEME.DARK,
       );
       if (offset) {

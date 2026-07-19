@@ -276,6 +276,7 @@ export const exportToCanvas = async (
       patternStrokeAlign: appState.patternGridModeEnabled
         ? appState.patternGridStrokeAlign
         : "center",
+      patternGridModeEnabled: appState.patternGridModeEnabled,
     },
   });
 
@@ -503,6 +504,7 @@ export const exportToSvg = async (
       patternStrokeAlign: appState.patternGridModeEnabled
         ? appState.patternGridStrokeAlign ?? "center"
         : "center",
+      patternGridModeEnabled: appState.patternGridModeEnabled ?? false,
     },
   );
 
