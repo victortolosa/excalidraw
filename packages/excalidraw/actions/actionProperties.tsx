@@ -120,7 +120,6 @@ import {
   StrokeWidthExtraBoldIcon,
   StrokeAlignInsideIcon,
   StrokeAlignCenterIcon,
-  StrokeAlignOutsideIcon,
   FontSizeSmallIcon,
   FontSizeMediumIcon,
   FontSizeLargeIcon,
@@ -808,22 +807,16 @@ export const actionChangePatternStrokeAlign = register<PatternStrokeAlign>({
           group="pattern-stroke-align"
           options={[
             {
-              value: "inside",
-              text: t("labels.strokeAlignInside"),
-              icon: StrokeAlignInsideIcon,
-              testId: "patternStrokeAlign-inside",
-            },
-            {
               value: "center",
               text: t("labels.strokeAlignCenter"),
               icon: StrokeAlignCenterIcon,
               testId: "patternStrokeAlign-center",
             },
             {
-              value: "outside",
-              text: t("labels.strokeAlignOutside"),
-              icon: StrokeAlignOutsideIcon,
-              testId: "patternStrokeAlign-outside",
+              value: "inside",
+              text: t("labels.strokeAlignInside"),
+              icon: StrokeAlignInsideIcon,
+              testId: "patternStrokeAlign-inside",
             },
           ]}
           value={appState.patternGridStrokeAlign}

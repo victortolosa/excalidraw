@@ -1234,28 +1234,6 @@ export const StrokeAlignCenterIcon = createIcon(
   modifiedTablerIconProps,
 );
 
-export const StrokeAlignOutsideIcon = createIcon(
-  <>
-    <rect
-      x="4"
-      y="4"
-      width="12"
-      height="12"
-      stroke="currentColor"
-      strokeWidth="0.75"
-      opacity="0.4"
-    />
-    <rect
-      x="2.75"
-      y="2.75"
-      width="14.5"
-      height="14.5"
-      stroke="currentColor"
-      strokeWidth="1.75"
-    />
-  </>,
-  modifiedTablerIconProps,
-);
 
 export const StrokeStyleSolidIcon = React.memo(({ theme }: { theme: Theme }) =>
   createIcon(

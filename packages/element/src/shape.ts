@@ -14,6 +14,7 @@ import {
 import {
   pointFrom,
   pointDistance,
+  pointsEqual,
   offsetPolyline,
   type LocalPoint,
   pointRotateRads,
@@ -38,7 +39,6 @@ import type { Mutable } from "@excalidraw/common/utility-types";
 import type {
   AppState,
   EmbedsValidationStatus,
-  PatternStrokeAlign,
 } from "@excalidraw/excalidraw/types";
 import type {
   ElementShape,
@@ -176,7 +176,6 @@ export class ShapeCache {
    */
   public static generatePatternOffsetShape = (
     element: ExcalidrawLinearElement,
-    align: Exclude<PatternStrokeAlign, "center">,
     isDarkMode: boolean,
   ): Drawable[] | null => {
     if (element.points.length < 2 || element.strokeWidth <= 0) {
@@ -187,28 +186,51 @@ export class ShapeCache {
       (element.type === "line" && (element as ExcalidrawLineElement).polygon) ||
       isPathALoop(element.points);
 
-    const half = element.strokeWidth / 2;
-
-    let distance: number;
-    if (closed) {
-      // orient by winding so "outside" always enlarges the ring
-      const outward = signedArea(element.points) >= 0 ? 1 : -1;
-      distance = (align === "outside" ? outward : -outward) * half;
-    } else {
-      // open paths have no true inside/outside — offset to a consistent side
-      distance = (align === "outside" ? 1 : -1) * half;
+    // "inside" alignment renders as a FILLED band between the path (outer edge)
+    // and the path offset inward by the full stroke width (inner edge). Filling
+    // the region gives exact polygon corners; stroking an offset centerline
+    // leaves join notches at corners that rough.js won't miter cleanly.
+    const inwardSign = closed ? (signedArea(element.points) >= 0 ? -1 : 1) : -1;
+    const inner = offsetPolyline(
+      element.points,
+      inwardSign * element.strokeWidth,
+      closed,
+    );
+    if (inner.length < 2) {
+      return null;
     }
 
-    const points = offsetPolyline(element.points, distance, closed);
-    const options = generateRoughOptions(element, false, isDarkMode);
-    const generator = ShapeCache.rg;
-
-    if (!element.roundness) {
-      return options.fill
-        ? [generator.polygon(points as unknown as RoughPoint[], options)]
-        : [generator.linearPath(points as unknown as RoughPoint[], options)];
+    // outer boundary = the path itself; strip any closing duplicate so we
+    // control closure explicitly
+    let outer = element.points as readonly LocalPoint[];
+    if (
+      closed &&
+      outer.length > 1 &&
+      pointsEqual(outer[0], outer[outer.length - 1])
+    ) {
+      outer = outer.slice(0, -1);
     }
-    return [generator.curve(points as unknown as RoughPoint[], options)];
+
+    const d = (pts: readonly LocalPoint[]) =>
+      `M${pts.map((p) => `${p[0]},${p[1]}`).join(" L")}`;
+    const innerReversed = [...inner].reverse();
+
+    // closed: two subpaths (outer + reversed inner) fill as an annulus via the
+    // nonzero rule. open: one closed ribbon from outer to reversed inner.
+    const path = closed
+      ? `${d(outer)} Z ${d(innerReversed)} Z`
+      : `${d(outer)} L${innerReversed.map((p) => `${p[0]},${p[1]}`).join(" L")} Z`;
+
+    const base = generateRoughOptions(element, false, isDarkMode);
+    // fill the band with the (dark-mode-adjusted) stroke color; no outline
+    const options = {
+      ...base,
+      fill: base.stroke,
+      fillStyle: "solid" as const,
+      stroke: "none",
+    };
+
+    return [ShapeCache.rg.path(path, options)];
   };
 
   /**
@@ -222,11 +244,9 @@ export class ShapeCache {
     element: T,
     renderConfig: StaticCanvasRenderConfig | SVGRenderConfig | null,
   ) => {
-    const align = renderConfig?.patternStrokeAlign;
-    if (align && align !== "center" && element.type === "line") {
+    if (renderConfig?.patternStrokeAlign === "inside" && element.type === "line") {
       const offset = ShapeCache.generatePatternOffsetShape(
         element as unknown as ExcalidrawLinearElement,
-        align,
         renderConfig?.theme === THEME.DARK,
       );
       if (offset) {
