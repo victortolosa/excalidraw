@@ -1,3 +1,4 @@
+import { createHash, randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -56,9 +57,60 @@ const isSvgThumbnail = (body: string, contentType: string | null) => {
 /** Write via temp file + rename so a crash never leaves a torn file. */
 async function atomicWrite(abs: string, content: string) {
   await fs.mkdir(path.dirname(abs), { recursive: true });
-  const tmp = `${abs}.tmp-${process.pid}-${Date.now()}`;
-  await fs.writeFile(tmp, content, "utf8");
-  await fs.rename(tmp, abs);
+  // randomUUID (not pid+Date.now) so two writes starting in the same
+  // millisecond can't pick the same temp name and corrupt each other
+  const tmp = `${abs}.tmp-${randomUUID()}`;
+  try {
+    await fs.writeFile(tmp, content, "utf8");
+    await fs.rename(tmp, abs);
+  } catch (err) {
+    // don't leak the temp file if writeFile or rename failed
+    await fs.rm(tmp, { force: true });
+    throw err;
+  }
+}
+
+/**
+ * Strong content validator (ETag). A quoted hash of the exact bytes on disk,
+ * used as the autosave conflict baseline: unlike mtime it has no clock
+ * resolution, so two saves in the same millisecond are still distinguishable.
+ */
+const contentEtag = (content: string) =>
+  `"${createHash("sha256").update(content, "utf8").digest("base64url")}"`;
+
+/** current on-disk validator, or null if the file doesn't exist. */
+async function fileEtag(abs: string): Promise<string | null> {
+  try {
+    return contentEtag(await fs.readFile(abs, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Serialize work per file path so a conflict check and its atomic write are
+ * one indivisible step — two concurrent PUTs to the same file can't both read
+ * the old version, both pass the guard, and clobber each other. Different
+ * paths stay fully concurrent. The map self-prunes as chains drain.
+ */
+const pathLocks = new Map<string, Promise<unknown>>();
+
+function withPathLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  const prev = pathLocks.get(key) ?? Promise.resolve();
+  // run fn after prev settles, regardless of whether prev resolved or rejected
+  const result = prev.then(fn, fn);
+  const tail = result.then(
+    () => {},
+    () => {},
+  );
+  pathLocks.set(key, tail);
+  void tail.finally(() => {
+    // only drop the entry if nobody chained a newer tail after us
+    if (pathLocks.get(key) === tail) {
+      pathLocks.delete(key);
+    }
+  });
+  return result;
 }
 
 async function listDrawings(dataDir: string): Promise<FileEntry[]> {
@@ -247,7 +299,10 @@ export function createApp(options: { dataDir: string; staticDir: string }) {
       return c.json({ error: "not found" }, 404);
     }
     c.header("Content-Type", "application/json");
+    // mtime is retained for the dashboard listing/sorting; the ETag is the
+    // autosave conflict validator the client echoes back on save
     c.header("X-Mtime", String(Math.round(stat.mtimeMs)));
+    c.header("ETag", contentEtag(content));
     return c.body(content);
   });
 
@@ -273,29 +328,36 @@ export function createApp(options: { dataDir: string; staticDir: string }) {
       return c.json({ error: "body must be valid JSON" }, 400);
     }
 
-    // conflict guard: reject when the disk copy is newer than the client's
-    // baseline (two tabs / two devices). No header = unconditional write.
-    const baseline = Number(c.req.header("X-Base-Mtime"));
-    if (baseline > 0) {
-      try {
-        const diskMtime = Math.round((await fs.stat(abs)).mtimeMs);
-        if (diskMtime > baseline) {
+    // conflict guard + write run under the per-path lock so the version check
+    // and the atomic replacement are one step (no lost-update race between
+    // two concurrent writers). No baseline header = unconditional overwrite.
+    const baseline = c.req.header("X-Base-Version");
+    return withPathLock(abs, async () => {
+      if (baseline) {
+        const current = await fileEtag(abs);
+        // current === null: the file was deleted since load — treat the PUT
+        // as a re-create rather than a conflict
+        if (current !== null && current !== baseline) {
           return c.json(
             {
               error: "file changed on disk since it was loaded",
-              mtime: diskMtime,
+              version: current,
             },
             409,
           );
         }
-      } catch {
-        // file doesn't exist yet — nothing to conflict with
       }
-    }
 
-    await atomicWrite(abs, body);
-    const stat = await fs.stat(abs);
-    return c.json({ mtime: Math.round(stat.mtimeMs), size: stat.size });
+      await atomicWrite(abs, body);
+      const stat = await fs.stat(abs);
+      const version = contentEtag(body);
+      c.header("ETag", version);
+      return c.json({
+        version,
+        mtime: Math.round(stat.mtimeMs),
+        size: stat.size,
+      });
+    });
   });
 
   api.post("/files/:path{.+}", async (c) => {

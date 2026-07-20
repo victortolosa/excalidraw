@@ -108,10 +108,26 @@ describe("serverStorage", () => {
   describe("saveToServer + flushServerSave", () => {
     const openFile = async (storage: any, path = "a.excalidraw") => {
       fetchMock.mockResolvedValueOnce(
-        jsonResponse(SCENE_ON_SERVER, { headers: { "X-Mtime": "100" } }),
+        jsonResponse(SCENE_ON_SERVER, { headers: { ETag: '"v1"' } }),
       );
       await storage.loadServerScene(path);
       fetchMock.mockClear();
+    };
+
+    const changedScene = (id: string) =>
+      asOrdered([
+        ...SCENE_ON_SERVER.elements,
+        API.createElement({ type: "ellipse", id }),
+      ]);
+
+    // a fetch mock that resolves only when we say so — lets a test hold a PUT
+    // "in flight" and observe what the save loop does around it
+    const deferredResponse = () => {
+      let resolve!: (r: Response) => void;
+      const promise = new Promise<Response>((r) => {
+        resolve = r;
+      });
+      return { promise, resolve };
     };
 
     it("PUTs the changed scene on flush", async () => {
@@ -232,6 +248,72 @@ describe("serverStorage", () => {
         vi.useRealTimers();
       }
     });
+
+    it("flush awaits the in-flight save and drains a newer edit after it", async () => {
+      const storage = await importServerStorage();
+      await openFile(storage);
+
+      const first = deferredResponse();
+      fetchMock
+        .mockReturnValueOnce(first.promise) // first PUT: held in flight
+        .mockResolvedValueOnce(jsonResponse({ version: '"v3"' })); // second PUT
+
+      storage.saveToServer(changedScene("el-2"), makeAppState(), {});
+      const flush = storage.flushServerSave();
+
+      // a newer edit lands while the first request is still in flight
+      storage.saveToServer(changedScene("el-3"), makeAppState(), {});
+
+      // release the first PUT; flush must not resolve until the queue is clean
+      first.resolve(jsonResponse({ version: '"v2"' }));
+      await flush;
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      // the second PUT carries the newest edit…
+      const secondBody = JSON.parse(fetchMock.mock.calls[1][1].body);
+      expect(secondBody.elements.map((el: any) => el.id)).toContain("el-3");
+      // …and the baseline refreshed from the first ack, not the stale load
+      expect(fetchMock.mock.calls[1][1].headers["X-Base-Version"]).toBe('"v2"');
+    });
+
+    it("repeated flush calls share a single drain", async () => {
+      const storage = await importServerStorage();
+      await openFile(storage);
+
+      const put = deferredResponse();
+      fetchMock.mockReturnValueOnce(put.promise);
+
+      storage.saveToServer(changedScene("el-2"), makeAppState(), {});
+      const a = storage.flushServerSave();
+      const b = storage.flushServerSave();
+
+      put.resolve(jsonResponse({ version: '"v2"' }));
+      await Promise.all([a, b]);
+
+      // both awaited the same loop → exactly one PUT
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not report 'saved' until the server acknowledges", async () => {
+      const storage = await importServerStorage();
+      const { appJotaiStore } = await import("../app-jotai");
+      await openFile(storage);
+      const status = () => appJotaiStore.get(storage.serverSaveStatusAtom);
+
+      const put = deferredResponse();
+      fetchMock.mockReturnValueOnce(put.promise);
+
+      storage.saveToServer(changedScene("el-2"), makeAppState(), {});
+      const flush = storage.flushServerSave();
+
+      // request is in flight — status is "saving", never prematurely "saved"
+      expect(status()).toBe("saving");
+
+      put.resolve(jsonResponse({ version: '"v2"' }));
+      await flush;
+
+      expect(status()).toBe("saved");
+    });
   });
 
   describe("conflict guard + recovery + session expiry (Phase 5)", () => {
@@ -239,7 +321,7 @@ describe("serverStorage", () => {
 
     const openFile = async (storage: any) => {
       fetchMock.mockResolvedValueOnce(
-        jsonResponse(SCENE_ON_SERVER, { headers: { "X-Mtime": "100" } }),
+        jsonResponse(SCENE_ON_SERVER, { headers: { ETag: '"v1"' } }),
       );
       await storage.loadServerScene("a.excalidraw");
       fetchMock.mockClear();
@@ -255,15 +337,15 @@ describe("serverStorage", () => {
       localStorage.clear();
     });
 
-    it("sends the mtime baseline with every guarded PUT", async () => {
+    it("sends the version baseline with every guarded PUT", async () => {
       const storage = await importServerStorage();
       await openFile(storage);
 
-      fetchMock.mockResolvedValueOnce(jsonResponse({ mtime: 200 }));
+      fetchMock.mockResolvedValueOnce(jsonResponse({ version: '"v2"' }));
       storage.saveToServer(changedElements(), makeAppState(), {});
       await storage.flushServerSave();
 
-      expect(fetchMock.mock.calls[0][1].headers["X-Base-Mtime"]).toBe("100");
+      expect(fetchMock.mock.calls[0][1].headers["X-Base-Version"]).toBe('"v1"');
     });
 
     it("overwrites without the baseline after a confirmed 409", async () => {
@@ -273,9 +355,9 @@ describe("serverStorage", () => {
       vi.stubGlobal("confirm", vi.fn().mockReturnValue(true));
       fetchMock
         .mockResolvedValueOnce(
-          jsonResponse({ error: "conflict", mtime: 999 }, { status: 409 }),
+          jsonResponse({ error: "conflict", version: '"v9"' }, { status: 409 }),
         )
-        .mockResolvedValueOnce(jsonResponse({ mtime: 1000 }));
+        .mockResolvedValueOnce(jsonResponse({ version: '"v10"' }));
 
       storage.saveToServer(changedElements(), makeAppState(), {});
       await storage.flushServerSave();
@@ -283,7 +365,7 @@ describe("serverStorage", () => {
       expect(fetchMock).toHaveBeenCalledTimes(2);
       // retry must be unconditional (no baseline header)
       expect(
-        fetchMock.mock.calls[1][1].headers["X-Base-Mtime"],
+        fetchMock.mock.calls[1][1].headers["X-Base-Version"],
       ).toBeUndefined();
     });
 

@@ -47,20 +47,24 @@ const setStatus = (status: ServerSaveStatus) => {
   appJotaiStore.set(serverSaveStatusAtom, status);
 };
 
-/** the currently open server file; null = scratch mode (stock behavior) */
-let currentFile: { path: string; mtime: number } | null = null;
+/**
+ * the currently open server file; null = scratch mode (stock behavior).
+ * `version` is the strong content validator (ETag) this tab last saw from the
+ * server — the conflict-guard baseline. null = new/unknown file (no guard).
+ */
+let currentFile: { path: string; version: string | null } | null = null;
 /** guards against clobbering a file we failed to load */
 let saveEnabled = false;
 /** serialized scene as of the last successful save (skip-if-unchanged) */
 let lastSavedScene: string | null = null;
 
 interface PendingSave {
+  /** monotonic client revision — identifies this exact snapshot */
+  revision: number;
   path: string;
   elements: readonly OrderedExcalidrawElement[];
   appState: AppState;
   files: BinaryFiles;
-  /** server mtime this tab last saw — the conflict-guard baseline */
-  baseline: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -99,10 +103,13 @@ const clearRecovery = (path: string) => {
 const looksLikeAuthWall = (response: Response) =>
   (response.headers.get("Content-Type") ?? "").includes("text/html");
 
+/** newest snapshot awaiting durability; superseded in place by later edits */
 let pending: PendingSave | null = null;
+let nextRevision = 1;
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 let firstQueuedAt: number | null = null;
-let saveInFlight = false;
+/** the single in-flight drain loop, shared by every flush caller */
+let saveLoop: Promise<void> | null = null;
 
 const encodePath = (path: string) =>
   path.split("/").map(encodeURIComponent).join("/");
@@ -131,6 +138,9 @@ const closeServerFile = () => {
   currentFile = null;
   saveEnabled = false;
   lastSavedScene = null;
+  // drop any leftover queue so a stray retry can't write to the file we left
+  clearDebounce();
+  pending = null;
   setStatus(null);
 };
 
@@ -188,7 +198,7 @@ export const loadServerScene = async (
 
     if (response.status === 404) {
       // treat as a new drawing: first save creates it
-      currentFile = { path, mtime: 0 };
+      currentFile = { path, version: null };
       saveEnabled = true;
       lastSavedScene = null;
       setStatus("saved");
@@ -206,7 +216,9 @@ export const loadServerScene = async (
       throw new Error(`load failed: HTTP ${response.status}`);
     }
 
-    const mtime = Number(response.headers.get("X-Mtime")) || 0;
+    // strong content validator for the conflict guard; falls back to null
+    // (unconditional first save) if the server didn't send one
+    const version = response.headers.get("ETag");
     // non-JSON here usually means an auth wall (e.g. Cloudflare Access
     // login page) — surface as an error rather than rendering garbage
     const data = JSON.parse(await response.text());
@@ -218,7 +230,7 @@ export const loadServerScene = async (
     const appState = restoreAppState(data.appState, null);
     const files: BinaryFiles = data.files ?? {};
 
-    currentFile = { path, mtime };
+    currentFile = { path, version };
     saveEnabled = true;
     lastSavedScene = serializeAsJSON(elements, appState, files, "local");
     setStatus("saved");
@@ -237,7 +249,7 @@ export const loadServerScene = async (
     console.error(`failed to load server file "${path}"`, error);
     // keep the file "open" so we don't fall back to scratch behavior, but
     // block saves — an empty editor must not overwrite the file on disk
-    currentFile = { path, mtime: 0 };
+    currentFile = { path, version: null };
     saveEnabled = false;
     lastSavedScene = null;
     const sessionExpired = String(error?.message).includes("session expired");
@@ -285,89 +297,129 @@ const putThumbnail = async (job: PendingSave) => {
   }
 };
 
-const performSave = async () => {
-  if (!pending || saveInFlight) {
-    return;
-  }
-  const job = pending;
-  pending = null;
-  firstQueuedAt = null;
+const putScene = (
+  path: string,
+  serialized: string,
+  baseVersion: string | null,
+) =>
+  fetch(fileUrl(path), {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      // no baseline = new file or a deliberate post-conflict overwrite
+      ...(baseVersion ? { "X-Base-Version": baseVersion } : {}),
+    },
+    body: serialized,
+  });
 
-  const serialized = serializeAsJSON(
-    job.elements,
-    job.appState,
-    job.files,
-    "local",
-  );
-  // onChange also fires on selection/viewport changes — never PUT a
-  // byte-identical scene
-  if (serialized === lastSavedScene) {
-    setStatus("saved");
-    return;
-  }
+/**
+ * Drain the pending queue until it is clean or hits a state that can't be
+ * retried right now (auth wall, reload, network error). Runs as a single
+ * shared loop — see `drain()`; every flush caller awaits the same promise, so
+ * a save can never be stranded behind a background timer.
+ *
+ * Each iteration re-reads `pending`, so an edit that lands mid-request is
+ * picked up automatically on the next turn. The conflict baseline is resolved
+ * at send time (not when the edit was queued) and refreshed from each server
+ * ack before the next revision goes out.
+ */
+const runDrain = async () => {
+  while (pending) {
+    const job = pending;
+    const serialized = serializeAsJSON(
+      job.elements,
+      job.appState,
+      job.files,
+      "local",
+    );
 
-  saveInFlight = true;
-  setStatus("saving");
-  try {
-    const putScene = (baseline: number) =>
-      fetch(fileUrl(job.path), {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          // baseline 0 = new file or deliberate overwrite — no guard
-          ...(baseline > 0 ? { "X-Base-Mtime": String(baseline) } : {}),
-        },
-        body: serialized,
-      });
-
-    let response = await putScene(job.baseline);
-
-    if (response.status === 409) {
-      const overwrite = window.confirm(
-        `"${job.path}" changed on the server (another tab or device?).\n\n` +
-          `OK — overwrite it with this tab's version.\n` +
-          `Cancel — reload to get the server version (this tab's latest ` +
-          `changes are kept locally as a backup).`,
-      );
-      if (!overwrite) {
-        writeRecovery(job.path, serialized);
-        window.location.reload();
-        return;
+    // onChange also fires on selection/viewport changes — never PUT a
+    // byte-identical scene. Already durable, so drop it (unless a newer
+    // revision superseded it while we were computing).
+    if (serialized === lastSavedScene) {
+      if (pending.revision === job.revision) {
+        pending = null;
       }
-      response = await putScene(0);
+      setStatus(pending ? "dirty" : "saved");
+      continue;
     }
 
-    if (looksLikeAuthWall(response)) {
+    setStatus("saving");
+    // baseline resolved now, from the newest ack — not stale queue-time state
+    const baseVersion =
+      currentFile?.path === job.path ? currentFile.version : null;
+
+    try {
+      let response = await putScene(job.path, serialized, baseVersion);
+
+      if (response.status === 409) {
+        const overwrite = window.confirm(
+          `"${job.path}" changed on the server (another tab or device?).\n\n` +
+            `OK — overwrite it with this tab's version.\n` +
+            `Cancel — reload to get the server version (this tab's latest ` +
+            `changes are kept locally as a backup).`,
+        );
+        if (!overwrite) {
+          writeRecovery(job.path, serialized);
+          window.location.reload();
+          return;
+        }
+        response = await putScene(job.path, serialized, null);
+      }
+
+      if (looksLikeAuthWall(response)) {
+        writeRecovery(job.path, serialized);
+        setStatus("session-expired");
+        return; // keep `pending`; a later trigger retries
+      }
+      if (!response.ok) {
+        throw new Error(`save failed: HTTP ${response.status}`);
+      }
+
+      const body = await response.json().catch(() => ({}));
+      // refresh the baseline before the next queued revision goes out, so we
+      // never conflict with our own write
+      if (currentFile?.path === job.path && typeof body.version === "string") {
+        currentFile.version = body.version;
+      }
+      lastSavedScene = serialized;
+      clearRecovery(job.path);
+      // only clear the queue if no newer edit arrived while we were saving
+      if (pending.revision === job.revision) {
+        pending = null;
+      }
+      setStatus(pending ? "dirty" : "saved");
+      putThumbnail(job);
+    } catch (error) {
+      console.error(`failed to save server file "${job.path}"`, error);
+      // retain the payload — a later trigger retries, and the localStorage
+      // copy survives a tab close
       writeRecovery(job.path, serialized);
-      pending = pending ?? job;
-      setStatus("session-expired");
-      return;
-    }
-    if (!response.ok) {
-      throw new Error(`save failed: HTTP ${response.status}`);
-    }
-    const body = await response.json();
-    // refresh the conflict baseline so we never conflict with our own write
-    if (currentFile?.path === job.path && typeof body.mtime === "number") {
-      currentFile.mtime = body.mtime;
-    }
-    lastSavedScene = serialized;
-    clearRecovery(job.path);
-    setStatus(pending ? "dirty" : "saved");
-    putThumbnail(job);
-  } catch (error) {
-    console.error(`failed to save server file "${job.path}"`, error);
-    // retain the payload — the next change or flush retries, and the
-    // localStorage copy survives a tab close
-    writeRecovery(job.path, serialized);
-    pending = pending ?? job;
-    setStatus("error");
-  } finally {
-    saveInFlight = false;
-    if (pending) {
-      scheduleSave();
+      setStatus("error");
+      return; // keep `pending`; stop looping so we don't hammer a dead server
     }
   }
+};
+
+/**
+ * Start the drain loop, or join the one already running. Returns a promise
+ * that resolves when the loop stops (queue clean, or a non-retryable state).
+ */
+const drain = (): Promise<void> => {
+  if (!saveLoop) {
+    saveLoop = runDrain().finally(() => {
+      saveLoop = null;
+    });
+  }
+  return saveLoop;
+};
+
+const clearDebounce = () => {
+  if (debounceTimer !== null) {
+    clearTimeout(debounceTimer);
+    debounceTimer = null;
+  }
+  firstQueuedAt = null;
 };
 
 const scheduleSave = () => {
@@ -383,7 +435,8 @@ const scheduleSave = () => {
   );
   debounceTimer = setTimeout(() => {
     debounceTimer = null;
-    performSave();
+    firstQueuedAt = null;
+    void drain();
   }, wait);
 };
 
@@ -399,38 +452,41 @@ export const saveToServer = (
   if (!currentFile || !saveEnabled) {
     return;
   }
+  // supersede any older queued snapshot in place; the newest wins
   pending = {
+    revision: nextRevision++,
     path: currentFile.path,
     elements,
     appState,
     files,
-    baseline: currentFile.mtime,
   };
   setStatus("dirty");
   scheduleSave();
 };
 
-/** Persist any pending change immediately (lifecycle boundaries). */
+/**
+ * Persist any pending change immediately, then wait until the queue is clean.
+ * Awaits the in-flight request too, so a revision can never be stranded behind
+ * the debounce timer once this resolves (lifecycle boundaries rely on that).
+ */
 export const flushServerSave = async () => {
-  if (debounceTimer !== null) {
-    clearTimeout(debounceTimer);
-    debounceTimer = null;
-  }
-  await performSave();
+  clearDebounce();
+  await drain();
 };
 
 /**
  * Best-effort synchronous-ish flush for pagehide/unload, where awaiting a
- * normal fetch isn't possible. keepalive only fits small payloads; larger
- * scenes fall back to a regular fetch the browser may cancel — the
- * visibilitychange flush below makes this a rare last resort.
+ * normal fetch isn't possible. Unlike a background drain this still sends the
+ * conflict baseline, so a stale exit write is rejected rather than silently
+ * clobbering newer work. keepalive only fits small payloads; larger scenes
+ * fall back to a regular fetch the browser may cancel — the visibilitychange
+ * flush above makes this a rare last resort.
  */
 const flushOnExit = () => {
   if (!pending) {
     return;
   }
   const job = pending;
-  pending = null;
   const serialized = serializeAsJSON(
     job.elements,
     job.appState,
@@ -440,28 +496,38 @@ const flushOnExit = () => {
   if (serialized === lastSavedScene) {
     return;
   }
+  const baseVersion =
+    currentFile?.path === job.path ? currentFile.version : null;
   fetch(fileUrl(job.path), {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(baseVersion ? { "X-Base-Version": baseVersion } : {}),
+    },
     body: serialized,
     keepalive: serialized.length < KEEPALIVE_MAX_BYTES,
   }).catch(() => {});
 };
 
 if (typeof window !== "undefined") {
+  // hidden = the last reliable moment to persist before a close/discard
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
-      flushServerSave();
+      void flushServerSave();
     }
   });
-  window.addEventListener("blur", () => {
-    flushServerSave();
+  // coming back / restored from bfcache — retry anything left queued
+  window.addEventListener("focus", () => {
+    void drain();
+  });
+  window.addEventListener("pageshow", () => {
+    void drain();
   });
   window.addEventListener("pagehide", flushOnExit);
   // route changes: flush the outgoing file (pending carries its own path);
   // when leaving server mode entirely, restore stock behavior
   window.addEventListener("hashchange", () => {
-    flushServerSave();
+    void flushServerSave();
     if (!parseServerHash(window.location.hash)) {
       closeServerFile();
     }

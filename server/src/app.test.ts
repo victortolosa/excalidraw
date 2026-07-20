@@ -293,39 +293,66 @@ test("GET /api/folders lists real dirs, including empty ones", async () => {
   await app.request("/api/folders/archive", { method: "DELETE" });
 });
 
-test("conflict guard: 409 when disk is newer than the client baseline", async () => {
+test("GET and PUT expose a content ETag; PUT returns a version", async () => {
+  const put = await app.request("/api/files/etag.excalidraw", {
+    method: "PUT",
+    body: SCENE,
+  });
+  const { version } = await put.json();
+  assert.equal(typeof version, "string");
+  assert.equal(put.headers.get("etag"), version);
+
+  const get = await app.request("/api/files/etag.excalidraw");
+  assert.equal(get.headers.get("etag"), version);
+
+  // same bytes → same validator; different bytes → different validator
+  const same = await app.request("/api/files/etag.excalidraw", {
+    method: "PUT",
+    body: SCENE,
+  });
+  assert.equal((await same.json()).version, version);
+  const changed = await app.request("/api/files/etag.excalidraw", {
+    method: "PUT",
+    body: SCENE.replace("[]", "[ ]"),
+  });
+  assert.notEqual((await changed.json()).version, version);
+
+  await app.request("/api/files/etag.excalidraw", { method: "DELETE" });
+});
+
+test("conflict guard: 409 when the on-disk version differs from the baseline", async () => {
   const put1 = await app.request("/api/files/conflict.excalidraw", {
     method: "PUT",
     body: SCENE,
   });
-  const { mtime: baseline } = await put1.json();
+  const { version: baseline } = await put1.json();
 
-  // another writer bumps the disk mtime past the baseline
-  await new Promise((resolve) => setTimeout(resolve, 10));
-  await app.request("/api/files/conflict.excalidraw", {
+  // another writer changes the file, so its version no longer matches
+  const put2 = await app.request("/api/files/conflict.excalidraw", {
     method: "PUT",
     body: SCENE.replace("[]", "[ ]"),
   });
+  const { version: current } = await put2.json();
 
   const stale = await app.request("/api/files/conflict.excalidraw", {
     method: "PUT",
     body: SCENE,
-    headers: { "X-Base-Mtime": String(baseline) },
+    headers: { "X-Base-Version": baseline },
   });
   assert.equal(stale.status, 409);
   const conflictBody = await stale.json();
-  assert.equal(typeof conflictBody.mtime, "number");
-  assert.ok(conflictBody.mtime > baseline);
+  assert.equal(conflictBody.version, current);
 
-  // a current baseline writes fine and returns the fresh mtime
+  // the current baseline writes fine and returns the fresh version
   const ok = await app.request("/api/files/conflict.excalidraw", {
     method: "PUT",
     body: SCENE,
-    headers: { "X-Base-Mtime": String(conflictBody.mtime) },
+    headers: { "X-Base-Version": current },
   });
   assert.equal(ok.status, 200);
 
-  // no header = unconditional overwrite (and new files never conflict)
+  // no header = unconditional overwrite; a baseline for a missing file writes
+  // as a re-create rather than conflicting
   const force = await app.request("/api/files/conflict.excalidraw", {
     method: "PUT",
     body: SCENE,
@@ -334,12 +361,72 @@ test("conflict guard: 409 when disk is newer than the client baseline", async ()
   const fresh = await app.request("/api/files/brand-new.excalidraw", {
     method: "PUT",
     body: SCENE,
-    headers: { "X-Base-Mtime": "12345" },
+    headers: { "X-Base-Version": '"whatever"' },
   });
   assert.equal(fresh.status, 200);
 
   await app.request("/api/files/conflict.excalidraw", { method: "DELETE" });
   await app.request("/api/files/brand-new.excalidraw", { method: "DELETE" });
+});
+
+test("concurrent same-file PUTs: one wins, one conflicts, no server errors", async () => {
+  const seed = await app.request("/api/files/race.excalidraw", {
+    method: "PUT",
+    body: SCENE,
+  });
+  const { version: baseline } = await seed.json();
+
+  // both writers loaded the same baseline and fire at once
+  const [a, b] = await Promise.all([
+    app.request("/api/files/race.excalidraw", {
+      method: "PUT",
+      body: SCENE.replace("[]", "[1]"),
+      headers: { "X-Base-Version": baseline },
+    }),
+    app.request("/api/files/race.excalidraw", {
+      method: "PUT",
+      body: SCENE.replace("[]", "[2]"),
+      headers: { "X-Base-Version": baseline },
+    }),
+  ]);
+
+  const statuses = [a.status, b.status].sort();
+  assert.deepEqual(statuses, [200, 409]);
+
+  await app.request("/api/files/race.excalidraw", { method: "DELETE" });
+});
+
+test("concurrent PUTs to different files both succeed", async () => {
+  const [a, b] = await Promise.all([
+    app.request("/api/files/par-a.excalidraw", { method: "PUT", body: SCENE }),
+    app.request("/api/files/par-b.excalidraw", { method: "PUT", body: SCENE }),
+  ]);
+  assert.equal(a.status, 200);
+  assert.equal(b.status, 200);
+  await app.request("/api/files/par-a.excalidraw", { method: "DELETE" });
+  await app.request("/api/files/par-b.excalidraw", { method: "DELETE" });
+});
+
+test("writes leave no temp files behind", async () => {
+  await Promise.all(
+    Array.from({ length: 5 }, (_, i) =>
+      app.request(`/api/files/tmp-${i}.excalidraw`, {
+        method: "PUT",
+        body: SCENE.replace("[]", `[${i}]`),
+      }),
+    ),
+  );
+  const names = await fs.readdir(dataDir);
+  assert.equal(
+    names.some((n) => n.includes(".tmp-")),
+    false,
+    `unexpected temp files: ${names.join(", ")}`,
+  );
+  await Promise.all(
+    Array.from({ length: 5 }, (_, i) =>
+      app.request(`/api/files/tmp-${i}.excalidraw`, { method: "DELETE" }),
+    ),
+  );
 });
 
 test("meta round-trips through .dashboard.json", async () => {
