@@ -159,6 +159,31 @@ test("listing treats old thumbnails as stale", async () => {
   });
 });
 
+test("file GET reports thumbnail staleness so the editor can backfill", async () => {
+  const file = "/api/files/backfill.excalidraw";
+  await app.request(file, { method: "PUT", body: SCENE });
+
+  // no thumbnail at all — the case that used to stay blank forever
+  let get = await app.request(file);
+  assert.equal(get.headers.get("x-thumbnail-stale"), "1");
+
+  await app.request(`${file}/thumbnail`, {
+    method: "PUT",
+    headers: { "Content-Type": "image/svg+xml" },
+    body: "<svg xmlns='http://www.w3.org/2000/svg'></svg>",
+  });
+  get = await app.request(file);
+  assert.equal(get.headers.get("x-thumbnail-stale"), "0");
+
+  // drawing rewritten after its thumbnail — stale again
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  await app.request(file, { method: "PUT", body: SCENE.replace("[]", "[ ]") });
+  get = await app.request(file);
+  assert.equal(get.headers.get("x-thumbnail-stale"), "1");
+
+  await app.request(file, { method: "DELETE" });
+});
+
 test("thumbnail PUT rejects non-SVG and oversized payloads", async () => {
   const notSvg = await app.request("/api/files/sub/a.excalidraw/thumbnail", {
     method: "PUT",

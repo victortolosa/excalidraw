@@ -236,6 +236,19 @@ export const loadServerScene = async (
     setStatus("saved");
     if (!isTestEnv()) {
       recordRecent(path).catch(() => {});
+      // Thumbnails are otherwise a side effect of a content-changing save, and
+      // the drain loop skips byte-identical scenes — so a drawing that never
+      // got one (predates the feature, restored from backup, or hit a rejected
+      // upload) would stay blank until someone happened to edit it. Backfill on
+      // open instead. Fire and forget; the scene is already durable.
+      if (response.headers.get("X-Thumbnail-Stale") === "1") {
+        void putThumbnail({
+          path,
+          elements,
+          appState: appState as AppState,
+          files,
+        });
+      }
     }
 
     const recovered = restoreFromRecovery(path, lastSavedScene);
@@ -266,10 +279,24 @@ export const loadServerScene = async (
 };
 
 /**
- * Regenerate the dashboard thumbnail after a successful save. Fire and
- * forget — a missing thumbnail only degrades the dashboard grid.
+ * Grid cells are only a few hundred px wide, so the thumbnail is downscaled and drawn
+ * without inlined font faces. Both matter for more than bandwidth: the server
+ * rejects thumbnails over 1MB, and a full-scale export inlines base64 WOFF2
+ * subsets per font family (plus image elements as data URIs), which pushes
+ * text- or photo-heavy scenes past that cap. Vector shapes stay crisp; text
+ * falls back to a system font at thumbnail size, which is the right trade.
  */
-const putThumbnail = async (job: PendingSave) => {
+const THUMBNAIL_SCALE = 0.5;
+
+/**
+ * Regenerate the dashboard thumbnail for a scene. A missing thumbnail only
+ * degrades the dashboard grid, so failures are logged and swallowed — but they
+ * are logged: silently discarding the response here is what let rejected
+ * thumbnails look like successful ones.
+ */
+const putThumbnail = async (
+  job: Pick<PendingSave, "path" | "elements" | "appState" | "files">,
+) => {
   if (isTestEnv()) {
     return;
   }
@@ -284,14 +311,21 @@ const putThumbnail = async (job: PendingSave) => {
         exportBackground: true,
         viewBackgroundColor: job.appState.viewBackgroundColor ?? "#ffffff",
         exportPadding: 16,
+        exportScale: THUMBNAIL_SCALE,
       },
       job.files,
+      { skipInliningFonts: true },
     );
-    await fetch(`${fileUrl(job.path)}/thumbnail`, {
+    const response = await fetch(`${fileUrl(job.path)}/thumbnail`, {
       method: "PUT",
       headers: { "Content-Type": "image/svg+xml" },
       body: svg.outerHTML,
     });
+    if (!response.ok) {
+      throw new Error(
+        `HTTP ${response.status} (${svg.outerHTML.length} bytes of SVG)`,
+      );
+    }
   } catch (error) {
     console.warn(`thumbnail generation failed for "${job.path}"`, error);
   }
@@ -389,7 +423,14 @@ const runDrain = async () => {
         pending = null;
       }
       setStatus(pending ? "dirty" : "saved");
-      putThumbnail(job);
+      // Only the settled revision gets a thumbnail, and it is awaited. An
+      // unawaited export can outlive the next scene PUT, leaving the thumbnail
+      // file older than the drawing — which the listing reports as "no
+      // thumbnail". Skipping intermediate revisions also drops the wasted
+      // exports that made that overlap likely in the first place.
+      if (!pending) {
+        await putThumbnail(job);
+      }
     } catch (error) {
       console.error(`failed to save server file "${job.path}"`, error);
       // retain the payload — a later trigger retries, and the localStorage

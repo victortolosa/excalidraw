@@ -303,6 +303,14 @@ export function createApp(options: { dataDir: string; staticDir: string }) {
     // autosave conflict validator the client echoes back on save
     c.header("X-Mtime", String(Math.round(stat.mtimeMs)));
     c.header("ETag", contentEtag(content));
+    // lets the editor backfill a thumbnail for a drawing that has none (or a
+    // stale one) without waiting for the next content-changing save — files
+    // predating thumbnails, restored backups, and rejected uploads otherwise
+    // stay blank in the dashboard forever
+    c.header(
+      "X-Thumbnail-Stale",
+      (await hasFreshThumbnail(thumbnailPath(rel), stat.mtimeMs)) ? "0" : "1",
+    );
     return c.body(content);
   });
 
