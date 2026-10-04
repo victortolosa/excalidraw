@@ -10,28 +10,41 @@ export interface DashboardMeta {
 
 const MAX_RECENTS = 12;
 
-export const getMeta = async (): Promise<DashboardMeta> => {
+export const getMeta = async (required = false): Promise<DashboardMeta> => {
   try {
     const response = await fetch("/api/meta");
     if (!response.ok) {
+      if (required) {
+        throw new Error(
+          `Could not load drawing metadata (HTTP ${response.status}).`,
+        );
+      }
       return {};
     }
     return await response.json();
-  } catch {
+  } catch (error) {
+    if (required) {
+      throw error;
+    }
     return {};
   }
 };
 
 export const putMeta = async (meta: DashboardMeta) => {
-  await fetch("/api/meta", {
+  const response = await fetch("/api/meta", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(meta),
   });
+  if (!response.ok) {
+    throw new Error(
+      `Could not save drawing metadata (HTTP ${response.status}).`,
+    );
+  }
 };
 
 export const toggleFavorite = async (path: string) => {
-  const meta = await getMeta();
+  const meta = await getMeta(true);
   const favorites = meta.favorites ?? [];
   const next = favorites.includes(path)
     ? favorites.filter((favorite) => favorite !== path)
@@ -52,7 +65,7 @@ export const recordRecent = async (path: string) => {
 
 /** Keep meta consistent when a file is renamed or deleted. */
 export const updateMetaPath = async (from: string, to: string | null) => {
-  const meta = await getMeta();
+  const meta = await getMeta(true);
   const map = (paths?: string[]) =>
     paths
       ?.map((p) => (p === from ? to : p))

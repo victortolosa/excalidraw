@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
 import ExcalidrawApp from "../App";
 
-import { Dashboard } from "./Dashboard";
 import { QuickSwitcher } from "./QuickSwitcher";
+
+const Dashboard = lazy(() =>
+  import("./Dashboard").then((module) => ({ default: module.Dashboard })),
+);
 
 /**
  * Hash router for the self-hosted dashboard fork:
@@ -44,7 +47,9 @@ export const DashboardRoot = () => {
 
   return (
     <>
-      {route === "dashboard" ? <Dashboard /> : <ExcalidrawApp />}
+      <Suspense fallback={<p role="status">Loading workspace…</p>}>
+        {route === "dashboard" ? <Dashboard /> : <ExcalidrawApp />}
+      </Suspense>
       <QuickSwitcher />
     </>
   );

@@ -69,7 +69,7 @@
     "test:app": "vitest",
     "test:code": "eslint --max-warnings=0 --ext .js,.ts,.tsx .",
     "test:other": "yarn prettier --list-different",
-    "test:typecheck": "tsc",
+    "test:typecheck": "node ./node_modules/typescript/bin/tsc",
     "test:update": "yarn test:app --update --watch=false",
     "test": "yarn test:app",
     "test:coverage": "vitest --coverage",

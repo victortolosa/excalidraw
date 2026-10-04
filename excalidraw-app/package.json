@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@excalidraw/random-username": "1.0.0",
+    "@prism-local/react": "file:../vendor/prism/prism-local-react-0.7.0.tgz",
     "@sentry/browser": "9.0.1",
     "callsites": "4.2.0",
     "firebase": "11.3.1",

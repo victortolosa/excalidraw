@@ -101,7 +101,7 @@ describe("Dashboard", () => {
 
     expect(screen.getByRole("tab", { name: "Favorites" })).toHaveAttribute(
       "aria-selected",
-      "true",
+      "false",
     );
     fireEvent.click(screen.getByRole("tab", { name: "Recent" }));
     expect(screen.getAllByText("Roadmap").length).toBeGreaterThan(0);
@@ -125,12 +125,14 @@ describe("Dashboard", () => {
   });
 
   it("creates a drawing in the current folder and opens it", async () => {
-    vi.stubGlobal("prompt", vi.fn().mockReturnValue("New map"));
-
     render(<Dashboard />);
     await screen.findAllByText("Root board");
 
     fireEvent.click(screen.getByRole("button", { name: "New drawing" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Name" }), {
+      target: { value: "New map" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Create" }));
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
@@ -145,20 +147,19 @@ describe("Dashboard", () => {
   });
 
   it("stays on the dashboard when another tab already created the drawing", async () => {
-    const alert = vi.fn();
-    vi.stubGlobal("alert", alert);
-    vi.stubGlobal("prompt", vi.fn().mockReturnValue("New map"));
     render(<Dashboard />);
     await screen.findAllByText("Root board");
     fetchMock.mockResolvedValueOnce(
       jsonResponse({ error: "target already exists" }, { status: 412 }),
     );
     fireEvent.click(screen.getByRole("button", { name: "New drawing" }));
-    await waitFor(() =>
-      expect(alert).toHaveBeenCalledWith(
-        "Something went wrong: target already exists",
-      ),
-    );
+    fireEvent.change(screen.getByRole("textbox", { name: "Name" }), {
+      target: { value: "New map" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Create" }));
+    expect(
+      await screen.findByText("target already exists"),
+    ).toBeInTheDocument();
     expect(window.location.hash).toBe("");
   });
 
@@ -183,5 +184,78 @@ describe("Dashboard", () => {
     await screen.findByRole("heading", { name: "Search results" });
     expect(screen.getByText('1 matches for "road"')).toBeInTheDocument();
     expect(screen.getByText("Roadmap")).toBeInTheDocument();
+  });
+  it("keeps invalid names in the dialog without creating a file", async () => {
+    render(<Dashboard />);
+    await screen.findAllByText("Root board");
+    fireEvent.click(screen.getByRole("button", { name: "New drawing" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Name" }), {
+      target: { value: "bad/name" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Create" }));
+    expect(
+      await screen.findByText(/Please use a plain name/),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(
+      fetchMock.mock.calls.some(([, init]) => init?.method === "PUT"),
+    ).toBe(false);
+  });
+
+  it("retains favorite state and reports failed metadata saves", async () => {
+    render(<Dashboard />);
+    await screen.findAllByText("Root board");
+    fireEvent.click(screen.getByRole("tab", { name: "Favorites" }));
+    const favorite = screen.getAllByRole("button", {
+      name: "Favorite Root board",
+    })[0];
+    fireEvent.click(favorite);
+    expect(
+      await screen.findByText(/Could not save favorite/),
+    ).toBeInTheDocument();
+    expect(favorite).toHaveAttribute("aria-pressed", "true");
+    expect(favorite).not.toHaveAttribute("aria-busy");
+  });
+
+  it("ignores a stale search response after the search is cleared", async () => {
+    let resolveSearch!: (value: Response) => void;
+    const normalFetch = createFetchMock();
+    fetchMock.mockImplementation((input, init) =>
+      urlOf(input) === "/api/files?q=road"
+        ? new Promise<Response>((resolve) => {
+            resolveSearch = resolve;
+          })
+        : normalFetch(input, init),
+    );
+    render(<Dashboard />);
+    await screen.findAllByText("Root board");
+    fireEvent.change(screen.getByRole("searchbox"), {
+      target: { value: "road" },
+    });
+    await waitFor(() => expect(resolveSearch).toBeDefined());
+    fireEvent.click(
+      screen.getByRole("button", { name: "Clear Search drawings" }),
+    );
+    await act(async () => {
+      resolveSearch(jsonResponse([files[1]]));
+    });
+    expect(
+      screen.queryByRole("heading", { name: "Search results" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("searchbox")).toHaveValue("");
+  });
+
+  it("removes Prism global CSS and restores theme attributes on unmount", () => {
+    document.documentElement.dataset.mode = "dark";
+    const { unmount } = render(<Dashboard />);
+    expect(
+      document.head.querySelector("style[data-prism-dashboard]"),
+    ).not.toBeNull();
+    unmount();
+    expect(
+      document.head.querySelector("style[data-prism-dashboard]"),
+    ).toBeNull();
+    expect(document.documentElement.dataset.mode).toBe("dark");
+    delete document.documentElement.dataset.mode;
   });
 });

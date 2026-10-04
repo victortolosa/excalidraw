@@ -1,5 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { Alert } from "@prism-local/react/alert";
+import { Button } from "@prism-local/react/button";
+import { Dialog } from "@prism-local/react/dialog";
+import { DropdownMenu } from "@prism-local/react/dropdown-menu";
+import { Empty } from "@prism-local/react/empty";
+import { Page } from "@prism-local/react/page";
+import { SearchField } from "@prism-local/react/search-field";
+import { Section } from "@prism-local/react/section";
+import { Select } from "@prism-local/react/select";
+import { Tabs } from "@prism-local/react/tabs";
+import { Toggle } from "@prism-local/react/toggle";
+import { ToastProvider, useToast } from "@prism-local/react/toast";
+import { TextField } from "@prism-local/react/text-field";
+
+import { STORAGE_KEYS } from "../app_constants";
+
 import { getMeta, toggleFavorite, updateMetaPath } from "../data/serverMeta";
 
 import {
@@ -14,7 +30,8 @@ import {
   thumbnailUrl,
 } from "./api";
 
-import { themeClass } from "./theme";
+import prismStyles from "./Prism.css?inline";
+import { isDarkTheme } from "./theme";
 
 import "./Dashboard.scss";
 
@@ -191,15 +208,16 @@ interface FileCardProps {
   file: ServerFileEntry;
   isFavorite: boolean;
   isDragging: boolean;
-  menuOpen: boolean;
+  pending: boolean;
+  onNavigate: (event: React.MouseEvent<HTMLAnchorElement>) => void;
   onDragEnd: () => void;
   onDragStart: (event: DragEvent<HTMLElement>, file: ServerFileEntry) => void;
-  onOpen: (file: ServerFileEntry) => void;
   onToggleFavorite: (file: ServerFileEntry) => void;
-  onRename: (file: ServerFileEntry) => void;
-  onMove: (file: ServerFileEntry) => void;
-  onDelete: (file: ServerFileEntry) => void;
-  onMenuToggle: (path: string) => void;
+  onAction: (
+    action: string,
+    file: ServerFileEntry,
+    trigger: HTMLButtonElement | null,
+  ) => void;
 }
 
 const Thumbnail = ({ file }: { file: ServerFileEntry }) => {
@@ -232,92 +250,69 @@ const FileCard = ({
   file,
   isFavorite,
   isDragging,
-  menuOpen,
+  pending,
+  onNavigate,
   onDragEnd,
   onDragStart,
-  onOpen,
   onToggleFavorite,
-  onRename,
-  onMove,
-  onDelete,
-  onMenuToggle,
-}: FileCardProps) => {
-  const cardDetails = [
-    file.folder,
-    formatFileSize(file.size),
-    formatModified(file.mtime),
-  ].filter(Boolean);
-
-  return (
-    <article
-      className={`Dashboard__card ${isDragging ? "is-dragging" : ""}`}
-      draggable
-      onClick={() => onOpen(file)}
-      onDragEnd={onDragEnd}
-      onDragStart={(event) => onDragStart(event, file)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter") {
-          onOpen(file);
-        }
-      }}
-      role="button"
-      tabIndex={0}
+  onAction,
+}: FileCardProps) => (
+  <article
+    className={`Dashboard__card overflow-hidden rounded-panel border bg-card text-card-foreground ${
+      isDragging ? "opacity-50" : ""
+    }`}
+    draggable
+    onDragEnd={onDragEnd}
+    onDragStart={(event) => onDragStart(event, file)}
+  >
+    <a
+      href={editorHash(file.path)}
+      draggable={false}
+      onClick={onNavigate}
+      className="Dashboard__thumbnail block bg-muted"
+      aria-label={`Open ${file.name}`}
     >
-      <button
-        className={`Dashboard__star ${isFavorite ? "is-active" : ""}`}
-        aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-        title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-        onClick={(event) => {
-          event.stopPropagation();
-          onToggleFavorite(file);
-        }}
-      >
-        <Icon name="star" />
-      </button>
-      <div className="Dashboard__thumbnail">
-        <Thumbnail file={file} />
-      </div>
-      <div className="Dashboard__card-body">
-        <div className="Dashboard__card-meta">
-          <div className="Dashboard__card-name" title={file.path}>
-            {file.name}
-          </div>
-          <div className="Dashboard__card-date">{cardDetails.join(" · ")}</div>
-        </div>
-        <div
-          className="Dashboard__card-actions"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <button
-            aria-expanded={menuOpen}
-            aria-label={`Actions for ${file.name}`}
-            className="Dashboard__icon-button"
-            onClick={() => onMenuToggle(file.path)}
+      <Thumbnail file={file} />
+    </a>
+    <div className="flex items-start justify-between gap-3 p-4">
+      <div className="min-w-0 space-y-2">
+        <h3 className="font-heading text-base font-semibold">
+          <a
+            href={editorHash(file.path)}
+            draggable={false}
+            onClick={onNavigate}
           >
-            <Icon name="more" />
-          </button>
-          {menuOpen && (
-            <div className="Dashboard__menu" role="menu">
-              <button role="menuitem" onClick={() => onRename(file)}>
-                Rename
-              </button>
-              <button role="menuitem" onClick={() => onMove(file)}>
-                Move
-              </button>
-              <button
-                className="Dashboard__danger"
-                role="menuitem"
-                onClick={() => onDelete(file)}
-              >
-                Delete
-              </button>
-            </div>
-          )}
-        </div>
+            {file.name}
+          </a>
+        </h3>
+        <p className="text-xs text-muted-foreground">
+          {[file.folder, formatFileSize(file.size), formatModified(file.mtime)]
+            .filter(Boolean)
+            .join(" · ")}
+        </p>
       </div>
-    </article>
-  );
-};
+      <div className="flex shrink-0 gap-1">
+        <Toggle
+          label={`Favorite ${file.name}`}
+          icon="star"
+          pressed={isFavorite}
+          pending={pending}
+          onPressedChange={() => onToggleFavorite(file)}
+        />
+        <DropdownMenu
+          trigger="icon"
+          label={`Actions for ${file.name}`}
+          items={[
+            { id: "rename", label: "Rename" },
+            { id: "move", label: "Move" },
+            { id: "delete", label: "Delete", variant: "destructive" },
+          ]}
+          onAction={(action, trigger) => onAction(action, file, trigger)}
+        />
+      </div>
+    </div>
+  </article>
+);
 
 const filePathFromDrag = (event: DragEvent<HTMLElement>) =>
   (() => {
@@ -331,25 +326,45 @@ const filePathFromDrag = (event: DragEvent<HTMLElement>) =>
     }
   })();
 
-export const Dashboard = () => {
+type Task = {
+  kind: "create" | "folder" | "rename" | "move" | "delete" | "deleteFolder";
+  file?: ServerFileEntry;
+  folder?: ServerFolderEntry;
+};
+
+const DashboardContent = () => {
+  const toast = useToast();
+  const [darkTheme, setDarkTheme] = useState(isDarkTheme);
+  const [task, setTask] = useState<Task | null>(null);
+  const [taskValue, setTaskValue] = useState("");
+  const [customDestination, setCustomDestination] = useState(false);
+  const [taskError, setTaskError] = useState<string | undefined>();
+  const [favoritePending, setFavoritePending] = useState(false);
+  const favoriteLock = useRef(false);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [searchPending, setSearchPending] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [searchRevision, setSearchRevision] = useState(0);
   const [files, setFiles] = useState<ServerFileEntry[] | null>(null);
   const [folders, setFolders] = useState<ServerFolderEntry[]>([]);
   const [meta, setMeta] = useState<DashboardMeta>({});
   const [error, setError] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>("mtime");
   const [quickAccessTab, setQuickAccessTab] =
-    useState<QuickAccessTab>("favorites");
+    useState<QuickAccessTab>("recent");
   const [currentFolder, setCurrentFolder] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<ServerFileEntry[] | null>(
     null,
   );
-  const [openMenuPath, setOpenMenuPath] = useState<string | null>(null);
+
   const [draggedFilePath, setDraggedFilePath] = useState<string | null>(null);
   const [dropTargetFolder, setDropTargetFolder] = useState<string | null>(null);
   const suppressNextOpenRef = useRef(false);
 
   const refresh = useCallback(async () => {
+    setRefreshing(true);
     try {
       const [loadedFiles, loadedFolders, loadedMeta] = await Promise.all([
         listFiles(),
@@ -362,6 +377,8 @@ export const Dashboard = () => {
       setError(null);
     } catch (loadError: any) {
       setError(`Could not load drawings: ${loadError.message}`);
+    } finally {
+      setRefreshing(false);
     }
   }, []);
 
@@ -370,160 +387,163 @@ export const Dashboard = () => {
     refresh();
   }, [refresh]);
 
+  // Ignore results from obsolete queries, including requests already in flight.
   useEffect(() => {
-    const onWindowClick = () => setOpenMenuPath(null);
-    window.addEventListener("click", onWindowClick);
-    return () => window.removeEventListener("click", onWindowClick);
-  }, []);
-
-  // debounced server-side search (filename + text content)
-  useEffect(() => {
+    let active = true;
+    setSearchError(null);
     if (!searchInput.trim()) {
       setSearchResults(null);
+      setSearchPending(false);
       return;
     }
+    setSearchPending(true);
+    setSearchResults(null);
     const timer = setTimeout(async () => {
       try {
-        setSearchResults(await listFiles(searchInput));
-      } catch {
-        setSearchResults([]);
+        const results = await listFiles(searchInput);
+        if (active) {
+          setSearchResults(results);
+        }
+      } catch (cause) {
+        if (active) {
+          setSearchError(
+            cause instanceof Error ? cause.message : "Search unavailable",
+          );
+        }
+      } finally {
+        if (active) {
+          setSearchPending(false);
+        }
       }
     }, SEARCH_DEBOUNCE_MS);
-    return () => clearTimeout(timer);
-  }, [searchInput]);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [searchInput, searchRevision]);
 
   const withErrorHandling = async (operation: () => Promise<void>) => {
     try {
       await operation();
       await refresh();
-    } catch (opError: any) {
-      window.alert(`Something went wrong: ${opError.message}`);
-      await refresh();
+      toast.show({ title: "Drawing moved", variant: "success" });
+    } catch (cause) {
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "Could not complete the operation.",
+      );
     }
   };
 
-  const openFile = (file: ServerFileEntry) => {
-    if (suppressNextOpenRef.current) {
-      suppressNextOpenRef.current = false;
+  const beginTask = (next: Task, trigger?: HTMLElement | null) => {
+    returnFocusRef.current =
+      trigger ??
+      (document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null);
+    setTaskValue(
+      next.kind === "move" ? next.file?.folder ?? "" : next.file?.name ?? "",
+    );
+    setTaskError(undefined);
+    setCustomDestination(false);
+    setTask(next);
+  };
+
+  const onToggleFavorite = async (file: ServerFileEntry) => {
+    if (favoriteLock.current) {
       return;
     }
-    window.location.hash = editorHash(file.path);
-  };
-
-  const onToggleFavorite = (file: ServerFileEntry) => {
-    withErrorHandling(async () => {
+    favoriteLock.current = true;
+    setFavoritePending(true);
+    try {
       const favorites = await toggleFavorite(file.path);
       setMeta((current) => ({ ...current, favorites }));
-    });
+    } catch (cause) {
+      setError(
+        `Could not save favorite: ${
+          cause instanceof Error ? cause.message : "Please try again."
+        }`,
+      );
+    } finally {
+      favoriteLock.current = false;
+      setFavoritePending(false);
+    }
   };
 
-  const onCreate = () => {
-    const input = window.prompt("Name for the new drawing:");
-    if (input === null) {
+  const confirmTask = async () => {
+    if (!task) {
       return;
     }
-    const name = toFileName(input);
-    if (!name) {
-      window.alert(NAME_RULES);
-      return;
+    setTaskError(undefined);
+    try {
+      const file = task.file;
+      if (task.kind === "create" || task.kind === "rename") {
+        const name = toFileName(taskValue);
+        if (!name) {
+          throw new Error(NAME_RULES);
+        }
+        const folder = file?.folder ?? currentFolder;
+        const path = folder ? `${folder}/${name}` : name;
+        if (file?.path === path) {
+          return;
+        }
+        if (files?.some((entry) => entry.path === path)) {
+          throw new Error(`"${taskValue.trim()}" already exists here.`);
+        }
+        if (task.kind === "create") {
+          await createFile(path);
+          window.location.hash = editorHash(path);
+          return;
+        }
+        await renameFile(file!.path, path);
+        await updateMetaPath(file!.path, path);
+        returnFocusRef.current = document.getElementById("drawings-main");
+      } else if (task.kind === "folder") {
+        const name = toFolderPath(taskValue);
+        if (!name || name.includes("/")) {
+          throw new Error(NAME_RULES);
+        }
+        await createFolder(currentFolder ? `${currentFolder}/${name}` : name);
+      } else if (task.kind === "move" && file) {
+        if (customDestination && !taskValue.trim()) {
+          throw new Error("Enter a destination folder path.");
+        }
+        const folder = toFolderPath(taskValue);
+        if (folder === null) {
+          throw new Error(NAME_RULES);
+        }
+        await moveFileToFolder(file, folder);
+        returnFocusRef.current = document.getElementById("drawings-main");
+      } else if (task.kind === "delete" && file) {
+        await deleteFile(file.path);
+        await updateMetaPath(file.path, null);
+        returnFocusRef.current = document.getElementById("drawings-main");
+      } else if (task.kind === "deleteFolder" && task.folder) {
+        await deleteFolder(task.folder.path);
+        returnFocusRef.current = document.getElementById("drawings-main");
+      }
+      await refresh();
+      setSearchRevision((revision) => revision + 1);
+      toast.show({
+        title:
+          task.kind === "delete" || task.kind === "deleteFolder"
+            ? "Deleted successfully"
+            : "Saved successfully",
+        variant: "success",
+      });
+    } catch (cause) {
+      setTaskError(
+        cause instanceof Error
+          ? cause.message
+          : "Could not save changes. Please try again.",
+      );
+      throw cause;
     }
-    const path = currentFolder ? `${currentFolder}/${name}` : name;
-    if (files?.some((file) => file.path === path)) {
-      window.alert(`"${input.trim()}" already exists here.`);
-      return;
-    }
-    withErrorHandling(async () => {
-      await createFile(path);
-      window.location.hash = editorHash(path);
-    });
-  };
-
-  const onCreateFolder = () => {
-    const input = window.prompt("Name for the new folder:");
-    if (input === null) {
-      return;
-    }
-    const name = toFolderPath(input);
-    if (!name || name.includes("/")) {
-      window.alert(NAME_RULES);
-      return;
-    }
-    const path = currentFolder ? `${currentFolder}/${name}` : name;
-    withErrorHandling(() => createFolder(path));
-  };
-
-  const onDeleteFolder = (folder: ServerFolderEntry) => {
-    if (!window.confirm(`Delete the empty folder "${folder.name}"?`)) {
-      return;
-    }
-    withErrorHandling(() => deleteFolder(folder.path));
-  };
-
-  const onRename = (file: ServerFileEntry) => {
-    const input = window.prompt("Rename drawing:", file.name);
-    if (input === null) {
-      return;
-    }
-    const name = toFileName(input);
-    if (!name) {
-      window.alert(NAME_RULES);
-      return;
-    }
-    const to = file.folder ? `${file.folder}/${name}` : name;
-    if (to === file.path) {
-      return;
-    }
-    if (files?.some((entry) => entry.path === to && entry.path !== file.path)) {
-      const destination = file.folder || "All drawings";
-      window.alert(`"${name}" already exists in ${destination}.`);
-      return;
-    }
-    withErrorHandling(async () => {
-      await renameFile(file.path, to);
-      await updateMetaPath(file.path, to);
-    });
-  };
-
-  const onMove = (file: ServerFileEntry) => {
-    const input = window.prompt(
-      'Move to folder (empty for the top level, "a/b" for nested):',
-      file.folder,
-    );
-    if (input === null) {
-      return;
-    }
-    const folder = toFolderPath(input);
-    if (folder === null) {
-      window.alert(NAME_RULES);
-      return;
-    }
-    const to = pathForFolder(file, folder);
-    if (to === file.path) {
-      return;
-    }
-    if (files?.some((entry) => entry.path === to && entry.path !== file.path)) {
-      const destination = folder || "All drawings";
-      window.alert(`"${file.name}" already exists in ${destination}.`);
-      return;
-    }
-    withErrorHandling(async () => {
-      await renameFile(file.path, to);
-      await updateMetaPath(file.path, to);
-    });
-  };
-
-  const onDelete = (file: ServerFileEntry) => {
-    if (!window.confirm(`Delete "${file.name}"? This cannot be undone.`)) {
-      return;
-    }
-    withErrorHandling(async () => {
-      await deleteFile(file.path);
-      await updateMetaPath(file.path, null);
-    });
   };
 
   const favorites = meta.favorites ?? [];
-  const isSearching = searchResults !== null;
+  const isSearching = !!searchInput.trim();
 
   const byPath = new Map((files ?? []).map((file) => [file.path, file]));
 
@@ -549,10 +569,7 @@ export const Dashboard = () => {
     event: DragEvent<HTMLElement>,
     file: ServerFileEntry,
   ) => {
-    if (
-      event.target instanceof HTMLElement &&
-      event.target.closest("button, a")
-    ) {
+    if (event.target instanceof HTMLElement && event.target.closest("button")) {
       event.preventDefault();
       return;
     }
@@ -566,7 +583,6 @@ export const Dashboard = () => {
     }
     setDraggedFilePath(file.path);
     setDropTargetFolder(null);
-    setOpenMenuPath(null);
   };
 
   const onFileDragEnd = () => {
@@ -648,250 +664,437 @@ export const Dashboard = () => {
     return parent === currentFolder;
   });
   const folderFiles = sortFiles(
-    (files ?? []).filter((file) => file.folder === currentFolder),
+    (files ?? []).filter(
+      (file) => !currentFolder || file.folder === currentFolder,
+    ),
     sortMode,
   );
-  const quickAccessFiles =
-    quickAccessTab === "favorites" ? favoriteFiles : recentFiles;
+
   const hasQuickAccess = favoriteFiles.length > 0 || recentFiles.length > 0;
 
   const breadcrumb = currentFolder ? currentFolder.split("/") : [];
 
-  const cardProps = {
-    onOpen: openFile,
-    onToggleFavorite,
-    onRename,
-    onMove,
-    onDelete,
-    onMenuToggle: (path: string) =>
-      setOpenMenuPath((current) => (current === path ? null : path)),
-    onDragEnd: onFileDragEnd,
-    onDragStart: onFileDragStart,
-  };
-
-  const renderGrid = (entries: ServerFileEntry[], variant = "") => (
-    <div className={`Dashboard__grid ${variant}`}>
+  const renderGrid = (entries: ServerFileEntry[]) => (
+    <div className="Dashboard__grid">
       {entries.map((file) => (
         <FileCard
           key={file.path}
           file={file}
-          isDragging={draggedFilePath === file.path}
           isFavorite={favorites.includes(file.path)}
-          menuOpen={openMenuPath === file.path}
-          {...cardProps}
+          isDragging={draggedFilePath === file.path}
+          pending={favoritePending}
+          onNavigate={(event) => {
+            if (suppressNextOpenRef.current) {
+              event.preventDefault();
+              suppressNextOpenRef.current = false;
+            }
+          }}
+          onToggleFavorite={onToggleFavorite}
+          onDragStart={onFileDragStart}
+          onDragEnd={onFileDragEnd}
+          onAction={(action, file, trigger) =>
+            beginTask(
+              { kind: action as "rename" | "move" | "delete", file },
+              trigger,
+            )
+          }
         />
       ))}
     </div>
   );
+  const taskTitle = task
+    ? {
+        create: "New drawing",
+        folder: "New folder",
+        rename: "Rename drawing",
+        move: "Move drawing",
+        delete: "Delete drawing",
+        deleteFolder: "Delete folder",
+      }[task.kind]
+    : "Drawing action";
+  const destructive = task?.kind === "delete" || task?.kind === "deleteFolder";
 
   return (
-    <div className={themeClass("Dashboard")}>
-      <div className="Dashboard__shell">
-        <header className="Dashboard__header">
-          <div className="Dashboard__title-block">
-            <h1>Drawings</h1>
-          </div>
-          <div className="Dashboard__actions">
-            <button className="Dashboard__secondary" onClick={onCreateFolder}>
-              <Icon name="folder" />
-              Folder
-            </button>
-            <button className="Dashboard__primary" onClick={onCreate}>
-              <Icon name="plus" />
-              New drawing
-            </button>
-            <a
-              className="Dashboard__scratch-link"
-              href="#scratch"
-              title="Open the stock scratch editor (browser-local, not saved to the server)"
+    <div className="Dashboard bg-background text-foreground font-sans">
+      <a
+        href="#drawings-main"
+        className="sr-only focus:not-sr-only"
+        onClick={(event) => {
+          event.preventDefault();
+          document.getElementById("drawings-main")?.focus();
+        }}
+      >
+        Skip to drawings
+      </a>
+      <header className="border-b">
+        <div className="Dashboard__brand flex items-center justify-between gap-4 p-4">
+          <span className="font-heading text-lg font-semibold">Excalidraw</span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-muted-foreground">
+              Your workspace
+            </span>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                const next = !darkTheme;
+                setDarkTheme(next);
+                document.documentElement.dataset.mode = next ? "dark" : "light";
+                try {
+                  localStorage.setItem(
+                    STORAGE_KEYS.LOCAL_STORAGE_THEME,
+                    next ? "dark" : "light",
+                  );
+                } catch {
+                  /* Keep the selected theme for this visit when storage is unavailable. */
+                }
+              }}
             >
-              Scratchpad
-            </a>
-          </div>
-        </header>
-
-        <div className="Dashboard__toolbar">
-          <label className="Dashboard__search">
-            <Icon name="search" />
-            <input
-              aria-label="Search drawings by name or contents"
-              type="search"
-              placeholder="Search drawings, folders, or text inside files"
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-            />
-          </label>
-          <div className="Dashboard__toolbar-actions">
-            <select
-              aria-label="Sort drawings"
-              value={sortMode}
-              onChange={(event) => setSortMode(event.target.value as SortMode)}
-            >
-              <option value="mtime">Last modified</option>
-              <option value="name">Name</option>
-            </select>
+              Toggle theme
+            </Button>
           </div>
         </div>
-
-        {error && <div className="Dashboard__error">{error}</div>}
-
+      </header>
+      <Page
+        id="drawings-main"
+        title="Drawings"
+        description="A home for your ideas. Pick up where you left off."
+        width="wide"
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => beginTask({ kind: "folder" })}
+            >
+              New folder
+            </Button>
+            <Button icon="add" onClick={() => beginTask({ kind: "create" })}>
+              New drawing
+            </Button>
+          </>
+        }
+      >
+        <div className="Dashboard__toolbar">
+          <SearchField
+            label="Search drawings"
+            placeholder="Search names or text inside drawings…"
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
+            onClear={() => setSearchInput("")}
+          />
+          <Select
+            label="Sort by"
+            value={sortMode}
+            onValueChange={(value) => setSortMode(value as SortMode)}
+            options={[
+              { value: "mtime", label: "Last modified" },
+              { value: "name", label: "Name" },
+            ]}
+          />
+        </div>
+        {error && (
+          <Alert
+            variant="destructive"
+            title="Workspace unavailable"
+            description={error}
+            action={
+              <Button variant="secondary" onClick={refresh}>
+                Retry
+              </Button>
+            }
+          />
+        )}
+        {!files && !error && <p role="status">Loading drawings…</p>}
+        {files && refreshing && <p role="status">Refreshing drawings…</p>}
         {isSearching ? (
-          <section className="Dashboard__section">
-            <div className="Dashboard__section-header">
-              <div>
-                <h2>Search results</h2>
-                <p>
-                  {searchResults.length} matches for "{searchInput.trim()}"
-                </p>
-              </div>
-            </div>
-            {searchResults.length > 0 ? (
+          <Section
+            title="Search results"
+            description={
+              searchResults
+                ? `${searchResults.length} matches for "${searchInput.trim()}"`
+                : undefined
+            }
+          >
+            {searchPending ? (
+              <p role="status">Searching drawings…</p>
+            ) : searchError ? (
+              <Alert
+                title="Search unavailable"
+                description={searchError}
+                variant="destructive"
+                action={
+                  <Button
+                    variant="secondary"
+                    onClick={() =>
+                      setSearchRevision((revision) => revision + 1)
+                    }
+                  >
+                    Retry search
+                  </Button>
+                }
+              />
+            ) : searchResults?.length ? (
               renderGrid(sortFiles(searchResults, sortMode))
             ) : (
-              <div className="Dashboard__empty">No matching drawings.</div>
+              <Empty
+                title="No matching drawings"
+                description="Try a different name or text."
+              />
             )}
-          </section>
+          </Section>
         ) : (
           <>
             {currentFolder === "" && hasQuickAccess && (
-              <section className="Dashboard__section">
-                <div className="Dashboard__section-header">
-                  <div>
-                    <h2>Quick access</h2>
-                    <p>
-                      {quickAccessTab === "favorites"
-                        ? `${favoriteFiles.length} favorite drawings`
-                        : `${recentFiles.length} recently opened drawings`}
-                    </p>
-                  </div>
-                  <div className="Dashboard__tabs" role="tablist">
-                    <button
-                      aria-selected={quickAccessTab === "favorites"}
-                      className={
-                        quickAccessTab === "favorites" ? "is-active" : ""
-                      }
-                      onClick={() => setQuickAccessTab("favorites")}
-                      role="tab"
-                    >
-                      Favorites
-                    </button>
-                    <button
-                      aria-selected={quickAccessTab === "recent"}
-                      className={quickAccessTab === "recent" ? "is-active" : ""}
-                      onClick={() => setQuickAccessTab("recent")}
-                      role="tab"
-                    >
-                      Recent
-                    </button>
-                  </div>
-                </div>
-                {quickAccessFiles.length > 0 ? (
-                  renderGrid(quickAccessFiles, "Dashboard__grid--compact")
-                ) : (
-                  <div className="Dashboard__empty Dashboard__empty--compact">
-                    {quickAccessTab === "favorites"
-                      ? "No favorites yet."
-                      : "No recent drawings yet."}
-                  </div>
-                )}
-              </section>
+              <Section title="Quick access">
+                <Tabs
+                  label="Quick access"
+                  value={quickAccessTab}
+                  onValueChange={(value) =>
+                    setQuickAccessTab(value as QuickAccessTab)
+                  }
+                  tabs={[
+                    { value: "recent", label: "Recent" },
+                    { value: "favorites", label: "Favorites" },
+                  ]}
+                  renderPanel={(value) => {
+                    const entries =
+                      value === "favorites" ? favoriteFiles : recentFiles;
+                    return entries.length ? (
+                      renderGrid(entries)
+                    ) : (
+                      <Empty
+                        title={
+                          value === "favorites"
+                            ? "No favorites yet"
+                            : "No recent drawings yet"
+                        }
+                        description={
+                          value === "favorites"
+                            ? "Star a drawing to keep it close."
+                            : "Open a drawing to see it here."
+                        }
+                      />
+                    );
+                  }}
+                />
+              </Section>
             )}
-
-            <section className="Dashboard__section">
-              <div className="Dashboard__section-header Dashboard__section-header--library">
-                <div>
-                  <h2>
-                    {currentFolder ? currentFolder.split("/").pop() : "Library"}
-                  </h2>
-                  <p>
-                    {folderFiles.length} drawings
-                    {subfolders.length > 0 && ` · ${subfolders.length} folders`}
-                  </p>
-                </div>
-                <div className="Dashboard__breadcrumb">
+            <div className="Dashboard__library">
+              <nav aria-label="Drawing folders" className="space-y-4">
+                <h2 className="text-sm font-semibold text-muted-foreground">
+                  Folders
+                </h2>
+                <div className="Dashboard__folder-list">
                   <button
-                    className={`${currentFolder === "" ? "is-current" : ""} ${
-                      dropTargetFolder === "" ? "is-drop-target" : ""
-                    }`}
+                    className="rounded-panel px-3 py-3 text-left hover:bg-muted"
                     onClick={() => setCurrentFolder("")}
                     {...getDropTargetProps("")}
+                    aria-current={!currentFolder ? "page" : undefined}
                   >
                     All drawings
                   </button>
-                  {breadcrumb.map((segment, index) => {
-                    const target = breadcrumb.slice(0, index + 1).join("/");
-                    return (
-                      <span key={target}>
-                        /
-                        <button
-                          className={`${
-                            target === currentFolder ? "is-current" : ""
-                          } ${
-                            dropTargetFolder === target ? "is-drop-target" : ""
-                          }`}
-                          onClick={() => setCurrentFolder(target)}
-                          {...getDropTargetProps(target)}
-                        >
-                          {segment}
-                        </button>
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {subfolders.length > 0 && (
-                <div className="Dashboard__folders">
                   {subfolders.map((folder) => (
                     <div
                       key={folder.path}
-                      className={`Dashboard__folder ${
-                        dropTargetFolder === folder.path ? "is-drop-target" : ""
-                      }`}
-                      onClick={() => setCurrentFolder(folder.path)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          setCurrentFolder(folder.path);
-                        }
-                      }}
-                      role="button"
-                      tabIndex={0}
+                      className="flex items-center justify-between gap-2 rounded-panel"
+                      data-drop-target={dropTargetFolder === folder.path}
                       {...getDropTargetProps(folder.path)}
                     >
-                      <span>
+                      <button
+                        className="flex min-w-0 items-center gap-2 px-3 py-3 text-left"
+                        onClick={() => setCurrentFolder(folder.path)}
+                      >
                         <Icon name="folder" />
                         {folder.name}
-                      </span>
-                      <button
-                        className="Dashboard__danger"
-                        title="Delete folder (must be empty)"
-                        aria-label={`Delete folder ${folder.name}`}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          onDeleteFolder(folder);
-                        }}
-                      >
-                        <Icon name="trash" />
                       </button>
+                      <DropdownMenu
+                        trigger="icon"
+                        label={`Actions for folder ${folder.name}`}
+                        items={[
+                          {
+                            id: "delete",
+                            label: "Delete empty folder",
+                            variant: "destructive",
+                          },
+                        ]}
+                        onAction={(_, trigger) =>
+                          beginTask({ kind: "deleteFolder", folder }, trigger)
+                        }
+                      />
                     </div>
                   ))}
                 </div>
-              )}
-
-              {files && folderFiles.length === 0 && subfolders.length === 0 && (
-                <div className="Dashboard__empty">
-                  <Icon name="grid" />
-                  {currentFolder
-                    ? "This folder is empty."
-                    : "No drawings yet. Create your first one."}
-                </div>
-              )}
-
-              {folderFiles.length > 0 && renderGrid(folderFiles)}
-            </section>
+              </nav>
+              <Section
+                title={
+                  currentFolder
+                    ? currentFolder.split("/").pop()
+                    : "All drawings"
+                }
+                description={`${folderFiles.length} drawings`}
+              >
+                {breadcrumb.length > 0 && (
+                  <nav
+                    aria-label="Folder path"
+                    className="flex flex-wrap items-center gap-2"
+                  >
+                    <button
+                      className="underline"
+                      onClick={() => setCurrentFolder("")}
+                      {...getDropTargetProps("")}
+                    >
+                      All drawings
+                    </button>
+                    {breadcrumb.map((segment, index) => {
+                      const target = breadcrumb.slice(0, index + 1).join("/");
+                      return (
+                        <span key={target} className="flex items-center gap-2">
+                          <span aria-hidden="true">/</span>
+                          <button
+                            className="underline"
+                            aria-current={
+                              target === currentFolder ? "page" : undefined
+                            }
+                            onClick={() => setCurrentFolder(target)}
+                            {...getDropTargetProps(target)}
+                          >
+                            {segment}
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </nav>
+                )}
+                {folderFiles.length > 0
+                  ? renderGrid(folderFiles)
+                  : files && (
+                      <Empty
+                        title={
+                          currentFolder
+                            ? "This folder is empty"
+                            : "Room for your next idea"
+                        }
+                        description="Create a drawing here, or move one from another folder."
+                      >
+                        <Button onClick={() => beginTask({ kind: "create" })}>
+                          New drawing
+                        </Button>
+                      </Empty>
+                    )}
+              </Section>
+            </div>
           </>
         )}
-      </div>
+        <footer className="flex justify-between gap-4 border-t pt-4 text-sm text-muted-foreground">
+          <span>Your drawings are saved on this server.</span>
+          <a href="#scratch" className="underline">
+            Scratchpad
+          </a>
+        </footer>
+      </Page>
+      <Dialog
+        open={!!task}
+        onOpenChange={(open) => {
+          if (!open) {
+            setTask(null);
+          }
+        }}
+        title={taskTitle}
+        description={
+          destructive
+            ? `Delete "${task?.file?.name ?? task?.folder?.name}"? ${
+                task?.kind === "deleteFolder"
+                  ? "Only empty folders can be deleted."
+                  : "This cannot be undone."
+              }`
+            : task?.kind === "move"
+            ? "Choose a destination folder."
+            : "Use a plain name without slashes or a leading dot."
+        }
+        confirmLabel={
+          destructive
+            ? taskTitle
+            : task?.kind === "move"
+            ? "Move drawing"
+            : task?.kind === "rename"
+            ? "Rename drawing"
+            : "Create"
+        }
+        confirmVariant={destructive ? "destructive" : "primary"}
+        onConfirm={confirmTask}
+        error={taskError}
+        returnFocusRef={returnFocusRef}
+      >
+        {!destructive &&
+          (task?.kind === "move" ? (
+            <div className="space-y-4">
+              <Select
+                label="Destination folder"
+                value={
+                  customDestination ? "__custom__" : taskValue || "__root__"
+                }
+                onValueChange={(value) => {
+                  setCustomDestination(value === "__custom__");
+                  setTaskValue(
+                    value === "__root__" || value === "__custom__" ? "" : value,
+                  );
+                }}
+                options={[
+                  { value: "__root__", label: "All drawings" },
+                  { value: "__custom__", label: "New folder path…" },
+                  ...folders.map((folder) => ({
+                    value: folder.path,
+                    label: folder.path,
+                  })),
+                ]}
+              />
+              {customDestination && (
+                <TextField
+                  label="Folder path"
+                  description="Use a/b for nested folders. Missing folders will be created."
+                  value={taskValue}
+                  onChange={(event) => setTaskValue(event.target.value)}
+                />
+              )}
+            </div>
+          ) : (
+            <TextField
+              label="Name"
+              value={taskValue}
+              onChange={(event) => setTaskValue(event.target.value)}
+            />
+          ))}
+      </Dialog>
     </div>
+  );
+};
+
+export const Dashboard = () => {
+  useEffect(() => {
+    const root = document.documentElement;
+    const previous = {
+      mode: root.getAttribute("data-mode"),
+      density: root.getAttribute("data-density"),
+    };
+    const style = document.createElement("style");
+    style.dataset.prismDashboard = "true";
+    style.textContent = prismStyles;
+    document.head.appendChild(style);
+    root.dataset.mode = isDarkTheme() ? "dark" : "light";
+    root.dataset.density = "comfortable";
+    return () => {
+      style.remove();
+      for (const [key, value] of Object.entries(previous)) {
+        if (value === null) {
+          root.removeAttribute(`data-${key}`);
+        } else {
+          root.setAttribute(`data-${key}`, value);
+        }
+      }
+    };
+  }, []);
+  return (
+    <ToastProvider>
+      <DashboardContent />
+    </ToastProvider>
   );
 };
