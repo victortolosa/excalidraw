@@ -346,6 +346,17 @@ const putScene = (
     body: serialized,
   });
 
+/** Preserve the newest edit, including edits received during a failed PUT. */
+const writeLatestRecovery = (job: PendingSave, serialized: string) => {
+  const latest = pending?.path === job.path ? pending : null;
+  writeRecovery(
+    job.path,
+    latest
+      ? serializeAsJSON(latest.elements, latest.appState, latest.files, "local")
+      : serialized,
+  );
+};
+
 /**
  * Drain the pending queue until it is clean or hits a state that can't be
  * retried right now (auth wall, reload, network error). Runs as a single
@@ -394,7 +405,7 @@ const runDrain = async () => {
             `changes are kept locally as a backup).`,
         );
         if (!overwrite) {
-          writeRecovery(job.path, serialized);
+          writeLatestRecovery(job, serialized);
           window.location.reload();
           return;
         }
@@ -402,7 +413,7 @@ const runDrain = async () => {
       }
 
       if (looksLikeAuthWall(response)) {
-        writeRecovery(job.path, serialized);
+        writeLatestRecovery(job, serialized);
         setStatus("session-expired");
         return; // keep `pending`; a later trigger retries
       }
@@ -417,7 +428,11 @@ const runDrain = async () => {
         currentFile.version = body.version;
       }
       lastSavedScene = serialized;
-      clearRecovery(job.path);
+      if (pending?.path === job.path && pending.revision !== job.revision) {
+        writeLatestRecovery(job, serialized);
+      } else {
+        clearRecovery(job.path);
+      }
       // only clear the queue if no newer edit arrived while we were saving
       if (pending.revision === job.revision) {
         pending = null;
@@ -435,7 +450,7 @@ const runDrain = async () => {
       console.error(`failed to save server file "${job.path}"`, error);
       // retain the payload — a later trigger retries, and the localStorage
       // copy survives a tab close
-      writeRecovery(job.path, serialized);
+      writeLatestRecovery(job, serialized);
       setStatus("error");
       return; // keep `pending`; stop looping so we don't hammer a dead server
     }
@@ -501,6 +516,9 @@ export const saveToServer = (
     appState,
     files,
   };
+  if (readRecovery(currentFile.path)) {
+    writeLatestRecovery(pending, "");
+  }
   setStatus("dirty");
   scheduleSave();
 };

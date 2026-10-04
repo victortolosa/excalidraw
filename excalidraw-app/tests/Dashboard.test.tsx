@@ -135,10 +135,31 @@ describe("Dashboard", () => {
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
         "/api/files/New%20map.excalidraw",
-        expect.objectContaining({ method: "PUT" }),
+        expect.objectContaining({
+          method: "PUT",
+          headers: expect.objectContaining({ "If-None-Match": "*" }),
+        }),
       ),
     );
     expect(window.location.hash).toBe("#/d/New%20map.excalidraw");
+  });
+
+  it("stays on the dashboard when another tab already created the drawing", async () => {
+    const alert = vi.fn();
+    vi.stubGlobal("alert", alert);
+    vi.stubGlobal("prompt", vi.fn().mockReturnValue("New map"));
+    render(<Dashboard />);
+    await screen.findAllByText("Root board");
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({ error: "target already exists" }, { status: 412 }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "New drawing" }));
+    await waitFor(() =>
+      expect(alert).toHaveBeenCalledWith(
+        "Something went wrong: target already exists",
+      ),
+    );
+    expect(window.location.hash).toBe("");
   });
 
   it("searches drawings through the server after a debounce", async () => {

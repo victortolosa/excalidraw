@@ -72,7 +72,7 @@ export const createFile = async (path: string) => {
   await expectOk(
     await fetch(`/api/files/${encodePath(path)}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "If-None-Match": "*" },
       body: EMPTY_SCENE,
     }),
   );

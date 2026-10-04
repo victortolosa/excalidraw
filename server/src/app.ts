@@ -113,6 +113,16 @@ function withPathLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
   return result;
 }
 
+/** Acquire multiple paths in a stable order to avoid rename deadlocks. */
+function withPathLocks<T>(keys: string[], fn: () => Promise<T>): Promise<T> {
+  const ordered = [...new Set(keys)].sort();
+  const acquire = (index: number): Promise<T> =>
+    index === ordered.length
+      ? fn()
+      : withPathLock(ordered[index], () => acquire(index + 1));
+  return acquire(0);
+}
+
 async function listDrawings(dataDir: string): Promise<FileEntry[]> {
   const entries: FileEntry[] = [];
 
@@ -340,7 +350,11 @@ export function createApp(options: { dataDir: string; staticDir: string }) {
     // and the atomic replacement are one step (no lost-update race between
     // two concurrent writers). No baseline header = unconditional overwrite.
     const baseline = c.req.header("X-Base-Version");
+    const createOnly = c.req.header("If-None-Match") === "*";
     return withPathLock(abs, async () => {
+      if (createOnly && (await exists(abs))) {
+        return c.json({ error: "target already exists" }, 412);
+      }
       if (baseline) {
         const current = await fileEtag(abs);
         // current === null: the file was deleted since load — treat the PUT
@@ -383,17 +397,19 @@ export function createApp(options: { dataDir: string; staticDir: string }) {
     }
     const to = safeFilePath(dataDir, body.to);
 
-    if (!(await exists(from.abs))) {
-      return c.json({ error: "not found" }, 404);
-    }
-    if (await exists(to.abs)) {
-      return c.json({ error: "target already exists" }, 409);
-    }
-    await fs.mkdir(path.dirname(to.abs), { recursive: true });
-    await fs.rename(from.abs, to.abs);
-    await moveThumbnail(from.rel, to.rel);
-    const stat = await fs.stat(to.abs);
-    return c.json({ path: to.rel, mtime: Math.round(stat.mtimeMs) });
+    return withPathLocks([from.abs, to.abs], async () => {
+      if (!(await exists(from.abs))) {
+        return c.json({ error: "not found" }, 404);
+      }
+      if (await exists(to.abs)) {
+        return c.json({ error: "target already exists" }, 409);
+      }
+      await fs.mkdir(path.dirname(to.abs), { recursive: true });
+      await fs.rename(from.abs, to.abs);
+      await moveThumbnail(from.rel, to.rel);
+      const stat = await fs.stat(to.abs);
+      return c.json({ path: to.rel, mtime: Math.round(stat.mtimeMs) });
+    });
   });
 
   api.delete("/files/:path{.+}", async (c) => {
@@ -402,13 +418,15 @@ export function createApp(options: { dataDir: string; staticDir: string }) {
     if (action !== "file") {
       return c.json({ error: "unknown action" }, 404);
     }
-    try {
-      await fs.unlink(abs);
-    } catch {
-      return c.json({ error: "not found" }, 404);
-    }
-    await fs.rm(thumbnailPath(rel), { force: true });
-    return c.json({ ok: true });
+    return withPathLock(abs, async () => {
+      try {
+        await fs.unlink(abs);
+      } catch {
+        return c.json({ error: "not found" }, 404);
+      }
+      await fs.rm(thumbnailPath(rel), { force: true });
+      return c.json({ ok: true });
+    });
   });
 
   api.post("/folders/:path{.+}", async (c) => {

@@ -466,3 +466,95 @@ test("meta round-trips through .dashboard.json", async () => {
   // stored as the dotfile, which the listing hides
   await fs.access(path.join(dataDir, ".dashboard.json"));
 });
+
+test("concurrent renames to one destination preserve both drawings", async () => {
+  const sources = ["rename-a.excalidraw", "rename-b.excalidraw"];
+  const contents = sources.map((name) => JSON.stringify({ name }));
+  await Promise.all(
+    sources.map((name, i) =>
+      fs.writeFile(path.join(dataDir, name), contents[i]),
+    ),
+  );
+  const results = await Promise.all(
+    sources.map((name) =>
+      app.request(`/api/files/${name}/rename`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: "rename-target.excalidraw" }),
+      }),
+    ),
+  );
+  assert.deepEqual(results.map((r) => r.status).sort(), [200, 409]);
+  const winner = results.findIndex((r) => r.status === 200);
+  assert.equal(
+    await fs.readFile(path.join(dataDir, "rename-target.excalidraw"), "utf8"),
+    contents[winner],
+  );
+  assert.equal(
+    await fs.readFile(path.join(dataDir, sources[1 - winner]), "utf8"),
+    contents[1 - winner],
+  );
+});
+
+test("opposite-direction renames finish without overwriting either file", async () => {
+  const names = ["opposite-a.excalidraw", "opposite-b.excalidraw"];
+  await Promise.all(
+    names.map((name) =>
+      fs.writeFile(path.join(dataDir, name), JSON.stringify({ name })),
+    ),
+  );
+  const results = await Promise.all(
+    names.map((name, i) =>
+      app.request(`/api/files/${name}/rename`, {
+        method: "POST",
+        body: JSON.stringify({ to: names[1 - i] }),
+        headers: { "Content-Type": "application/json" },
+      }),
+    ),
+  );
+  assert.deepEqual(
+    results.map((r) => r.status),
+    [409, 409],
+  );
+  for (const name of names) {
+    assert.equal(
+      await fs.readFile(path.join(dataDir, name), "utf8"),
+      JSON.stringify({ name }),
+    );
+  }
+});
+
+test("create-only PUT rejects an existing drawing without changing it", async () => {
+  const name = "create-existing.excalidraw";
+  const original = JSON.stringify({ elements: [{ id: "keep-me" }] });
+  await fs.writeFile(path.join(dataDir, name), original);
+  const result = await app.request(`/api/files/${name}`, {
+    method: "PUT",
+    body: SCENE,
+    headers: { "If-None-Match": "*" },
+  });
+  assert.equal(result.status, 412);
+  assert.equal(await fs.readFile(path.join(dataDir, name), "utf8"), original);
+});
+
+test("concurrent create-only PUTs allow exactly one creator", async () => {
+  const url = "/api/files/create-race.excalidraw";
+  const bodies = [
+    JSON.stringify({ owner: "a" }),
+    JSON.stringify({ owner: "b" }),
+  ];
+  const results = await Promise.all(
+    bodies.map((body) =>
+      app.request(url, {
+        method: "PUT",
+        body,
+        headers: { "If-None-Match": "*" },
+      }),
+    ),
+  );
+  assert.deepEqual(results.map((r) => r.status).sort(), [200, 412]);
+  assert.equal(
+    await (await app.request(url)).text(),
+    bodies[results.findIndex((r) => r.status === 200)],
+  );
+});

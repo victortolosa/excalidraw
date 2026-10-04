@@ -216,6 +216,58 @@ describe("serverStorage", () => {
       expect(fetchMock.mock.calls[1][1].method).toBe("PUT");
     });
 
+    it("backs up the newest edit when an older in-flight save fails", async () => {
+      const storage = await importServerStorage();
+      const path = "latest-recovery.excalidraw";
+      const key = `excalidraw-server-recovery:${path}`;
+      await openFile(storage, path);
+      let reject!: (error: Error) => void;
+      fetchMock.mockReturnValueOnce(
+        new Promise<Response>((_, fail) => {
+          reject = fail;
+        }),
+      );
+      storage.saveToServer(changedScene("older"), makeAppState(), {});
+      const flush = storage.flushServerSave();
+      storage.saveToServer(changedScene("newest"), makeAppState(), {});
+      reject(new Error("offline"));
+      await flush;
+      const recoveredIds = () =>
+        JSON.parse(localStorage.getItem(key)!).elements.map((el: any) => el.id);
+      expect(recoveredIds()).toContain("newest");
+      expect(recoveredIds()).not.toContain("older");
+
+      // Edits after a failure must also survive a close before the next retry.
+      storage.saveToServer(changedScene("after-failure"), makeAppState(), {});
+      expect(recoveredIds()).toContain("after-failure");
+      fetchMock.mockResolvedValueOnce(jsonResponse({ version: '"v2"' }));
+      await storage.flushServerSave();
+      expect(localStorage.getItem(key)).toBeNull();
+    });
+
+    it("keeps the newer recovery copy when an older save succeeds", async () => {
+      const storage = await importServerStorage();
+      const path = "recovery-ack.excalidraw";
+      const key = `excalidraw-server-recovery:${path}`;
+      await openFile(storage, path);
+      const first = deferredResponse();
+      const second = deferredResponse();
+      fetchMock
+        .mockReturnValueOnce(first.promise)
+        .mockReturnValueOnce(second.promise);
+      storage.saveToServer(changedScene("older"), makeAppState(), {});
+      const flush = storage.flushServerSave();
+      storage.saveToServer(changedScene("newest"), makeAppState(), {});
+      first.resolve(jsonResponse({ version: '"v2"' }));
+      await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+      expect(
+        JSON.parse(localStorage.getItem(key)!).elements.map((el: any) => el.id),
+      ).toContain("newest");
+      second.resolve(jsonResponse({ version: '"v3"' }));
+      await flush;
+      expect(localStorage.getItem(key)).toBeNull();
+    });
+
     it("debounces saves (no PUT before the debounce window)", async () => {
       vi.useFakeTimers();
       try {
