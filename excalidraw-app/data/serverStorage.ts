@@ -13,7 +13,6 @@ import {
   restoreAppState,
   restoreElements,
 } from "@excalidraw/excalidraw/data/restore";
-import { exportToSvg } from "@excalidraw/excalidraw/scene/export";
 
 import type { OrderedExcalidrawElement } from "@excalidraw/element/types";
 import type {
@@ -23,6 +22,8 @@ import type {
 } from "@excalidraw/excalidraw/types";
 
 import { atom, appJotaiStore } from "../app-jotai";
+
+import { createThumbnail } from "./thumbnail";
 
 import { recordRecent } from "./serverMeta";
 
@@ -279,16 +280,6 @@ export const loadServerScene = async (
 };
 
 /**
- * Grid cells are only a few hundred px wide, so the thumbnail is downscaled and drawn
- * without inlined font faces. Both matter for more than bandwidth: the server
- * rejects thumbnails over 1MB, and a full-scale export inlines base64 WOFF2
- * subsets per font family (plus image elements as data URIs), which pushes
- * text- or photo-heavy scenes past that cap. Vector shapes stay crisp; text
- * falls back to a system font at thumbnail size, which is the right trade.
- */
-const THUMBNAIL_SCALE = 0.5;
-
-/**
  * Regenerate the dashboard thumbnail for a scene. A missing thumbnail only
  * degrades the dashboard grid, so failures are logged and swallowed — but they
  * are logged: silently discarding the response here is what let rejected
@@ -301,29 +292,15 @@ const putThumbnail = async (
     return;
   }
   try {
-    const elements = job.elements.filter((element) => !element.isDeleted);
-    if (!elements.length) {
-      return;
-    }
-    const svg = await exportToSvg(
-      elements,
-      {
-        exportBackground: true,
-        viewBackgroundColor: job.appState.viewBackgroundColor ?? "#ffffff",
-        exportPadding: 16,
-        exportScale: THUMBNAIL_SCALE,
-      },
-      job.files,
-      { skipInliningFonts: true },
-    );
+    const thumbnail = await createThumbnail(job);
     const response = await fetch(`${fileUrl(job.path)}/thumbnail`, {
       method: "PUT",
       headers: { "Content-Type": "image/svg+xml" },
-      body: svg.outerHTML,
+      body: thumbnail,
     });
     if (!response.ok) {
       throw new Error(
-        `HTTP ${response.status} (${svg.outerHTML.length} bytes of SVG)`,
+        `HTTP ${response.status} (${new Blob([thumbnail]).size} bytes of SVG)`,
       );
     }
   } catch (error) {
