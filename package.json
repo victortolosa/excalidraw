@@ -70,6 +70,7 @@
     "test:code": "eslint --max-warnings=0 --ext .js,.ts,.tsx .",
     "test:other": "yarn prettier --list-different",
     "test:typecheck": "node ./node_modules/typescript/bin/tsc",
+    "prism:check": "prism-check --source excalidraw-app/dashboard --boundary packages --boundary excalidraw-app/components --boundary excalidraw-app/share --boundary excalidraw-app/app-language",
     "test:update": "yarn test:app --update --watch=false",
     "test": "yarn test:app",
     "test:coverage": "vitest --coverage",

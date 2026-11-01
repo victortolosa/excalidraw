@@ -77,11 +77,14 @@ export const QuickSwitcher = () => {
   };
 
   return (
+    // prism-allow noninteractive-handler: Gap QS-1: no command-palette component in Prism 0.9.2; see docs/audits/drawings-dashboard.md
     <div className={themeClass("QuickSwitcher")} onClick={() => setOpen(false)}>
+      {/* prism-allow noninteractive-handler: Gap QS-1: no command-palette component in Prism 0.9.2; see docs/audits/drawings-dashboard.md */}
       <div
         className="QuickSwitcher__panel"
         onClick={(event) => event.stopPropagation()}
       >
+        {/* prism-allow native-control: Gap QS-1: no command-palette component in Prism 0.9.2; see docs/audits/drawings-dashboard.md */}
         <input
           ref={inputRef}
           value={query}
@@ -94,6 +97,7 @@ export const QuickSwitcher = () => {
         />
         <ul>
           {results.map((file, index) => (
+            // prism-allow noninteractive-handler: Gap QS-1: no command-palette component in Prism 0.9.2; see docs/audits/drawings-dashboard.md
             <li
               key={file.path}
               className={index === selected ? "is-selected" : ""}

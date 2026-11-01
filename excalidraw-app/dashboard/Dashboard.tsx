@@ -884,6 +884,7 @@ const DashboardContent = () => {
                   Folders
                 </h2>
                 <div className="Dashboard__folder-list">
+                  {/* prism-allow native-control: Gap DASH-1: Prism Button takes no drag-and-drop handlers or aria-current; see docs/audits/drawings-dashboard.md */}
                   <button
                     className="rounded-panel px-3 py-3 text-left hover:bg-muted"
                     onClick={() => setCurrentFolder("")}
@@ -899,6 +900,7 @@ const DashboardContent = () => {
                       data-drop-target={dropTargetFolder === folder.path}
                       {...getDropTargetProps(folder.path)}
                     >
+                      {/* prism-allow native-control: Gap DASH-1: Prism Button takes no drag-and-drop handlers or aria-current; see docs/audits/drawings-dashboard.md */}
                       <button
                         className="flex min-w-0 items-center gap-2 px-3 py-3 text-left"
                         onClick={() => setCurrentFolder(folder.path)}
@@ -937,6 +939,7 @@ const DashboardContent = () => {
                     aria-label="Folder path"
                     className="flex flex-wrap items-center gap-2"
                   >
+                    {/* prism-allow native-control: Gap DASH-2: Prism Breadcrumb needs href links and takes no drop handlers; see docs/audits/drawings-dashboard.md */}
                     <button
                       className="underline"
                       onClick={() => setCurrentFolder("")}
@@ -949,6 +952,7 @@ const DashboardContent = () => {
                       return (
                         <span key={target} className="flex items-center gap-2">
                           <span aria-hidden="true">/</span>
+                          {/* prism-allow native-control: Gap DASH-2: Prism Breadcrumb needs href links and takes no drop handlers; see docs/audits/drawings-dashboard.md */}
                           <button
                             className="underline"
                             aria-current={

@@ -30,6 +30,28 @@ Ready. Installed contracts, React declarations and guidance support every contro
 
 Drawing cards and folder browsing are new local compositions, not shared components. Use native semantics and registered role utilities; no internal restyling. Prism owns controls; consumer owns services and layout. Compiled Prism CSS is injected once during dashboard lifetime and removed on unmount, with root theme attributes restored. Verify editor coexistence and portal styling. This is a routine stylesheet integration adaptation to preserve the stock editor.
 
+### Open gaps (Prism 0.9.2)
+
+`prism-check` flags 8 native controls and handlers in the dashboard. Each has a reviewed `prism-allow` exception pointing here. They must be resolved before application promotion. None was approximated with styling or a faked variant.
+
+- Gap DASH-1: Folder list entries ("All drawings" and each folder) are in-page navigation buttons that are also drag-and-drop targets and mark the current folder
+- Component or token: Button (no drag handlers, no aria-current), Toggle (pressed state, not current location)
+- Discovery: shadcn MCP unavailable in this session; not searched. Installed Prism 0.9.2 contracts read.
+- Used instead: native button with prism-allow native-control (Dashboard.tsx, 2 uses)
+- Proposed extension: a Prism folder or tree navigation component that supports a current item and drop targets, or a Button extension for aria-current and drop handling
+
+- Gap DASH-2: Breadcrumb path of the current folder, each segment a drop target
+- Component or token: Breadcrumb (ancestors must be href links; no drop handlers)
+- Discovery: shadcn MCP unavailable in this session; not searched. Installed Prism 0.9.2 contracts read.
+- Used instead: native buttons with prism-allow native-control (Dashboard.tsx, 2 uses)
+- Proposed extension: give folders URL routes so Breadcrumb links apply, and a drop-target slot for move-by-drag, or accept a drag-free Breadcrumb and keep the accessible Move dialog as the only move path
+
+- Gap QS-1: Cmd/Ctrl+K quick switcher overlay: backdrop dismissal, filter input, arrow-key highlighted results
+- Component or token: Dialog and Combobox (no always-open result list), SearchField (documented as not a command palette), Item (static rows, no highlight)
+- Discovery: shadcn MCP unavailable in this session; not searched. The shadcn command palette (Command / CommandDialog) is the likely candidate, to be confirmed.
+- Used instead: native overlay, input and list with prism-allow (QuickSwitcher.tsx, 4 uses)
+- Proposed extension: promote a command-palette component into Prism through the normal system process
+
 ## Verification
 
 - Typecheck passed using the repository TypeScript 5.9 compiler. The script now resolves that compiler explicitly; removed unnecessary baseUrl (path aliases are already relative), allowing the build checker to run under TypeScript 6 as well.
