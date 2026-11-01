@@ -32,3 +32,9 @@ yarn fix             # Auto-fix formatting and linting issues
 - Internal packages use path aliases (see `vitest.config.mts`)
 - Build system uses esbuild for packages, Vite for the app
 - TypeScript throughout with strict configuration
+
+<!-- prism:instructions:start -->
+
+For Prism design and React web implementation, read [the installed release instructions](node_modules/@prism-local/react/AGENTS.md) and the project AGENTS.md. Preserve project rules and use release-matched guidance.
+
+<!-- prism:instructions:end -->

@@ -32,3 +32,11 @@ yarn fix             # Auto-fix formatting and linting issues
 - Internal packages use path aliases (see `vitest.config.mts`)
 - Build system uses esbuild for packages, Vite for the app
 - TypeScript throughout with strict configuration
+
+<!-- prism:instructions:start -->
+
+## Prism design system
+
+For Prism design and React web implementation, read [the installed release instructions](node_modules/@prism-local/react/AGENTS.md) first. Use the `prism-explore` skill when the design is unsettled and `prism-build` for approved designs and production work. Follow its discovery, rules, audit and validation workflow; retrieve only selected APIs. Project instructions remain in force. Read the installed release again after dependency updates.
+
+<!-- prism:instructions:end -->
