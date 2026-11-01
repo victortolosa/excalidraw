@@ -12,6 +12,7 @@
 .yarn
 *.log
 *.tgz
+!vendor/prism/*.tgz
 build
 dist
 firebase
